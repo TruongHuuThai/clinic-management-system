@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>
+        <%= title %> - Quản Lý Lịch Hẹn
+    </title>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
+</head>
+
+<body>
+    <main>
+        <div class="form-container">
+            <h1>
+                <%= title %>
+            </h1>
+
+            <div class="button-group mb-4">
+                <button type="button" class="btn btn-secondary" onclick="showTab('existing')">Bệnh nhân có sẵn</button>
+                <button type="button" class="btn btn-secondary" onclick="showTab('new')">Bệnh nhân mới</button>
+            </div>
+            <hr>
+
+            <div class="form-group">
+                <label for="patient_search">Tìm kiếm/Nhập Tên Bệnh nhân:</label>
+                <input type="text" class="form-control" id="patient_search" name="patient_search"
+                    placeholder="Bắt đầu nhập tên hoặc SĐT..." required>
+                <input type="hidden" id="bn_ma" name="bn_ma" value="">
+            </div>
+
+            <div id="existing_patient_fields" style="display: none;">
+                <h4 class="mb-3">Thông tin Bệnh nhân</h4>
+
+                <div class="form-group">
+                    <label for="">Họ tên bệnh nhân:</label>
+                    <input type="text" class="form-control" id="bn_ho_ten_available" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>Số Điện Thoại:</label>
+                    <input type="text" class="form-control" id="bn_sdt_available" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="">Giới tính:</label>
+                    <input type="text" class="form-control" id="bn_gioi_tinh_available" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="">Ngày sinh:</label>
+                    <input type="text" class="form-control" id="bn_ngay_sinh_available" readonly>
+                </div>
+
+                <div>
+                    <label for="form-control">Địa chỉ:</label>
+                    <input type="text" class="form-control" id="bn_dia_chi_available" readonly>
+                </div>
+            </div>
+
+            <div id="new_patient_fields" style="display: none;">
+                <h4 class="mb-3">Thông tin Bệnh nhân mới</h4>
+
+                <div class="form-group">
+                    <label for="">Họ tên bệnh nhân:</label>
+                    <input type="text" class="form-control" id="bn_ho_ten_new" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Số Điện Thoại:</label>
+                    <input type="text" class="form-control" id="bn_sdt_new" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Giới tính:</label>
+                    <div>
+                        <input type="radio" id="gt_nam" name="bn_gioi_tinh_new" value="Nam" checked>
+                        <label for="gt_nam" style="margin-right: 15px;">Nam</label>
+
+                        <input type="radio" id="gt_nu" name="bn_gioi_tinh_new" value="Nữ">
+                        <label for="gt_nu" style="margin-right: 15px;">Nữ</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="">Ngày sinh:</label>
+                    <input type="date" class="form-control" id="bn_ngay_sinh_new" name="bn_ngay_sinh_new" required>
+                </div>
+
+                <div>
+                    <label for="form-control">Địa chỉ:</label>
+                    <input type="text" class="form-control" id="bn_dia_chi_new" required>
+                </div>
+
+            </div>
+        </div>
+        <form id="newAppointmentForm" method="POST" onsubmit="submitNewAppointment(event)">
+
+            <div class="form-group">
+                <label for="ngay_hen">Ngày Hẹn:</label>
+                <input type="date" class="form-control" id="ngay_hen" name="ngay_hen" required>
+            </div>
+
+            <div class="form-group">
+                <label for="khung_gio">Khung Giờ:</label>
+                <select class="form-control" id="khung_gio" name="khung_gio" required>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="ghi_chu">Ghi Chú:</label>
+                <textarea class="form-control" id="ghi_chu" name="ghi_chu" rows="3" required></textarea>
+            </div>
+
+            <div class="form-actions mt-4">
+                <button type="submit" class="btn btn-primary">Tạo Lịch Hẹn</button>
+            </div>
+        </form>
+        </div>
+    </main>
+
+    <script src="/js/appointment_new_form.js"></script>
+    <script>
+        // Gọi hàm khởi tạo sau khi DOM tải xong
+        document.addEventListener('DOMContentLoaded', initializeNewAppointmentForm);
+    </script>
+</body>
+
+</html>

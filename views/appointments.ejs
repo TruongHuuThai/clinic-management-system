@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>
+        <%= title %> - Quản Lý Phòng Khám
+    </title>
+</head>
+
+<body>
+    <header>
+    </header>
+
+    <main class="container">
+        <h1>
+            <%= title %>
+        </h1>
+        <p>Tổng số lịch hẹn: **<%= data.totalCount %>**</p>
+
+        <div>
+            <button onclick="themLichHen()">Thêm lịch hẹn</button>
+        </div>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Thời gian</th>
+                    <th>Ngày hẹn</th>
+                    <th>Bệnh nhân</th>
+                    <th>Trạng thái</th>
+                    <th>Ghi chú</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% data.appointments.forEach((item, index)=> { %>
+                    <tr>
+                        <td>
+                            <%= index + 1 %>
+                        </td>
+                        <td>
+                            <%= item.time %>
+                        </td>
+                        <td>
+                            <%= item.date.toLocaleDateString('vi-VN') %>
+                        </td>
+                        <td>
+                            <%= item.name %>
+                        </td>
+                        <td>
+                            <span class="status-badge status ">
+                               <%
+    let displayStatus = '';
+
+    // 1. Lấy và chuẩn hóa giá trị gốc
+    const normalizedStatus = item.status ? item.status.trim().toUpperCase() : '';
+
+    // 2. So sánh với giá trị đã chuẩn hóa
+    if (normalizedStatus === 'DA_DEN') {
+        displayStatus = 'Đã đến';
+    } else if (normalizedStatus === 'CHO_KHAM') {
+        displayStatus = 'Chờ khám';
+    } else if (normalizedStatus === 'DA_HUY') {
+        displayStatus = 'Đã hủy';
+    } else if (normalizedStatus === 'CHUA_DEN') { // THÊM ĐIỀU KIỆN NÀY
+        displayStatus = 'Chưa đến';
+    } else {
+        // 3. Fallback: Nếu không khớp, hiển thị giá trị gốc
+        displayStatus = item.status;
+    }
+%>
+<%= displayStatus %>
+                            </span>
+                        </td>
+                        <td>
+                            <%= item.note %>
+                        </td>
+                        <td>
+                            <button class="btn-sm btn-info" data-id="<%= item.lh_ma %>" onclick="suaLichHen(this)">
+                                Sửa
+                            </button>
+                            <button class="btn-sm btn-danger" data-id="<%= item.lh_ma %>" onclick="xoaLichHen(this)">
+                                Xóa
+                            </button>
+                        </td>
+                    </tr>
+                    <% }); %>
+            </tbody>
+        </table>
+    </main>
+
+    <script src="/js/appointments.js"></script>
+</body>
+
+</html>

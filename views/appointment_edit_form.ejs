@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>
+        <%= title %> - Quản Lý Lịch Hẹn
+    </title>
+</head>
+
+<body>
+    <script>
+        // Tính ngày hiện tại dưới định dạng YYYY-MM-DD
+        function getCurrentDateISO() {
+            const now = new Date();
+            // Lấy offset thời gian để chuyển về giờ địa phương (tránh lỗi múi giờ)
+            const offset = now.getTimezoneOffset() * 60000;
+            const localISOTime = new Date(now.getTime() - offset).toISOString().substring(0, 10);
+            return localISOTime;
+        }
+
+        // Gán ngày hiện tại vào một biến JS
+        const minDate = getCurrentDateISO();
+    </script>
+    <main>
+        <div class="form-container">
+            <h1>
+                <%= title %>
+            </h1>
+
+            <div class="form-group">
+                <label for="bn_ho_ten">Tên Bệnh Nhân:</label>
+                <input type="text" class="form-control" id="bn_ho_ten" value="<%= appointmentData.bn_ho_ten %>"
+                    readonly>
+            </div>
+            <hr>
+
+            <form id="editAppointmentForm">
+                <input type="hidden" id="lh_ma" name="lh_ma" value="<%= appointmentData.lh_ma %>">
+
+                <div class="form-group">
+                    <label for="ngay_hen">Ngày Hẹn:</label>
+                    <input type="date" class="form-control" id="ngay_hen" name="ngay_hen"
+                        value="<%= appointmentData.lh_ngay_hen ? appointmentData.lh_ngay_hen.toISOString().substring(0, 10) : '' %>"
+                        required>
+                </div>
+
+                <div class="form-group">
+                    <label for="khung_gio">Khung Giờ:</label>
+                    <select class="form-control" id="khung_gio" name="khung_gio" required>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="trang_thai">Trạng Thái:</label>
+                    <select class="form-control" id="trang_thai" name="trang_thai" required>
+                        <option value="CHO_KHAM" <%=appointmentData.lh_trang_thai==='CHO_KHAM' ? 'selected' : '' %>>Chờ
+                            Khám</option>
+                        <option value="DA_DEN" <%=appointmentData.lh_trang_thai==='DA_DEN' ? 'selected' : '' %>>Đã Đến
+                        </option>
+                        <option value="DA_HUY" <%=appointmentData.lh_trang_thai==='DA_HUY' ? 'selected' : '' %>>Đã Hủy
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="ghi_chu">Ghi Chú:</label>
+                    <textarea class="form-control" id="ghi_chu" name="ghi_chu"
+                        rows="3"><%= appointmentData.lh_ghi_chu || '' %></textarea>
+                </div>
+
+                <div class="form-actions" style="margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
+                    <a href="/api/appointments" class="btn btn-secondary">Hủy</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script src="/js/appointment_edit_form.js"></script>
+
+    <script>
+
+        // KHỞI TẠO KHUNG GIỜ
+        const rawTime = "<%= appointmentData.lh_khung_gio %>";
+        const slotValue = (rawTime && rawTime.length >= 5) ? rawTime.substring(0, 5) : '07:00';
+        const idValue = "<%= appointmentData.lh_ma %>";
+
+        const occupiedJSON = '<%- JSON.stringify(occupiedSlots) %>';
+        const initialOccupiedSlots = JSON.parse(occupiedJSON);
+
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof initializeFormLogic === 'function') {
+                initializeFormLogic(idValue, slotValue, initialOccupiedSlots);
+            }
+        });
+
+        // GIỚI HẠN NGÀY HẸN
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const form = document.getElementById('editAppointmentForm');
+
+            const occupiedSlotsString = form.getAttribute('data-occupied-slots');
+            const initialOccupiedSlots = JSON.parse(occupiedSlotsString || '[]');
+
+            function getMinDate() {
+                const now = new Date();
+                const offset = now.getTimezoneOffset() * 60000;
+                const localTime = new Date(now.getTime() - offset);
+                return localTime.toISOString().substring(0, 10);
+            }
+            const dateInput = document.getElementById('ngay_hen');
+            if (dateInput) {
+                dateInput.setAttribute('min', getMinDate());
+            }
+
+            if (typeof initializeFormLogic === 'function') {
+                initializeFormLogic(idValue, slotValue, initialOccupiedSlots);
+            }
+        });
+    </script>
+
+</body>
+
+</html>
