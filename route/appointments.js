@@ -4,29 +4,51 @@ const pool = require('../config/db');
 
 //  ROUTE GET QUẢN LÝ LỊCH HẸN 
 router.get('/appointments', async (req, res) => {
+    const { search, status, dateFrom } = req.query; 
     let appointments = [];
     let totalCount = 0;
-
+    
     try {
+        let whereClauses = ["lh.lh_da_xoa = FALSE"]; // Luôn lọc lịch hẹn chưa xóa
+        let queryParams = [];
+        
+        // Lọc theo TÌM KIẾM
+        if (search) {
+            queryParams.push(`%${search}%`);
+            whereClauses.push(`(bn.bn_ho_ten ILIKE $${queryParams.length} OR bn.bn_sdt ILIKE $${queryParams.length})`);
+        }
+        
+        // Lọc theo TRẠNG THÁI
+        if (status) {
+            queryParams.push(status);
+            whereClauses.push(`lh.lh_trang_thai = $${queryParams.length}`);
+        }
+        
+        // Lọc theo NGÀY
+        if (dateFrom) {
+            queryParams.push(dateFrom);
+            whereClauses.push(`lh.lh_ngay_hen >= $${queryParams.length}`);
+        }
+
+        const whereString = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+
         const query = `
             SELECT 
-                lh.lh_ma,
-                lh.lh_khung_gio AS time,
-                lh.lh_ngay_hen AS date,  
-                bn.bn_ho_ten AS name,
-                lh.lh_trang_thai AS status,
-                lh.lh_ghi_chu AS note
+                lh.lh_ma, lh.lh_khung_gio AS time, lh.lh_ngay_hen AS date, 
+                bn.bn_ho_ten AS name, lh.lh_trang_thai AS status, lh.lh_ghi_chu AS note,
+                bn.bn_sdt -- Lấy SĐT để tìm kiếm có sẵn
             FROM 
                 lich_hen lh
             JOIN 
                 benh_nhan bn ON lh.lh_ma_bn = bn.bn_ma
-            WHERE
-                lh.lh_da_xoa = false
+            ${whereString}
             ORDER BY
                 lh.lh_ngay_hen DESC, lh.lh_khung_gio DESC;
         `;
 
-        const result = await pool.query(query);
+        // 🎯 SỬA LỖI: TRUYỀN THAM SỐ VÀO pool.query()
+        const result = await pool.query(query, queryParams); 
+        
         appointments = result.rows.map(row => ({
             ...row,
             status: row.status.replace(/_/g, ' ')
@@ -35,8 +57,14 @@ router.get('/appointments', async (req, res) => {
 
     } catch (error) {
         console.error('LỖI KHI TRUY VẤN LỊCH HẸN CHI TIẾT:', error);
-        appointments = [];
-        return res.status(500).render('error', { title: 'Lỗi', message: 'Lỗi kết nối hoặc truy vấn CSDL.' });
+            appointments = [];
+                
+              
+            return res.status(500).render('appointments', { 
+            title: 'Lỗi', 
+            data: { appointments: [], totalCount: 0 },
+            query: req.query || {}
+        });
     }
 
     res.render('appointments', {
@@ -44,11 +72,11 @@ router.get('/appointments', async (req, res) => {
         data: {
             appointments: appointments,
             totalCount: totalCount
-        }
+        },
+        query: req.query
     });
 });
 
-// ROUTE GET FORM CHỈNH SỬA 
 router.get('/appointments/edit/:id', async (req, res) => {
     const { id } = req.params;
 
@@ -297,6 +325,30 @@ router.post('/appointments/new', async (req, res) => {
         res.status(500).json({ message: 'Lỗi server nội bộ khi tạo lịch hẹn.' });
     } finally {
         if (client) client.release();
+    }
+});
+
+router.get('/patients/:bnId/appointments', async (req, res) => {
+    const { bnId } = req.params;
+
+    try {
+        const query = `
+            SELECT 
+                lh_ngay_hen, lh_khung_gio, lh_trang_thai, lh_ghi_chu
+            FROM 
+                lich_hen
+            WHERE 
+                lh_ma_bn = $1 AND lh_da_xoa = FALSE
+            ORDER BY 
+                lh_ngay_hen DESC;
+        `;
+        const result = await pool.query(query, [bnId]);
+
+        res.status(200).json(result.rows);
+
+    } catch (error) {
+        console.error('LỖI KHI TẢI LỊCH SỬ HẸN:', error);
+        res.status(500).json({ message: 'Lỗi server khi tải dữ liệu lịch sử hẹn.' });
     }
 });
 

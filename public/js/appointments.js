@@ -60,3 +60,21 @@ async function xoaLichHen(buttonElement) {
 function themLichHen() {
     window.location.href = '/api/appointments/new';
 }
+
+function applyFilters() {
+    const form = document.getElementById('filterForm');
+    const search = form.elements.search.value;
+    const status = form.elements.status.value;
+    const dateFrom = form.elements.dateFrom.value;
+        
+    const params = new URLSearchParams();
+    if (search) params.append('search', search);
+    if (status) params.append('status', status);
+    if (dateFrom) params.append('dateFrom', dateFrom);
+        
+    window.location.href = '/api/appointments?' + params.toString();
+}
+    
+function clearFilters() {
+    window.location.href = '/api/appointments';
+}
