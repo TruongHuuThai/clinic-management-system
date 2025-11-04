@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>
+    <% 
+        title = "Danh sách bệnh nhân"; 
+    %>
+    <%= 
+        title 
+    %>
+</title>
+
+</head>
+
+<body>
+    <main>
+        <div class="detail-container">
+            <h1><%= title %></h1>
+
+            <div class="">
+                <button onclick="window.location.href='/'" class="btn btn-primary">
+                    Trang chủ
+                </button>
+                <button onclick="danhSachBenhNhan()" class="btn btn-primary">
+                    Danh sách bệnh nhân
+                </button>
+
+                <button onclick="danhSachLichHen()" class="btn btn-primary">
+                    Danh sách lịch hẹn
+                </button>
+            </div>
+            <%
+                if (typeof patients !== 'undefined' && Array.isArray(patients)) { 
+            %>
+                <p>Tổng số bệnh nhân: **<%= patients.length %>**</p>
+                
+                <% if (patients.length === 0) { %>
+                    <p>Hiện không có bệnh nhân nào trong hệ thống.</p>
+                <% } else { %>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Mã BN</th>
+                                <th>Họ và Tên</th>
+                                <th>SĐT</th>
+                                <th>Địa Chỉ</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% patients.forEach(p => { %>
+                                <tr>
+                                    <td><%= p.bn_ma %></td>
+                                    <td><%= p.bn_ho_ten %></td>
+                                    <td><%= p.bn_sdt || '—' %></td>
+                                    <td><%= p.bn_dia_chi || '—' %></td>
+                                    <td>
+                                        <a href="/patients/<%= p.bn_ma %>" class="btn-sm-info">Xem Chi tiết</a>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                <% } %>
+
+            <% 
+                // TRƯỜNG HỢP 2: HIỂN THỊ CHI TIẾT BỆNH NHÂN (/patients/:id)
+                // Biến 'patient' tồn tại và KHÔNG phải là mảng
+                } else if (typeof patient !== 'undefined' && !Array.isArray(patient)) { 
+            %>
+
+                <div class="patient-info">
+                    <h3>Thông tin Cá nhân</h3>
+                    <p><strong>Mã Bệnh nhân:</strong> <%= patient.bn_ma %></p>
+                    <p><strong>Họ và Tên:</strong> <%= patient.bn_ho_ten %></p>
+                    <p><strong>Số Điện Thoại:</strong> <%= patient.bn_sdt || 'Chưa cập nhật' %></p>
+                    <p><strong>Giới Tính:</strong> <%= patient.bn_gioi_tinh || 'Chưa cập nhật' %></p>
+                    <p><strong>Ngày Sinh:</strong> 
+                        <% 
+                             // Đã sửa lỗi 'out is not defined'
+                             if (patient.bn_ngay_sinh) {
+                                 %> <%= new Date(patient.bn_ngay_sinh).toLocaleDateString('vi-VN') %> <% 
+                             } else {
+                                 %> Chưa cập nhật <% 
+                             }
+                         %>
+                    </p>
+                    <p><strong>Địa Chỉ:</strong> <%= patient.bn_dia_chi || 'Chưa cập nhật' %></p>
+                    
+                    <button onclick="scheduleFollowUp('<%= patient.bn_ma %>')" class="btn btn-warning mt-3">
+                        Tạo Lịch Tái Khám
+                    </button>
+                </div>
+                <% 
+                    // Đã sửa lỗi 'history is not defined' bằng cách kiểm tra
+                    if (typeof history !== 'undefined') { 
+                %>
+                    <h3>Lịch Sử Hẹn (Tổng cộng: <%= history.length %> lần)</h3>
+                    
+                    <% if (history.length === 0) { %>
+                        <p>Bệnh nhân chưa có lịch hẹn nào.</p>
+                    <% } else { %>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Ngày Hẹn</th>
+                                    <th>Khung Giờ</th>
+                                    <th>Trạng Thái</th>
+                                    <th>Ghi Chú</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% history.forEach(item => { %>
+                                    <tr>
+                                        <td><%= item.lh_ngay_hen %></td> 
+                                        <td><%= item.lh_khung_gio %></td>
+                                        <td><%= item.lh_trang_thai %></td>
+                                        <td><%= item.lh_ghi_chu || '' %></td>
+                                        <td>
+                                            <a href="/api/appointments/edit/<%= item.lh_ma %>" class="btn-sm-info">Sửa</a>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    <% } %>
+                    <% } %>
+            
+            <% } else { %>
+                <h2>Không tìm thấy dữ liệu bệnh nhân</h2>
+                <p>Vui lòng kiểm tra lại đường dẫn hoặc dữ liệu được truyền từ server.</p>
+            <% } %>
+
+        </div>
+    </main>
+
+    <script>
+        function scheduleFollowUp(patientId) {
+            alert('Chức năng tạo lịch tái khám cho bệnh nhân ID: ' + patientId);
+        }
+    </script>
+    </body>
+</html>

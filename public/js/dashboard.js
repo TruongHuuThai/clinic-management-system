@@ -79,3 +79,7 @@ function examination(buttonElement) {
     alert(`Chuyển đến màn hình khám cho lịch hẹn ID: ${appointmentId}`);
     // Thực tế: window.location.href = `/khambenh/${appointmentId}`;
 }
+
+function danhSachLichHen(){
+    window.location.href = "/api/appointments";
+}

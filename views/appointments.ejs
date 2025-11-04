@@ -10,7 +10,6 @@
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.min.js'></script> 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-
 </head>
 
 <body>
@@ -25,10 +24,13 @@
         </h1>
 
         <div class="">
-        <button onclick="window.location.href='/'" class="btn btn-primary">
-            Trang chủ
-        </button>
-    </div>
+            <button onclick="window.location.href='/'" class="btn btn-primary">
+                Trang chủ
+            </button>
+            <button onclick="danhSachBenhNhan()" class="btn btn-primary">
+                Danh sách bệnh nhân
+            </button>
+        </div>
 
     <div class="mt-4 mb-3">
         <button id="listViewBtn" class="btn btn-info">Danh sách</button>
@@ -56,7 +58,7 @@
             <input type="date" id="dateFrom" name="dateFrom" value="<%= query.dateFrom || '' %>">
 
             <button type="submit" class="btn btn-primary">Áp dụng</button>
-            <button type="button" onclick="clearFilters()" class="btn btn-secondary">Xóa lọc</button>
+            <button type="button" onclick="danhSachLichHen()" class="btn btn-secondary">Xóa lọc</button>
         </form>
     </div>
 
@@ -94,7 +96,7 @@
                             <%= item.date.toLocaleDateString('vi-VN') %>
                         </td>
                         <td>
-                            <%= item.name %>
+                                <%= item.name %>
                         </td>
                         <td>
                             <span class="status-badge status ">
