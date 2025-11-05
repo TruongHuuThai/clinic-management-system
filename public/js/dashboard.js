@@ -80,6 +80,10 @@ function examination(buttonElement) {
     // Thực tế: window.location.href = `/khambenh/${appointmentId}`;
 }
 
+function danhSachBenhNhan(){
+    window.location.href = "/api/patients";
+}
+
 function danhSachLichHen(){
     window.location.href = "/api/appointments";
 }

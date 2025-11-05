@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+
+<body>
+    <main>
+        <div class="detail-container">
+            <h1><%= title %></h1> 
+
+            <div class="mb-3">
+                <button onclick="window.location.href='/'" class="btn btn-primary">
+                    Trang chủ
+                </button>
+                <button onclick="danhSachBenhNhan()" class="btn btn-primary">
+                    Danh sách bệnh nhân
+                </button>
+                <button onclick="danhSachLichHen()" class="btn btn-primary">
+                    Danh sách lịch hẹn
+                </button>
+            </div>
+            
+            <% 
+                // LOGIC CHÍNH: Kiểm tra biến patients có tồn tại và là MẢNG hay không
+                if (typeof patients !== 'undefined' && Array.isArray(patients)) { 
+            %>
+                <p>Tổng số bệnh nhân: **<%= patients.length %>**</p>
+                
+                <% if (patients.length === 0) { %>
+                    <p>Hiện không có bệnh nhân nào trong hệ thống.</p>
+                <% } else { %>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Mã BN</th>
+                                <th>Họ và Tên</th>
+                                <th>SĐT</th>
+                                <th>Địa Chỉ</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% 
+                                // Vòng lặp chỉ chạy khi patients là mảng
+                                patients.forEach(p => { 
+                            %>
+                                <tr>
+                                    <td><%= p.bn_ma %></td>
+                                    <td><%= p.bn_ho_ten %></td>
+                                    <td><%= p.bn_sdt || '—' %></td>
+                                    <td><%= p.bn_dia_chi || '—' %></td>
+                                    <td>
+                                        <button onclick="chiTietBenhNhan('<%= p.bn_ma %>')" class="btn btn-primary btn-sm-info">Chi tiết</button>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                <% } %>
+            <% } else { %>
+                <p style="color: red;">Lỗi dữ liệu: Không tìm thấy danh sách bệnh nhân hoặc dữ liệu không đúng định dạng. Vui lòng kiểm tra lại log server.</p>
+            <% } %>
+
+        </div>
+    </main>
+
+    <script src="/js/patient_list.js"></script>
+    
+    </body>
+</html>

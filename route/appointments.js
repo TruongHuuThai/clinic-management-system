@@ -2,29 +2,25 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../config/db');
 
-//  ROUTE GET QUẢN LÝ LỊCH HẸN 
 router.get('/appointments', async (req, res) => {
     const { search, status, dateFrom } = req.query; 
     let appointments = [];
     let totalCount = 0;
     
     try {
-        let whereClauses = ["lh.lh_da_xoa = FALSE"]; // Luôn lọc lịch hẹn chưa xóa
+        let whereClauses = ["lh.lh_da_xoa = FALSE"]; 
         let queryParams = [];
         
-        // Lọc theo TÌM KIẾM
         if (search) {
             queryParams.push(`%${search}%`);
             whereClauses.push(`(bn.bn_ho_ten ILIKE $${queryParams.length} OR bn.bn_sdt ILIKE $${queryParams.length})`);
         }
         
-        // Lọc theo TRẠNG THÁI
         if (status) {
             queryParams.push(status);
             whereClauses.push(`lh.lh_trang_thai = $${queryParams.length}`);
         }
         
-        // Lọc theo NGÀY
         if (dateFrom) {
             queryParams.push(dateFrom);
             whereClauses.push(`lh.lh_ngay_hen >= $${queryParams.length}`);
@@ -46,7 +42,6 @@ router.get('/appointments', async (req, res) => {
                 lh.lh_ngay_hen DESC, lh.lh_khung_gio DESC;
         `;
 
-        // 🎯 SỬA LỖI: TRUYỀN THAM SỐ VÀO pool.query()
         const result = await pool.query(query, queryParams); 
         
         appointments = result.rows.map(row => ({
@@ -114,7 +109,6 @@ router.get('/appointments/edit/:id', async (req, res) => {
         res.render('appointment_edit_form', {
             title: `Sửa Lịch Hẹn #${id}`,
             appointmentData: appointmentData,
-            // TRUYỀN DỮ LIỆU CÁC SLOT ĐÃ BỊ CHIẾM BAN ĐẦU
             occupiedSlots: occupiedSlots
         });
 
@@ -124,7 +118,6 @@ router.get('/appointments/edit/:id', async (req, res) => {
     }
 });
 
-// ROUTE PUT LƯU CHỈNH SỬA 
 router.put('/appointments/:id', async (req, res) => {
     const { id } = req.params;
     const { ngay_hen, khung_gio, trang_thai, ghi_chu } = req.body;
@@ -159,7 +152,6 @@ router.put('/appointments/:id', async (req, res) => {
     }
 });
 
-// CẬP NHẬT TIẾP ĐÓN
 router.post('/appointment/:id/status', async (req, res) => {
     const { id } = req.params;
     const { newStatus } = req.body;
@@ -168,7 +160,6 @@ router.post('/appointment/:id/status', async (req, res) => {
         return res.status(400).json({ message: 'Trạng thái không hợp lệ.' });
     }
 });
-
 
 router.get('/appointments/occupied_slots/:id', async (req, res) => {
     const { id } = req.params;
@@ -230,7 +221,6 @@ router.delete('/appointments/:id', async (req, res) => {
     }
 });
 
-// THÊM LỊCH HẸN
 router.get('/appointments/new', async (req, res) => {
 
     res.render('appointment_new_form', {
@@ -241,7 +231,6 @@ router.get('/appointments/new', async (req, res) => {
     });
 });
 
-// API HỖ TRỢ TÌM KIẾM 
 router.get('/patients/search', async (req, res) => {
     const query = req.query.q;
     if (!query) return res.json([]);
@@ -279,14 +268,12 @@ router.post('/appointments/new', async (req, res) => {
         client = await pool.connect();
         await client.query('BEGIN');
 
-        // bệnh nhân mới
         if (!bn_ma) {
             if (!bn_ho_ten || !bn_sdt || !bn_ngay_sinh) {
                 await client.query('ROLLBACK');
                 return res.status(400).json({ message: 'Thiếu Tên, SĐT hoặc Ngày Sinh Bệnh nhân mới.' });
             }
 
-            // Tạo bệnh nhân
             const newPatientQuery = `
                 INSERT INTO benh_nhan (bn_ho_ten, bn_sdt, bn_gioi_tinh, bn_ngay_sinh, bn_dia_chi)
                 VALUES ($1, $2, $3, $4, $5)
@@ -298,7 +285,7 @@ router.post('/appointments/new', async (req, res) => {
             patientIdToUse = result.rows[0].bn_ma;
 
         }
-        //  Bệnh nhân có sẵn
+
         else {
             patientIdToUse = bn_ma;
         }
@@ -343,9 +330,8 @@ router.get('/patients', async (req, res) => {
         `;
         
         const result = await pool.query(patientsQuery);
-        
-        // Đã sửa: Đường dẫn view và tên biến (patients)
-        res.render('patient_detail_view', { 
+
+        res.render('patient_list', { 
             title: 'Danh sách Bệnh nhân',
             patients: result.rows 
         });
@@ -353,7 +339,6 @@ router.get('/patients', async (req, res) => {
     } catch (error) {
         console.error('LỖI KHI TẢI DANH SÁCH BỆNH NHÂN:', error);
         
-        // Thống nhất cách xử lý lỗi 500 là trả về JSON
         res.status(500).json({ 
             message: 'Không thể tải danh sách bệnh nhân.',
             error_details: error.message 
@@ -364,7 +349,6 @@ router.get('/patients', async (req, res) => {
 router.get('/patients/:id', async (req, res) => {
     const { id } = req.params;
     
-    // 1. Khai báo các truy vấn SQL
     const patientQuery = `
         SELECT bn_ho_ten, bn_sdt, bn_gioi_tinh, bn_ngay_sinh, bn_dia_chi
         FROM benh_nhan
@@ -383,20 +367,16 @@ router.get('/patients/:id', async (req, res) => {
     `;
 
     try {
-        // 2. Thực hiện các truy vấn SQL song song
         const [patientResult, historyResult] = await Promise.all([
             pool.query(patientQuery, [id]),
             pool.query(historyQuery, [id])
         ]);
 
-        // 3. Kiểm tra Thông tin Bệnh nhân (Xử lý 404)
         if (patientResult.rowCount === 0) {
-            // Thống nhất cách trả về 404 bằng send (hoặc render error)
             return res.status(404).send('<h1>404 Not Found</h1><p>Không tìm thấy bệnh nhân với Mã: ' + id + '</p>'); 
         }
         const patientData = patientResult.rows[0];
 
-        // 4. Xử lý và Định dạng Lịch sử Hẹn
         const appointmentsHistory = historyResult.rows.map(row => {
             const formattedDate = row.lh_ngay_hen 
                 ? new Date(row.lh_ngay_hen).toLocaleDateString('vi-VN')
@@ -413,15 +393,14 @@ router.get('/patients/:id', async (req, res) => {
             };
         });
 
-        // 5. Render trang chi tiết (Đã sửa đường dẫn view)
-        res.render('patient_detail_view', {
+        res.render('patient_list', {
             title: `Hồ sơ Bệnh nhân: ${patientData.bn_ho_ten}`,
             patients: patientData,
             history: appointmentsHistory
         });
 
     } catch (error) {
-        console.error(`❌ LỖI GỐC KHI TẢI HỒ SƠ BỆNH NHÂN (ID: ${id}):`, error);
+        console.error(`LỖI GỐC KHI TẢI HỒ SƠ BỆNH NHÂN (ID: ${id}):`, error);
         
         res.status(500).json({ 
             message: 'Đã xảy ra lỗi máy chủ khi truy xuất hồ sơ bệnh nhân.',

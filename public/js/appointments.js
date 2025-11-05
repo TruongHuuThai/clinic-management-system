@@ -82,4 +82,3 @@ function danhSachBenhNhan(){
 function danhSachLichHen(){
     window.location.href = "/api/appointments";
 }
-

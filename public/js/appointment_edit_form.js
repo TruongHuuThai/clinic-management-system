@@ -1,3 +1,5 @@
+// appointment_edit_form
+
 let globalOccupiedSlots = [];
 
 function generateTimeSlotsHTML(currentSlotValue) {
@@ -74,17 +76,15 @@ function initializeFormLogic(appointmentId, currentSlot, initialSlots) {
         });
     }
 
-    // 4. THÊM LISTENER CHO TRƯỜNG NGÀY HẸN
     if (dateInput) {
         dateInput.addEventListener('change', () => {
-            // Lấy giá trị slot đang được chọn (để giữ lại nó sau khi tải)
+
             const selectedSlot = selectElement.value;
             loadAvailableSlots(appointmentId, selectedSlot);
         });
     }
 }
-// ----------------------------------------------------------------------
-// HÀM saveAppointment (Giữ nguyên)
+
 async function saveAppointment(appointmentId) {
     const form = document.getElementById('editAppointmentForm');
 

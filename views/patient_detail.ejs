@@ -3,27 +3,18 @@
 
 <head>
     <meta charset="UTF-8">
-
-    <title>
-    <% 
-        title = "Danh sách bệnh nhân"; 
-    %>
-    <%= 
-        title 
-    %>
-</title>
-
+    <title><%= title %></title>
 </head>
 
 <body>
     <main>
         <div class="detail-container">
             <h1><%= title %></h1>
-
             <div class="">
                 <button onclick="window.location.href='/'" class="btn btn-primary">
                     Trang chủ
                 </button>
+
                 <button onclick="danhSachBenhNhan()" class="btn btn-primary">
                     Danh sách bệnh nhân
                 </button>
@@ -32,45 +23,9 @@
                     Danh sách lịch hẹn
                 </button>
             </div>
-            <%
-                if (typeof patients !== 'undefined' && Array.isArray(patients)) { 
-            %>
-                <p>Tổng số bệnh nhân: **<%= patients.length %>**</p>
-                
-                <% if (patients.length === 0) { %>
-                    <p>Hiện không có bệnh nhân nào trong hệ thống.</p>
-                <% } else { %>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Mã BN</th>
-                                <th>Họ và Tên</th>
-                                <th>SĐT</th>
-                                <th>Địa Chỉ</th>
-                                <th>Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% patients.forEach(p => { %>
-                                <tr>
-                                    <td><%= p.bn_ma %></td>
-                                    <td><%= p.bn_ho_ten %></td>
-                                    <td><%= p.bn_sdt || '—' %></td>
-                                    <td><%= p.bn_dia_chi || '—' %></td>
-                                    <td>
-                                        <a href="/patients/<%= p.bn_ma %>" class="btn-sm-info">Xem Chi tiết</a>
-                                    </td>
-                                </tr>
-                            <% }); %>
-                        </tbody>
-                    </table>
-                <% } %>
 
-            <% 
-                // TRƯỜNG HỢP 2: HIỂN THỊ CHI TIẾT BỆNH NHÂN (/patients/:id)
-                // Biến 'patient' tồn tại và KHÔNG phải là mảng
-                } else if (typeof patient !== 'undefined' && !Array.isArray(patient)) { 
-            %>
+
+            <% if (typeof patient !== 'undefined' && patient) { %>
 
                 <div class="patient-info">
                     <h3>Thông tin Cá nhân</h3>
@@ -80,7 +35,6 @@
                     <p><strong>Giới Tính:</strong> <%= patient.bn_gioi_tinh || 'Chưa cập nhật' %></p>
                     <p><strong>Ngày Sinh:</strong> 
                         <% 
-                             // Đã sửa lỗi 'out is not defined'
                              if (patient.bn_ngay_sinh) {
                                  %> <%= new Date(patient.bn_ngay_sinh).toLocaleDateString('vi-VN') %> <% 
                              } else {
@@ -90,14 +44,43 @@
                     </p>
                     <p><strong>Địa Chỉ:</strong> <%= patient.bn_dia_chi || 'Chưa cập nhật' %></p>
                     
-                    <button onclick="scheduleFollowUp('<%= patient.bn_ma %>')" class="btn btn-warning mt-3">
-                        Tạo Lịch Tái Khám
-                    </button>
+                    <div>
+                        <button onclick="showTaiKhamForm()" class="btn btn-warning mt-3">
+                            Tạo Lịch Tái Khám
+                        </button>
+
+                        <button onclick="capNhatHoSoBenhNhan('<%= patient.bn_ma %>')" class="btn btn-warning mt-3">
+                            Cập nhật hồ sơ
+                        </button>
+                    </div>
+
+                    <div id="reschedule-form-container">
+                        <h3>Tạo Lịch Tái Khám</h3>
+                        <div id="form-message" style="color: green; margin-bottom: 10px;"></div>
+
+                        <div class="form-group">
+                            <label for="appointment_date">Chọn Ngày Hẹn</label>
+                            <input type="date" id="appointment_date" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="khung_gio">Khung Giờ:</label>
+                            <select class="form-control" id="khung_gio" name="khung_gio" required>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="appointment_note">Ghi Chú</label>
+                            <textarea id="appointment_note" class="form-control" rows="2" required></textarea>
+                        </div>
+
+                        <button onclick="submitTaiKham('<%= patient.bn_ma %>')" class="btn btn-success">Xác Nhận</button>
+                        <button onclick="hideTaiKhamForm()" class="btn btn-secondary">Hủy</button>
+                    </div>
+                    
+
                 </div>
-                <% 
-                    // Đã sửa lỗi 'history is not defined' bằng cách kiểm tra
-                    if (typeof history !== 'undefined') { 
-                %>
+                <% if (typeof history !== 'undefined') { %>
                     <h3>Lịch Sử Hẹn (Tổng cộng: <%= history.length %> lần)</h3>
                     
                     <% if (history.length === 0) { %>
@@ -116,7 +99,7 @@
                             <tbody>
                                 <% history.forEach(item => { %>
                                     <tr>
-                                        <td><%= item.lh_ngay_hen %></td> 
+                                        <td><%= item.lh_ngay_hen %></td>
                                         <td><%= item.lh_khung_gio %></td>
                                         <td><%= item.lh_trang_thai %></td>
                                         <td><%= item.lh_ghi_chu || '' %></td>
@@ -128,20 +111,18 @@
                             </tbody>
                         </table>
                     <% } %>
-                    <% } %>
+                <% } %>
             
             <% } else { %>
-                <h2>Không tìm thấy dữ liệu bệnh nhân</h2>
-                <p>Vui lòng kiểm tra lại đường dẫn hoặc dữ liệu được truyền từ server.</p>
+                <h2>Lỗi Dữ liệu</h2>
+                <p>Không tìm thấy hồ sơ bệnh nhân hoặc dữ liệu bị thiếu.</p>
             <% } %>
 
         </div>
     </main>
 
-    <script>
-        function scheduleFollowUp(patientId) {
-            alert('Chức năng tạo lịch tái khám cho bệnh nhân ID: ' + patientId);
-        }
+    <script src="/js/patient_detail.js">
+
     </script>
-    </body>
+</body>
 </html>

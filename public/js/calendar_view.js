@@ -49,7 +49,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Khởi tạo 
     const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         locale: 'vi',

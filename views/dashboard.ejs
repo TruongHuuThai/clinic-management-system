@@ -8,11 +8,19 @@
 </head>
 <body>
     <header>
-        <h1>Quản Lý Phòng Khám Tư Nhân</h1>
+        <h1>Hệ Thống Quản Lý Hồ Sơ Bệnh Án</h1>
 
         <div class="">
             <button onclick="window.location.href='/'" class="btn btn-primary">
                 Trang chủ
+            </button>
+
+            <button onclick="danhSachBenhNhan()" class="btn btn-primary">
+                Danh sách bệnh nhân
+            </button>
+
+            <button onclick="danhSachLichHen()" class="btn btn-primary">
+                Danh sách lịch hẹn
             </button>
         </div>
 
@@ -47,10 +55,6 @@
 
             <section class="appointments-list">
                 <h2>Lịch Hẹn Chi Tiết</h2>
-
-                <button onclick="danhSachLichHen()" class="btn btn-primary">
-                    Danh sách lịch hẹn
-                </button>
 
             <table class="data-table">
                 <thead>

@@ -45,7 +45,6 @@ router.get('/', async (req, res) => {
         const revenueAmount = parseFloat(revenueResult.rows[0].total_revenue).toLocaleString('vi-VN');
         totalRevenue = `${revenueAmount} VNĐ`;
 
-        // 3. TRUY VẤN BỆNH NHÂN ĐANG TRONG QUY TRÌNH
         const waitingPatientsQuery = `
             SELECT 
                 bn.bn_ho_ten AS name, pkb.pkb_ma, tt.tt_da_thanh_toan, pcd.pcd_trang_thai

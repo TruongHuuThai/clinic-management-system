@@ -7,9 +7,9 @@ const pool = require('./config/db');
 
 const dashboardRoute = require('./route/dashboard');
 const appointmentsRoute = require('./route/appointments');
+const patientsRoute = require('./route/patients');
 
 app.use(express.json()); 
-
 
 app.use(express.urlencoded({ extended: true }));
 
@@ -19,6 +19,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', dashboardRoute);
 app.use('/api', appointmentsRoute);
+app.use('/api/patient_detail', patientsRoute);
+
 
 
 // KHỞI CHẠY SERVER 
