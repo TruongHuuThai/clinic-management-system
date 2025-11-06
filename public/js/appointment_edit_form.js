@@ -86,11 +86,28 @@ function initializeFormLogic(appointmentId, currentSlot, initialSlots) {
 async function saveAppointment(appointmentId) {
     const form = document.getElementById('editAppointmentForm');
 
+    // 1. Lấy giá trị từ form (cũng là giá trị hiển thị DD/MM/YYYY)
+    const ngayHenVN = form.querySelector('#ngay_hen').value;
+    const khungGio = form.querySelector('#khung_gio').value;
+    const trangThai = form.querySelector('#trang_thai').value;
+    const ghiChu = form.querySelector('#ghi_chu').value;
+
+    let ngayHenISO = ngayHenVN;
+
+    // 2. BUỘC CHUYỂN ĐỔI NGÀY THÁNG (DD/MM/YYYY -> YYYY-MM-DD)
+    if (ngayHenVN && ngayHenVN.includes('/')) {
+        const parts = ngayHenVN.split('/');
+        // Tạo chuỗi ISO: YYYY-MM-DD
+        ngayHenISO = `${parts[2]}-${parts[1]}-${parts[0]}`; 
+    }
+    // Ghi chú: Nếu ngayHenVN đã là ISO (do Datepicker tự động), logic vẫn hoạt động an toàn.
+    
+    // 3. Chuẩn bị Dữ liệu Gửi
     const updatedData = {
-        ngay_hen: form.querySelector('#ngay_hen').value,
-        khung_gio: form.querySelector('#khung_gio').value,
-        trang_thai: form.querySelector('#trang_thai').value,
-        ghi_chu: form.querySelector('#ghi_chu').value,
+        ngay_hen: ngayHenISO, // Gửi giá trị đã chuyển đổi (ISO)
+        khung_gio: khungGio,
+        trang_thai: trangThai,
+        ghi_chu: ghiChu,
     };
 
     const apiUrl = `/api/appointments/${appointmentId}`;
@@ -98,21 +115,30 @@ async function saveAppointment(appointmentId) {
     try {
         const response = await fetch(apiUrl, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json' 
+            },
             body: JSON.stringify(updatedData),
         });
 
         if (!response.ok) {
             const errorResult = await response.json();
+            // Ném lỗi chi tiết từ server
             throw new Error(errorResult.message || `Lỗi server HTTP: ${response.status}`);
         }
-        window.location.href = '/api/appointments';
+
+        alert("Lưu thay đổi thành công!");
+        // Chuyển hướng về trang danh sách lịch hẹn sau khi cập nhật
+        window.location.href = '/api/appointments'; 
 
     } catch (error) {
         console.error("Lỗi khi gửi yêu cầu cập nhật:", error);
+        // Hiển thị lỗi chung cho người dùng
         alert(`Lỗi kết nối hoặc server: ${error.message || 'Không thể lưu thay đổi.'}`);
     }
 }
+
+
 
 function danhSachBenhNhan(){
     window.location.href = "/api/patients";
