@@ -1,5 +1,3 @@
-// appointment_edit_form
-
 let globalOccupiedSlots = [];
 
 function generateTimeSlotsHTML(currentSlotValue) {
@@ -108,12 +106,18 @@ async function saveAppointment(appointmentId) {
             const errorResult = await response.json();
             throw new Error(errorResult.message || `Lỗi server HTTP: ${response.status}`);
         }
-
-        alert("Lưu thay đổi thành công!");
         window.location.href = '/api/appointments';
 
     } catch (error) {
         console.error("Lỗi khi gửi yêu cầu cập nhật:", error);
         alert(`Lỗi kết nối hoặc server: ${error.message || 'Không thể lưu thay đổi.'}`);
     }
+}
+
+function danhSachBenhNhan(){
+    window.location.href = "/api/patients";
+}
+
+function danhSachLichHen(){
+    window.location.href = "/api/appointments";
 }

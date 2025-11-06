@@ -8,7 +8,7 @@ function checkAppointment(appointmentId) {
 }
 
 function suaLichHen(buttonElement) {
-
+    
     const appointmentId = buttonElement.getAttribute('data-id');
 
     checkAppointment(appointmentId);

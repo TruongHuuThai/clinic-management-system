@@ -6,20 +6,25 @@
     <title>
         <%= title %> - Quản Lý Lịch Hẹn
     </title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-datepicker/1.13.0/i18n/jquery.ui.datepicker-vi.min.js"></script>
+
+    <script> 
+
+
+    </script>
 </head>
 
 <body>
     <script>
-        // Tính ngày hiện tại dưới định dạng YYYY-MM-DD
         function getCurrentDateISO() {
             const now = new Date();
-            // Lấy offset thời gian để chuyển về giờ địa phương (tránh lỗi múi giờ)
             const offset = now.getTimezoneOffset() * 60000;
             const localISOTime = new Date(now.getTime() - offset).toISOString().substring(0, 10);
             return localISOTime;
         }
-
-        // Gán ngày hiện tại vào một biến JS
         const minDate = getCurrentDateISO();
     </script>
     <main>
@@ -27,6 +32,20 @@
             <h1>
                 <%= title %>
             </h1>
+
+            <div class="">
+                <button onclick="window.location.href='/'" class="btn btn-primary">
+                    Trang chủ
+                </button>
+
+                <button onclick="danhSachBenhNhan()" class="btn btn-primary">
+                    Danh sách bệnh nhân
+                </button>
+
+                <button onclick="danhSachLichHen()" class="btn btn-primary">
+                    Danh sách lịch hẹn
+                </button>
+            </div>
 
             <div class="form-group">
                 <label for="bn_ho_ten">Tên Bệnh Nhân:</label>
@@ -40,9 +59,12 @@
 
                 <div class="form-group">
                     <label for="ngay_hen">Ngày Hẹn:</label>
-                    <input type="date" class="form-control" id="ngay_hen" name="ngay_hen"
-                        value="<%= appointmentData.lh_ngay_hen ? appointmentData.lh_ngay_hen.toISOString().substring(0, 10) : '' %>"
-                        required>
+
+                    <input type="text" class="form-control datepicker-input" id="ngay_hen" name="ngay_hen"
+                        <% 
+                            let isoDate = appointmentData.lh_ngay_hen ? new Date(appointmentData.lh_ngay_hen).toISOString().substring(0, 10) : ''; 
+                        %>
+                        value="<%= isoDate %>" placeholder="dd/mm/yyyy" required>
                 </div>
 
                 <div class="form-group">
@@ -54,11 +76,17 @@
                 <div class="form-group">
                     <label for="trang_thai">Trạng Thái:</label>
                     <select class="form-control" id="trang_thai" name="trang_thai" required>
-                        <option value="CHO_KHAM" <%=appointmentData.lh_trang_thai==='CHO_KHAM' ? 'selected' : '' %>>Chờ
-                            Khám</option>
-                        <option value="DA_DEN" <%=appointmentData.lh_trang_thai==='DA_DEN' ? 'selected' : '' %>>Đã Đến
+                        <option value="CHO_KHAM" <%=appointmentData.lh_trang_thai==='CHO_KHAM' ? 'selected' : '' %>>
+                            Chờ Khám
                         </option>
-                        <option value="DA_HUY" <%=appointmentData.lh_trang_thai==='DA_HUY' ? 'selected' : '' %>>Đã Hủy
+                        <option value="DA_DEN" <%=appointmentData.lh_trang_thai==='DA_DEN' ? 'selected' : '' %>>
+                            Đã Đến
+                        </option>
+                        <option value="DA_HUY" <%=appointmentData.lh_trang_thai==='DA_HUY' ? 'selected' : '' %>>
+                            Đã Hủy
+                        </option>
+                        <option value="DA_HUY" <%=appointmentData.lh_trang_thai==='TAI_KHAM' ? 'selected' : '' %>>
+                            Tái khám
                         </option>
                     </select>
                 </div>
@@ -71,8 +99,9 @@
 
                 <div class="form-actions" style="margin-top: 20px;">
                     <button type="submit" class="btn btn-primary">Lưu Thay Đổi</button>
-                    <a href="/api/appointments" class="btn btn-secondary">Hủy</a>
+                    <button type="button" class="btn btn-primary" onclick="danhSachLichHen()">Hủy</button>
                 </div>
+                
             </form>
         </div>
     </main>
@@ -84,7 +113,6 @@
         const rawTime = "<%= appointmentData.lh_khung_gio %>";
         const slotValue = (rawTime && rawTime.length >= 5) ? rawTime.substring(0, 5) : '07:00';
         const idValue = "<%= appointmentData.lh_ma %>";
-
         const occupiedJSON = '<%- JSON.stringify(occupiedSlots) %>';
         const initialOccupiedSlots = JSON.parse(occupiedJSON);
 
@@ -94,7 +122,6 @@
             }
         });
 
-        // GIỚI HẠN NGÀY HẸN
         document.addEventListener('DOMContentLoaded', function () {
 
             const form = document.getElementById('editAppointmentForm');
@@ -117,6 +144,71 @@
                 initializeFormLogic(idValue, slotValue, initialOccupiedSlots);
             }
         });
+
+        function getMinDateISO() {
+            const now = new Date();
+            const offset = now.getTimezoneOffset() * 60000;
+            const localTime = new Date(now.getTime() - offset);
+            return localTime.toISOString().substring(0, 10);
+        }
+
+$(document).ready(function() {
+    
+    $(".datepicker-input").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true,
+        yearRange: "1940:2030",
+        closeText: 'Đóng',
+        currentText: 'Hôm nay',
+        // Thiết lập minDate để không chọn ngày trong quá khứ
+        minDate: new Date() 
+    });
+
+    // CHUYỂN ĐỔI NGÀY SANG ĐỊNH DẠNG HIỂN THỊ (ISO -> VN)
+    $(".datepicker-input").each(function() {
+        let $input = $(this);
+        let isoValue = $input.val();
+        
+        if (isoValue && isoValue.includes('-')) {
+            let parts = isoValue.split('-');
+            let displayValue = parts[2] + '/' + parts[1] + '/' + parts[0];
+            $input.val(displayValue);
+        }
+    });
+
+
+    // XỬ LÝ SỰ KIỆN SUBMIT FORM (KHẮC PHỤC LỖI 500)
+    $('#editAppointmentForm').submit(function(e) {
+        
+        let conversionError = false;
+
+        $(".datepicker-input").each(function() {
+            let $input = $(this);
+            let dateString = $input.val();
+            
+            if (dateString && dateString.includes('/')) {
+                let parts = dateString.split('/');
+                
+                // Kiểm tra sơ bộ tính hợp lệ
+                if (parts.length === 3 && parts[2].length === 4) {
+                    let isoDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                    $input.val(isoDate);
+                } else {
+                    conversionError = true;
+                }
+            }
+        });
+
+        if (conversionError) {
+            e.preventDefault();
+            alert("Lỗi định dạng ngày tháng. Vui lòng nhập DD/MM/YYYY.");
+            // Tải lại trang để Datepicker khôi phục định dạng cũ
+            setTimeout(() => { window.location.reload(); }, 50); 
+            return false;
+        }
+    });
+});
     </script>
 
 </body>

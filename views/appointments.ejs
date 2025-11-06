@@ -57,6 +57,7 @@
                 <option value="">Tất cả</option>
                 <option value="CHO_KHAM" <%= query.status === 'CHO_KHAM' ? 'selected' : '' %>>Chờ Khám</option>
                 <option value="DA_DEN" <%= query.status === 'DA_DEN' ? 'selected' : '' %>>Đã Đến</option>
+                <option value="TAI_KHAM" <%= query.status === 'TAI_KHAM' ? 'selected' : '' %>>Tái Khám</option>
             </select>
             
             <label for="dateFrom">Từ ngày:</label>
@@ -105,26 +106,26 @@
                         </td>
                         <td>
                             <span class="status-badge status ">
-                               <%
-                            let displayStatus = '';
+                            <%
+                                let displayStatus = '';
+                                const normalizedStatus = item.status ? item.status.trim().toUpperCase() : '';
 
-                            // 1. Lấy và chuẩn hóa giá trị gốc
-                            const normalizedStatus = item.status ? item.status.trim().toUpperCase() : '';
-
-                            // 2. So sánh với giá trị đã chuẩn hóa
-                            if (normalizedStatus === 'DA DEN') {
-                                displayStatus = 'Đã đến';
-                            } else if (normalizedStatus === 'CHO KHAM') {
-                                displayStatus = 'Chờ khám';
-                            } else if (normalizedStatus === 'DA HUY') {
-                                displayStatus = 'Đã hủy';
-                            } else if (normalizedStatus === 'CHUA DEN') { 
-                                displayStatus = 'Chưa đến';
-                            } else {
-                                displayStatus = item.status;
-                            }
-                        %>
-                        <%= displayStatus %>
+                                // 2. So sánh với giá trị đã chuẩn hóa
+                                if (normalizedStatus === 'DA DEN') {
+                                    displayStatus = 'Đã đến';
+                                } else if (normalizedStatus === 'CHO KHAM') {
+                                    displayStatus = 'Chờ khám';
+                                } else if (normalizedStatus === 'DA HUY') {
+                                    displayStatus = 'Đã hủy';
+                                } else if (normalizedStatus === 'CHUA DEN') { 
+                                    displayStatus = 'Chưa đến';
+                                } else if (normalizedStatus === 'TAI KHAM') {
+                                    displayStatus = 'Tái khám';
+                                } else {
+                                    displayStatus = item.status;
+                                }
+                            %>
+                            <%= displayStatus %>
                             </span>
                         </td>
                         <td>

@@ -54,9 +54,9 @@
                         </button>
                     </div>
 
-                    <div id="reschedule-form-container">
+                    <div id="reschedule-form-container" style="display: none;" >
                         <h3>Tạo Lịch Tái Khám</h3>
-                        <div id="form-message" style="color: green; margin-bottom: 10px;"></div>
+                        <div id="form-message"></div>
 
                         <div class="form-group">
                             <label for="appointment_date">Chọn Ngày Hẹn</label>
@@ -101,10 +101,56 @@
                                     <tr>
                                         <td><%= item.lh_ngay_hen %></td>
                                         <td><%= item.lh_khung_gio %></td>
-                                        <td><%= item.lh_trang_thai %></td>
-                                        <td><%= item.lh_ghi_chu || '' %></td>
                                         <td>
-                                            <a href="/api/appointments/edit/<%= item.lh_ma %>" class="btn-sm-info">Sửa</a>
+                                        <%
+                                            let displayStatus = '';
+                                            const normalizedStatus = item.lh_trang_thai ? item.lh_trang_thai.trim().toUpperCase() : '';
+
+                                            if (normalizedStatus === 'DA DEN') {
+                                                displayStatus = 'Đã đến';
+                                            } else if (normalizedStatus === 'CHO KHAM') {
+                                                displayStatus = 'Chờ khám';
+                                            } else if (normalizedStatus === 'DA HUY') {
+                                                displayStatus = 'Đã hủy';
+                                            } else if (normalizedStatus === 'CHUA DEN') { 
+                                                displayStatus = 'Chưa đến';
+                                            } else if (normalizedStatus === 'TAI KHAM') {
+                                                displayStatus = 'Tái khám';
+                                            } else {
+                                                displayStatus = item.status;
+                                            }
+                                        %>
+                                        <%= displayStatus %>
+                                        </td>
+                                        <td><%= item.lh_ghi_chu || '' %></td>
+                                            <% 
+                                                const ngayHienTai = new Date();
+                                                ngayHienTai.setHours(0, 0, 0, 0);
+                                                
+                                                const dateString = item.lh_ngay_hen;
+                                                const dateParts = dateString.split('/');
+
+                                                const ngayHen = new Date(
+                                                    parseInt(dateParts[2]),
+                                                    parseInt(dateParts[1]) - 1, 
+                                                    parseInt(dateParts[0]) 
+                                                );
+
+                                                ngayHen.setHours(0, 0, 0, 0);
+                                                const kiemTraNgayHen = ngayHen >= ngayHienTai;
+                                            %>
+                                            
+                                        <td> 
+                                            <% if (kiemTraNgayHen) { %>
+                                                <button class="btn-sm btn-info" data-id="<%= item.lh_ma %>" onclick="suaLichHen('<%= item.lh_ma %>')">
+                                                    Sửa
+                                                </button>
+                                                <button class="btn-sm btn-danger" data-id="<%= item.lh_ma %>" onclick="xoaLichHen('<%= item.lh_ma %>')">
+                                                    Xóa
+                                                </button>
+                                            <% } else { %>
+                                                <span class="text-muted">Đã qua</span>
+                                            <% } %>
                                         </td>
                                     </tr>
                                 <% }); %>
@@ -121,8 +167,8 @@
         </div>
     </main>
 
-    <script src="/js/patient_detail.js">
-
+    <script src="/js/patient_detail.js"></script> 
+    
     </script>
 </body>
 </html>

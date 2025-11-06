@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <title><%= title %></title>
-    <link rel="stylesheet" href="/css/dashboard.css">
 </head>
 
 <body>
@@ -22,6 +21,17 @@
                 <button onclick="danhSachLichHen()" class="btn btn-primary">
                     Danh sách lịch hẹn
                 </button>
+            </div>
+
+            <div id="filter-container" class="mb-4 p-3 border rounded">
+                <form id="filterForm" onsubmit="event.preventDefault(); applyFilters()">
+                    
+                    <label for="search">Tìm kiếm (Tên/SĐT):</label>
+                    <input type="text" id="search" name="search" value="<%= query.search || '' %>" class="form-control d-inline-block w-50"> 
+                    
+                    <button type="submit" class="btn btn-primary">Áp dụng</button>
+                    <button type="button" onclick="resetFilters()" class="btn btn-secondary">Xóa lọc</button>
+                </form>
             </div>
             
             <% 

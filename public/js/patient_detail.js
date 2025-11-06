@@ -1,14 +1,5 @@
-// Khai báo biến cần thiết (Bạn cần đảm bảo biến này là global)
 let globalOccupiedSlots = []; 
 
-const ALL_TIME_SLOTS = [
-    { value: '08:00', label: '08:00 - 09:00 (Sáng)' },
-    { value: '10:00', label: '10:00 - 11:00 (Sáng)' },
-    { value: '14:00', label: '14:00 - 15:00 (Chiều)' },
-    { value: '16:00', label: '16:00 - 17:00 (Chiều)' }
-];
-
-// Hàm tạo HTML cho các slots (Dựa trên mã gốc của bạn)
 function generateTimeSlotsHTML(currentSlotValue) {
     let html = '';
     const periods = [
@@ -27,8 +18,7 @@ function generateTimeSlotsHTML(currentSlotValue) {
 
             const isOccupied = globalOccupiedSlots.includes(timeString);
 
-            // Tinh chỉnh logic: Chỉ hiển thị slot nếu nó KHÔNG bị chiếm
-            if (!isOccupied) {
+            if (!isOccupied || timeString === currentSlotValue) {
                 const isSelected = timeString === currentSlotValue ? 'selected' : '';
                 html += `<option value="${timeString}" ${isSelected}>${timeString} (${period.label})</option>`;
             }
@@ -44,12 +34,10 @@ function generateTimeSlotsHTML(currentSlotValue) {
     return html;
 }
 
-// Hàm tải slot có sẵn từ API
 async function loadAvailableSlots(selectedSlot) { 
     const date = document.getElementById('appointment_date').value;
     const slotSelect = document.getElementById('khung_gio');
     
-    // Luôn đặt trạng thái tải khi bắt đầu
     slotSelect.innerHTML = '<option value="" disabled selected>Đang tải...</option>';
 
     if (!date) {
@@ -58,7 +46,6 @@ async function loadAvailableSlots(selectedSlot) {
     }
 
     try {
-        // ID=0: Tạo lịch hẹn mới, không cần loại trừ lịch hẹn cũ
         const appointmentId = 0; 
         const apiUrl = `/api/appointments/occupied_slots/${appointmentId}?date=${date}`; 
         const response = await fetch(apiUrl);
@@ -68,7 +55,6 @@ async function loadAvailableSlots(selectedSlot) {
         const result = await response.json();
         globalOccupiedSlots = result.occupiedSlots; 
 
-        // Tái tạo HTML
         slotSelect.innerHTML = generateTimeSlotsHTML(selectedSlot);
 
     } catch (error) {
@@ -78,29 +64,21 @@ async function loadAvailableSlots(selectedSlot) {
     }
 }
 
-// HÀM CHÍNH: Hiển thị form tái khám
 function showTaiKhamForm() {
     const container = document.getElementById('reschedule-form-container');
     const dateInput = document.getElementById('appointment_date');
     
-    // 1. Đặt ngày mặc định và hiển thị
-    dateInput.valueAsDate = new Date(); 
+    dateInput.valueAsDate = new Date();
     document.getElementById('form-message').textContent = '';
     container.style.display = 'block';
-    
-    // 2. Gắn/Gỡ Listener (Sử dụng hàm bọc để duy trì listener và loại bỏ lỗi gọi hàm cũ)
-    // Tách hàm listener ra để dễ dàng gỡ bỏ
+
     const slotChangeListener = () => loadAvailableSlots(null);
-
-    // Xóa listener cũ và thêm listener mới cho trường ngày
-    dateInput.removeEventListener('change', slotChangeListener); 
-    dateInput.addEventListener('change', slotChangeListener); 
-
-    // 3. Tải slots ban đầu
+    dateInput.removeEventListener('change', slotChangeListener);
+    dateInput.addEventListener('change', slotChangeListener);
+    
     loadAvailableSlots(null); 
 }
 
-// HÀM SUBMIT TÁI KHÁM (Không thay đổi)
 async function submitTaiKham(patientId) {
     const date = document.getElementById('appointment_date').value;
     const note = document.getElementById('appointment_note').value;
@@ -115,7 +93,7 @@ async function submitTaiKham(patientId) {
     }
 
     try {
-        const response = await fetch('/api/appointments/schedule', {
+        const response = await fetch('/api/schedule', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -123,15 +101,14 @@ async function submitTaiKham(patientId) {
                 ngay_hen: date,
                 ghi_chu: note,
                 khung_gio: timeSlot,
-                trang_thai: 'THEO_LICH'
+                trang_thai: 'TAI_KHAM' 
             })
         });
         
         const result = await response.json();
 
         if (response.ok) {
-            messageEl.textContent = '✅ Đã tạo lịch tái khám thành công!';
-            messageEl.style.color = 'green';
+            messageEl.textContent = 'Đã tạo lịch tái khám thành công!';
             setTimeout(() => { window.location.reload(); }, 1000); 
         } else {
             messageEl.textContent = `Lỗi: ${result.message || 'Không thể tạo lịch hẹn.'}`;
@@ -139,7 +116,7 @@ async function submitTaiKham(patientId) {
         }
         
     } catch (error) {
-        messageEl.textContent = ' Lỗi kết nối máy chủ.';
+        messageEl.textContent = 'Lỗi kết nối máy chủ.';
         messageEl.style.color = 'red';
         console.error('Lỗi khi gửi lịch tái khám:', error);
     }
@@ -149,6 +126,40 @@ function hideTaiKhamForm() {
     document.getElementById('reschedule-form-container').style.display = 'none';
 }
 
+function suaLichHen(appointmentId) { 
+    if (!appointmentId) {
+        console.error("Thiếu ID lịch hẹn để chỉnh sửa.");
+        alert("Không thể sửa lịch hẹn. Thiếu mã ID.");
+        return;
+    }
+    window.location.href = `/api/appointments/edit/${appointmentId}`;
+}
+
+async function xoaLichHen(appointmentId) {
+    if (!appointmentId) return;
+    
+    const isConfirmed = confirm("Có chắc chắn muốn xóa lịch hẹn này không?");
+    if (!isConfirmed) return;
+    
+    const apiUrl = `/api/appointments/${appointmentId}`;
+
+    try {
+        const response = await fetch(apiUrl, { method: 'DELETE' });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Xóa không thành công. Chi tiết: ${errorText}.`);
+        }
+
+        alert("Xóa mềm lịch hẹn thành công!");
+        window.location.reload();
+
+    } catch (error) {
+        console.error("Lỗi khi gửi yêu cầu xóa:", error);
+        alert(`Lỗi: ${error.message || 'Không thể xóa lịch hẹn.'}`);
+    }
+}
+
 function danhSachBenhNhan(){ window.location.href = "/api/patients"; }
 function danhSachLichHen(){ window.location.href = "/api/appointments"; }
-function capNhatHoSoBenhNhan(bn_ma) { window.location.href = `/api/patient_detail/edit/${bn_ma}`; }
+function capNhatHoSoBenhNhan(bn_ma) { window.location.href = `/api/patients/edit/${bn_ma}`; }

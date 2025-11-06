@@ -1,42 +1,47 @@
-// route/patients.js
-
 const express = require('express');
 const router = express.Router();
-const pool = require('../config/db');
-
+const pool = require('../config/db'); 
 
 router.get('/', async (req, res) => {
+    const { search } = req.query;
+    let queryParams = [];
+    let whereClauses = [];
+
     try {
+        if (search) {
+            queryParams.push(`%${search}%`);
+            whereClauses.push(`(bn_ho_ten ILIKE $${queryParams.length} OR bn_sdt ILIKE $${queryParams.length})`);
+        }
+
+        const whereString = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
+
         const patientsQuery = `
-            SELECT 
-                bn_ma, bn_ho_ten, bn_sdt, bn_dia_chi
-            FROM 
-                benh_nhan
-            ORDER BY 
-                bn_ho_ten;
+            SELECT bn_ma, bn_ho_ten, bn_sdt, bn_dia_chi 
+            FROM benh_nhan 
+            ${whereString}
+            ORDER BY bn_ho_ten;
         `;
-        
-        const result = await pool.query(patientsQuery);
+
+        const result = await pool.query(patientsQuery, queryParams);
         
         res.render('patient_list', { 
-            title: 'Danh sách Bệnh nhân',
-            patients: result.rows 
+            title: 'Danh Sách Bệnh Nhân',
+            patients: result.rows,
+            query: req.query 
         });
 
     } catch (error) {
         console.error('LỖI KHI TẢI DANH SÁCH BỆNH NHÂN:', error);
         res.status(500).json({ 
-            message: 'Không thể tải danh sách bệnh nhân.',
+            message: 'Lỗi server: Không thể tải danh sách bệnh nhân.',
             error_details: error.message 
         });
     }
 });
 
-// --- 2. Router Xem Chi tiết Bệnh nhân (GET /patients/:id) ---
 router.get('/:id', async (req, res) => {
     const { id } = req.params;
     
-    // Khai báo các truy vấn SQL
     const patientQuery = `
         SELECT bn_ma, bn_ho_ten, bn_sdt, bn_gioi_tinh, bn_ngay_sinh, bn_dia_chi
         FROM benh_nhan
@@ -64,22 +69,20 @@ router.get('/:id', async (req, res) => {
             return res.status(404).send('<h1>404 Not Found</h1><p>Không tìm thấy bệnh nhân với Mã: ' + id + '</p>');
         }
         const patientData = patientResult.rows[0];
-
         const appointmentsHistory = historyResult.rows.map(row => {
-            const formattedDate = row.lh_ngay_hen ? new Date(row.lh_ngay_hen).toLocaleDateString('vi-VN') : 'Chưa có ngày';
-            const formattedStatus = row.lh_trang_thai ? row.lh_trang_thai.replace(/_/g, ' ') : 'Không xác định';
-
             return {
                 ...row,
-                lh_ngay_hen: formattedDate,
-                lh_trang_thai: formattedStatus
+                lh_ngay_hen: row.lh_ngay_hen ? new Date(row.lh_ngay_hen).toLocaleDateString('vi-VN') : 'Chưa có ngày',
+                lh_ngay_hen_original: row.lh_ngay_hen, 
+                lh_trang_thai: row.lh_trang_thai ? row.lh_trang_thai.replace(/_/g, ' ') : 'Không xác định'
             };
         });
 
         res.render('patient_detail', { 
             title: `Hồ Sơ Bệnh Nhân: ${patientData.bn_ho_ten}`,
             patient: patientData,
-            history: appointmentsHistory
+            history: appointmentsHistory,
+            query: req.query
         });
 
     } catch (error) {
@@ -123,6 +126,7 @@ router.get('/edit/:id', async (req, res) => {
     }
 });
 
+
 router.post('/edit/:id', async (req, res) => {
     const { id } = req.params;
     const { ho_ten, sdt, gioi_tinh, ngay_sinh, dia_chi } = req.body; 
@@ -140,17 +144,17 @@ router.post('/edit/:id', async (req, res) => {
 
     try {
         await pool.query(updateQuery, [ho_ten, sdt, gioi_tinh, ngay_sinh, dia_chi, id]);
-
-        res.redirect(`/api/patient_detail/${id}`); 
+        res.redirect(`/api/patients/${id}`); 
 
     } catch (error) {
-        console.error(`❌ LỖI KHI CẬP NHẬT HỒ SƠ (ID: ${id}):`, error);
+        console.error(`LỖI KHI CẬP NHẬT HỒ SƠ (ID: ${id}):`, error);
         res.status(500).render('patient_edit', {
             title: 'Lỗi Cập Nhật Hồ Sơ',
-            patient: req.body,
+            patient: req.body, 
             error: 'Lỗi cập nhật dữ liệu. Vui lòng kiểm tra thông tin.'
         });
     }
 });
+
 
 module.exports = router;

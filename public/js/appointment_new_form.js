@@ -55,12 +55,10 @@ window.submitNewAppointment = async function (event) {
     const form = document.getElementById('newAppointmentForm');
     const payload = {};
 
-    // 1. Thu thập thông tin LỊCH HẸN từ form chính
     new FormData(form).forEach((value, key) => {
         payload[key] = value;
     });
 
-    // 2. Thu thập thông tin BỆNH NHÂN dựa trên mode (Lấy trực tiếp bằng ID)
     const searchInput = document.getElementById('patient_search');
     const bnMaInput = document.getElementById('bn_ma');
 
@@ -113,7 +111,6 @@ window.submitNewAppointment = async function (event) {
     }
 }
 
-// HÀM KHỞI TẠO CHÍNH 
 function initializeNewAppointmentForm() {
     const searchInput = document.getElementById('patient_search');
     const bnMaInput = document.getElementById('bn_ma');
@@ -130,7 +127,6 @@ function initializeNewAppointmentForm() {
         selectTimeElement.innerHTML = generateTimeSlotsHTML();
     }
 
-    // --- KHỞI TẠO JQUERY UI AUTOCOMPLETE ---
     if (typeof $(searchInput).autocomplete === 'function') {
         $(searchInput).autocomplete({
             source: async (request, response) => {
@@ -152,26 +148,19 @@ function initializeNewAppointmentForm() {
             select: (event, ui) => {
                 event.preventDefault();
 
-                // Điền tên bệnh nhân gợi ý vào ô
-
-                //searchInput.value = ui.item.details.bn_ho_ten;
 
                 hoTenInput.value = ui.item.details.bn_ho_ten;
 
-                // Gán id vào đường dẫn
                 bnMaInput.value = ui.item.value;
                 selectedPatientId = ui.item.value;
 
-                // Điền số điện thoại
                 if (sdtAvailableInput) {
                     sdtAvailableInput.value = ui.item.details.bn_sdt || '';
                 }
                 if (gioiTinhInput) {
-                    // Giả sử bn_gioi_tinh là 'Nam' hoặc 'Nữ'
                     gioiTinhInput.value = ui.item.details.bn_gioi_tinh || '';
                 }
                 if (ngaySinhInput) {
-                    // Định dạng lại ngày sinh nếu cần (ví dụ: từ ISO sang DD/MM/YYYY)
                     const dob = ui.item.details.bn_ngay_sinh;
                     if (dob) {
                         try {
@@ -187,20 +176,18 @@ function initializeNewAppointmentForm() {
                 if (diaChiInput) {
                     diaChiInput.value = ui.item.details.bn_dia_chi || '';
                 }
-                showTab('existing'); // Chuyển sang tab existing
+                showTab('existing');
             },
             focus: (event, ui) => {
                 event.preventDefault();
             }
         });
     } else {
-        console.warn("jQuery UI Autocomplete chưa được tải."); // Cảnh báo nếu thư viện thiếu
+        console.warn("jQuery UI Autocomplete chưa được tải.");
     }
 
 
-    // --- LOGIC THEO DÕI INPUT ---
     searchInput.addEventListener('input', () => {
-        // Kiểm tra xem jQuery đã tải chưa trước khi dùng $
         if (typeof $ !== 'undefined' && bnMaInput.value !== '' && searchInput.value !== $(searchInput).val()) {
             bnMaInput.value = '';
             selectedPatientId = null;
@@ -218,9 +205,15 @@ function initializeNewAppointmentForm() {
         }
     });
 
-    // Khởi tạo trạng thái tab ban đầu
     showTab('new');
 }
 
-// Gọi hàm khởi tạo khi DOM đã sẵn sàng
 document.addEventListener('DOMContentLoaded', initializeNewAppointmentForm);
+
+function danhSachBenhNhan(){
+    window.location.href = "/api/patients";
+}
+
+function danhSachLichHen(){
+    window.location.href = "/api/appointments";
+}

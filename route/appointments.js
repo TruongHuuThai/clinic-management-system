@@ -32,7 +32,7 @@ router.get('/appointments', async (req, res) => {
             SELECT 
                 lh.lh_ma, lh.lh_khung_gio AS time, lh.lh_ngay_hen AS date, 
                 bn.bn_ho_ten AS name, lh.lh_trang_thai AS status, lh.lh_ghi_chu AS note,
-                bn.bn_sdt -- Lấy SĐT để tìm kiếm có sẵn
+                bn.bn_sdt
             FROM 
                 lich_hen lh
             JOIN 
@@ -53,8 +53,7 @@ router.get('/appointments', async (req, res) => {
     } catch (error) {
         console.error('LỖI KHI TRUY VẤN LỊCH HẸN CHI TIẾT:', error);
             appointments = [];
-                
-              
+            
             return res.status(500).render('appointments', { 
             title: 'Lỗi', 
             data: { appointments: [], totalCount: 0 },
@@ -78,7 +77,7 @@ router.get('/appointments/edit/:id', async (req, res) => {
     try {
         const currentAppointmentQuery = `
             SELECT lh.*, bn.bn_ho_ten 
-            FROM lich_hen lh  
+            FROM lich_hen lh 
             JOIN benh_nhan bn ON lh.lh_ma_bn = bn.bn_ma 
             WHERE lh.lh_ma = $1; 
         `;
@@ -166,7 +165,7 @@ router.get('/appointments/occupied_slots/:id', async (req, res) => {
     const { date } = req.query;
 
     if (!date) {
-        return res.status(400).json({ message: 'Thiếu   số ngày.' });
+        return res.status(400).json({ message: 'Thiếu tham số ngày.' });
     }
 
     try {
@@ -251,7 +250,6 @@ router.get('/patients/search', async (req, res) => {
 });
 
 router.post('/appointments/new', async (req, res) => {
-
     const {
         ngay_hen, khung_gio, trang_thai, ghi_chu,
         bn_ma, bn_ho_ten, bn_sdt, bn_gioi_tinh, bn_ngay_sinh, bn_dia_chi
@@ -283,7 +281,6 @@ router.post('/appointments/new', async (req, res) => {
                 bn_ho_ten, bn_sdt, bn_gioi_tinh, bn_ngay_sinh, bn_dia_chi
             ]);
             patientIdToUse = result.rows[0].bn_ma;
-
         }
 
         else {
@@ -315,97 +312,48 @@ router.post('/appointments/new', async (req, res) => {
     }
 });
 
-router.get('/patients', async (req, res) => {
-    try {
-        const patientsQuery = `
-            SELECT 
-                bn_ma, 
-                bn_ho_ten, 
-                bn_sdt,
-                bn_dia_chi
-            FROM 
-                benh_nhan
-            ORDER BY 
-                bn_ho_ten;
-        `;
-        
-        const result = await pool.query(patientsQuery);
+router.post('/schedule', async (req, res) => {
+    const { patientId, ngay_hen, khung_gio, trang_thai, ghi_chu } = req.body; 
 
-        res.render('patient_list', { 
-            title: 'Danh sách Bệnh nhân',
-            patients: result.rows 
-        });
-
-    } catch (error) {
-        console.error('LỖI KHI TẢI DANH SÁCH BỆNH NHÂN:', error);
-        
-        res.status(500).json({ 
-            message: 'Không thể tải danh sách bệnh nhân.',
-            error_details: error.message 
-        });
+    if (!patientId || !ngay_hen || !khung_gio) {
+        return res.status(400).json({ message: 'Thiếu thông tin bắt buộc.' });
     }
-});
 
-router.get('/patients/:id', async (req, res) => {
-    const { id } = req.params;
-    
-    const patientQuery = `
-        SELECT bn_ho_ten, bn_sdt, bn_gioi_tinh, bn_ngay_sinh, bn_dia_chi
-        FROM benh_nhan
-        WHERE bn_ma = $1;
-    `;
-
-    const historyQuery = `
-        SELECT 
-            lh_ngay_hen, lh_khung_gio, lh_trang_thai, lh_ghi_chu, lh_ma
-        FROM 
-            lich_hen
-        WHERE 
-            lh_ma_bn = $1 AND lh_da_xoa = FALSE
-        ORDER BY 
-            lh_ngay_hen DESC;
-    `;
-
+    let client;
     try {
-        const [patientResult, historyResult] = await Promise.all([
-            pool.query(patientQuery, [id]),
-            pool.query(historyQuery, [id])
+        client = await pool.connect();
+        await client.query('BEGIN'); 
+
+        const checkConflictQuery = `
+            SELECT lh_ma FROM lich_hen 
+            WHERE lh_ngay_hen = $1 AND lh_khung_gio = $2 
+            AND lh_trang_thai NOT IN ('DA_HUY', 'DA_KHAM') AND lh_da_xoa = FALSE;
+        `;
+        const conflictResult = await client.query(checkConflictQuery, [ngay_hen, khung_gio]);
+
+        if (conflictResult.rowCount > 0) {
+            await client.query('ROLLBACK');
+            return res.status(409).json({ message: 'Khung giờ này đã có lịch hẹn khác.' });
+        }
+        
+        const insertQuery = `
+            INSERT INTO lich_hen (lh_ma_bn, lh_ngay_hen, lh_khung_gio, lh_trang_thai, lh_ghi_chu)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING lh_ma; 
+        `;
+        const result = await client.query(insertQuery, [
+            patientId, ngay_hen, khung_gio, trang_thai || 'CHO_KHAM', ghi_chu
         ]);
 
-        if (patientResult.rowCount === 0) {
-            return res.status(404).send('<h1>404 Not Found</h1><p>Không tìm thấy bệnh nhân với Mã: ' + id + '</p>'); 
-        }
-        const patientData = patientResult.rows[0];
-
-        const appointmentsHistory = historyResult.rows.map(row => {
-            const formattedDate = row.lh_ngay_hen 
-                ? new Date(row.lh_ngay_hen).toLocaleDateString('vi-VN')
-                : 'Chưa có ngày';
-
-            const formattedStatus = row.lh_trang_thai 
-                ? row.lh_trang_thai.replace(/_/g, ' ') 
-                : 'Không xác định';
-
-            return {
-                ...row,
-                lh_ngay_hen: formattedDate,
-                lh_trang_thai: formattedStatus
-            };
-        });
-
-        res.render('patient_list', {
-            title: `Hồ sơ Bệnh nhân: ${patientData.bn_ho_ten}`,
-            patients: patientData,
-            history: appointmentsHistory
-        });
+        await client.query('COMMIT');
+        res.status(201).json({ message: 'Tạo lịch hẹn thành công.', appointmentId: result.rows[0].lh_ma });
 
     } catch (error) {
-        console.error(`LỖI GỐC KHI TẢI HỒ SƠ BỆNH NHÂN (ID: ${id}):`, error);
-        
-        res.status(500).json({ 
-            message: 'Đã xảy ra lỗi máy chủ khi truy xuất hồ sơ bệnh nhân.',
-            error_details: error.message 
-        });
+        if (client) await client.query('ROLLBACK');
+        console.error('LỖI LƯU LỊCH TÁI KHÁM:', error);
+        res.status(500).json({ message: 'Lỗi server nội bộ khi lưu lịch hẹn.' });
+    } finally {
+        if (client) client.release();
     }
 });
 

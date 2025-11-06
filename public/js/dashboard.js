@@ -73,11 +73,9 @@ function receive(buttonElement) {
     }
 }
 
-// Hàm giả định cho nút Bắt đầu Khám
 function examination(buttonElement) {
     const appointmentId = buttonElement.getAttribute('data-id');
     alert(`Chuyển đến màn hình khám cho lịch hẹn ID: ${appointmentId}`);
-    // Thực tế: window.location.href = `/khambenh/${appointmentId}`;
 }
 
 function danhSachBenhNhan(){
