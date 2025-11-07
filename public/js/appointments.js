@@ -1,4 +1,6 @@
 // public/js/dashboard.js
+let appointmentIdToDelete = null;
+
 function checkAppointment(appointmentId) {
     if (!appointmentId) {
         console.error("Lỗi: Không tìm thấy Mã Lịch Hẹn để sửa.");
@@ -23,8 +25,6 @@ function getAppointmentId(element) {
     }
     return element; 
 }
-
-let appointmentIdToDelete = null;
 
 function xoaLichHen(buttonElement) {
     const appointmentId = buttonElement.getAttribute('data-id');

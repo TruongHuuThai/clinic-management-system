@@ -1,5 +1,3 @@
-// public/js/appointment_new_form.js (Mã đã hoàn thiện)
-
 let selectedPatientId = null;
 let formMode = 'new';
 let globalOccupiedSlots = [];
@@ -43,6 +41,27 @@ function convertDateToISO(dateString) {
     return dateString;
 }
 
+function initializeDatepickers() {
+    $(".datepicker-input").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true,
+        yearRange: "1940:2030",
+        closeText: 'Đóng',
+        currentText: 'Hôm nay'
+    });
+    $(".datepicker-input").each(function() {
+        let $input = $(this);
+        let isoValue = $input.val();
+        
+        if (isoValue && isoValue.includes('-')) {
+            let parts = isoValue.split('-');
+            let displayValue = parts[2] + '/' + parts[1] + '/' + parts[0];
+            $input.val(displayValue);
+        }
+    });
+}
+
 window.showTab = function (tabName) {
     const newPatientFields = document.getElementById('new_patient_fields');
     const existingPatientFields = document.getElementById('existing_patient_fields');
@@ -67,6 +86,7 @@ window.submitNewAppointment = async function (event) {
     const form = document.getElementById('newAppointmentForm');
     const payload = {};
     
+    // 1. CHUẨN BỊ DỮ LIỆU
     new FormData(form).forEach((value, key) => {
         if (key === 'ngay_hen' || key === 'bn_ngay_sinh') {
             payload[key] = convertDateToISO(value);
@@ -75,26 +95,20 @@ window.submitNewAppointment = async function (event) {
         }
     });
 
-    const searchInput = document.getElementById('patient_search');
     const bnMaInput = document.getElementById('bn_ma');
 
+    // 2. LOGIC TÙY CHẾ ĐỘ (Giữ nguyên)
     if (formMode === 'new') {
         const selectedGender = document.querySelector('input[name="bn_gioi_tinh_new"]:checked');
-        
         payload.bn_ma = '';
         payload.bn_gioi_tinh = selectedGender ? selectedGender.value : 'Nam'; 
         
-        payload.bn_ho_ten = document.getElementById('bn_ho_ten_new').value;
-        payload.bn_sdt = document.getElementById('bn_sdt_new').value;
-        payload.bn_dia_chi = document.getElementById('bn_dia_chi_new').value;
-
         if (!payload.bn_ho_ten || !payload.bn_sdt || !payload.bn_ngay_sinh) {
              alert("Vui lòng nhập đầy đủ Tên, SĐT và Ngày Sinh cho bệnh nhân mới.");
              return;
         }
     } else if (formMode === 'existing') {
         payload.bn_ma = bnMaInput.value;
-        
         delete payload.bn_ho_ten; 
         delete payload.bn_sdt;
         delete payload.bn_gioi_tinh;
@@ -109,7 +123,6 @@ window.submitNewAppointment = async function (event) {
         alert("Vui lòng chọn chế độ Thêm mới hoặc Bệnh nhân có sẵn.");
         return;
     }
-
     const apiUrl = '/api/appointments/new';
     try {
         const response = await fetch(apiUrl, {
@@ -118,46 +131,28 @@ window.submitNewAppointment = async function (event) {
             body: JSON.stringify(payload),
         });
 
+        const result = await response.json();
+
         if (!response.ok) {
-            const errorResult = await response.json();
-            throw new Error(errorResult.message || `Lỗi server HTTP: ${response.status}`);
+            const errorMessage = result.message || `Lỗi server HTTP: ${response.status}`;
+            document.getElementById('failure-message').textContent = errorMessage;
+            $('#failureModal').modal('show');
+            return;
         }
 
-        alert("Tạo lịch hẹn thành công!");
-        window.location.href = '/api/appointments';
+        $('#successModal').modal('show');
+        
+        setTimeout(() => {
+            window.location.href = '/api/appointments'; 
+        }, 1000); 
+        $('#successModal').off('hidden.bs.modal'); 
 
     } catch (error) {
-        console.error("LỖI KHI TẠO LỊCH HẸN:", error);
-        alert(`Thao tác thất bại: ${error.message}`);
+        document.getElementById('failure-message').textContent = `Lỗi kết nối: ${error.message}`;
+        $('#failureModal').modal('show');
     }
 }
 
-function initializeDatepickers() {
-    $(".datepicker-input").datepicker({
-        dateFormat: 'dd/mm/yy',
-        changeMonth: true,
-        changeYear: true,
-        yearRange: "1940:2030",
-        closeText: 'Đóng',
-        currentText: 'Hôm nay',
-        minDate: function(element) {
-            if (element && element.id === 'ngay_hen') {
-                return 0;
-            }
-            return undefined; 
-        }
-    });
-    $(".datepicker-input").each(function() {
-        let $input = $(this);
-        let isoValue = $input.val();
-        
-        if (isoValue && isoValue.includes('-')) {
-            let parts = isoValue.split('-');
-            let displayValue = parts[2] + '/' + parts[1] + '/' + parts[0];
-            $input.val(displayValue);
-        }
-    });
-}
 
 function initializeNewAppointmentForm() {
     const searchInput = document.getElementById('patient_search');
