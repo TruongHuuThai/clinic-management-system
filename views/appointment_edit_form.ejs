@@ -11,10 +11,6 @@
     <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-datepicker/1.13.0/i18n/jquery.ui.datepicker-vi.min.js"></script>
 
-    <script> 
-
-
-    </script>
 </head>
 
 <body>
@@ -105,82 +101,7 @@
             </form>
         </div>
     </main>
-
     <script src="/js/appointment_edit_form.js"></script>
-
-<script>
-    const rawTime = "<%= appointmentData.lh_khung_gio %>";
-    const slotValue = (rawTime && rawTime.length >= 5) ? rawTime.substring(0, 5) : '07:00';
-    const idValue = "<%= appointmentData.lh_ma %>";
-    const occupiedJSON = '<%- JSON.stringify(occupiedSlots) %>';
-    const initialOccupiedSlots = JSON.parse(occupiedJSON);
-
-    // 2. HÀM CHUYỂN HƯỚNG CẦN THIẾT
-    function danhSachBenhNhan(){ window.location.href = "/api/patients"; }
-    function danhSachLichHen(){ window.location.href = "/api/appointments"; }
-    
-    
-    // 3. KHỐI JQUERY CHÍNH (Đã hợp nhất và sửa lỗi trùng lặp)
-    $(document).ready(function() {
-        
-        // --- A. KHỞI TẠO VÀ CHUYỂN ĐỔI HIỂN THỊ (ISO -> VN) ---
-        $(".datepicker-input").datepicker({
-            dateFormat: 'dd/mm/yy',
-            changeMonth: true,
-            changeYear: true,
-            yearRange: "1940:2030",
-            closeText: 'Đóng',
-            currentText: 'Hôm nay',
-            minDate: new Date()
-        });
-
-        $(".datepicker-input").each(function() {
-            let $input = $(this);
-            let isoValue = $input.val();
-            
-            if (isoValue && isoValue.includes('-')) {
-                let parts = isoValue.split('-');
-                let displayValue = parts[2] + '/' + parts[1] + '/' + parts[0];
-                $input.val(displayValue);
-            }
-        });
-
-        // 4. GỌI LOGIC TỪ FILE BÊN NGOÀI
-        if (typeof initializeFormLogic === 'function') {
-            initializeFormLogic(idValue, slotValue, initialOccupiedSlots);
-        }
-
-        // 5. XỬ LÝ SỰ KIỆN SUBMIT FORM (KHẮC PHỤC LỖI 500)
-        $('#editAppointmentForm').submit(function(e) {
-            
-            let conversionError = false;
-
-            $(".datepicker-input").each(function() {
-                let $input = $(this);
-                let dateString = $input.val();
-                
-                if (dateString && dateString.includes('/')) {
-                    let parts = dateString.split('/');
-                    
-                    if (parts.length === 3 && parts[2].length === 4) {
-                        let isoDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-                        $input.val(isoDate); // Ghi đè giá trị ISO
-                    } else {
-                        conversionError = true;
-                    }
-                }
-            });
-
-            if (conversionError) {
-                e.preventDefault();
-                alert("Lỗi định dạng ngày tháng. Vui lòng nhập DD/MM/YYYY.");
-                setTimeout(() => { window.location.reload(); }, 50); 
-                return false;
-            }
-        });
-    });
-</script>
-
 </body>
 
 </html>

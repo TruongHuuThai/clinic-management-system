@@ -35,11 +35,16 @@
             </div>
             
             <% 
-                // LOGIC CHÍNH: Kiểm tra biến patients có tồn tại và là MẢNG hay không
                 if (typeof patients !== 'undefined' && Array.isArray(patients)) { 
             %>
                 <p>Tổng số bệnh nhân: **<%= patients.length %>**</p>
-                
+
+                <div class="header-actions">
+                    <button type="button" onclick="themMoiBenhNhan()" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Thêm Bệnh nhân mới
+                    </button>
+                </div>
+
                 <% if (patients.length === 0) { %>
                     <p>Hiện không có bệnh nhân nào trong hệ thống.</p>
                 <% } else { %>

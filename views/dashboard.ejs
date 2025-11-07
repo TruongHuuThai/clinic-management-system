@@ -7,28 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <header>
-        <h1>Hệ Thống Quản Lý Hồ Sơ Bệnh Án</h1>
-
-        <div class="">
-            <button onclick="window.location.href='/'" class="btn btn-primary">
-                Trang chủ
-            </button>
-
-            <button onclick="danhSachBenhNhan()" class="btn btn-primary">
-                Danh sách bệnh nhân
-            </button>
-
-            <button onclick="danhSachLichHen()" class="btn btn-primary">
-                Danh sách lịch hẹn
-            </button>
-        </div>
-
-        <div class="user-info">
-            <i class="fas fa-user-circle"></i> 
-            Chào mừng, **<%= data.userName %>**
-        </div>
-    </header>
+        <%- include('partials/header') %>
 
     <main class="dashboard-container">
         

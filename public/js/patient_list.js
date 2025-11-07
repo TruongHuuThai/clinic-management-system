@@ -21,3 +21,7 @@ function danhSachBenhNhan(){
 function danhSachLichHen(){
     window.location.href = "/api/appointments";
 }
+
+function themMoiBenhNhan() {
+    window.location.href = '/api/patients/new';
+}

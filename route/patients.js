@@ -39,6 +39,14 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.get('/new/', (req, res) => {
+    res.render('patient_new_form', {
+        title: 'Thêm Bệnh Nhân Mới',
+        patient: {}, 
+        error: null 
+    });
+});
+
 router.get('/:id', async (req, res) => {
     const { id } = req.params;
     
@@ -152,6 +160,36 @@ router.post('/edit/:id', async (req, res) => {
             title: 'Lỗi Cập Nhật Hồ Sơ',
             patient: req.body, 
             error: 'Lỗi cập nhật dữ liệu. Vui lòng kiểm tra thông tin.'
+        });
+    }
+});
+
+
+
+router.post('/', async (req, res) => {
+    const { ten_benh_nhan, ngay_sinh, gioi_tinh, so_dien_thoai, dia_chi } = req.body;
+    let ngaySinhISO = ngay_sinh;
+    if (ngay_sinh && ngay_sinh.includes('/')) {
+        const parts = ngay_sinh.split('/'); 
+        ngaySinhISO = `${parts[2]}-${parts[1]}-${parts[0]}`; 
+    }
+
+    try {
+        const sql = `INSERT INTO patients (ten_benh_nhan, ngay_sinh, gioi_tinh, so_dien_thoai, dia_chi, created_at, updated_at) 
+                     VALUES ($1, $2, $3, $4, $5, NOW(), NOW()) 
+                     RETURNING *`;
+        
+        const values = [ten_benh_nhan, ngaySinhISO, gioi_tinh, so_dien_thoai, dia_chi];
+    
+        req.session.message = { type: 'success', content: 'Thêm bệnh nhân mới thành công!' };
+        res.redirect('/api/patients'); 
+
+    } catch (error) {
+        console.error("Lỗi khi thêm bệnh nhân:", error);
+        res.render('patient_new_form', {
+            title: 'Thêm Bệnh nhân mới',
+            patient: req.body,
+            error: 'Lỗi: Không thể thêm bệnh nhân. Vui lòng kiểm tra lại dữ liệu.'
         });
     }
 });

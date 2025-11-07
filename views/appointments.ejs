@@ -6,19 +6,28 @@
     <title>
         <%= title %> - Quản Lý Phòng Khám
     </title>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-datepicker/1.13.0/i18n/jquery.ui.datepicker-vi.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.min.js'></script> 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.min.js'></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
 </head>
 
 <body>
     <header>
     </header>
 
-    
-
     <main class="container">
+
+        <%- include('partials/delete_form') %>
+
+
         <h1>
             <%= title %>
         </h1>
@@ -37,10 +46,6 @@
 
         </div>
 
-    <div class="mt-4 mb-3">
-        <button id="listViewBtn" class="btn btn-info">Danh sách</button>
-        <button id="calendarViewBtn" class="btn btn-outline-info">Lịch</button>
-    </div>
 
     <div id='calendar-container' style="display: none;">
         <div id='fullCalendar'></div>
@@ -49,19 +54,26 @@
     <div id="filter-container" class="mb-4 p-3 border rounded">
         <form id="filterForm" onsubmit="event.preventDefault(); applyFilters()">
             
-            <label for="search">Tìm kiếm (Tên/SĐT):</label>
-            <input type="text" id="search" name="search" value="<%= query.search || '' %>"> 
+            <div class="form-group d-inline-block mr-3">
+                <label for="search">Tìm kiếm (Tên/SĐT):</label>
+                <input type="text" id="search" name="search" value="<%= query.search || '' %>" class="form-control"> 
+            </div>
 
-            <label for="status">Trạng thái:</label>
-            <select id="status" name="status">
-                <option value="">Tất cả</option>
-                <option value="CHO_KHAM" <%= query.status === 'CHO_KHAM' ? 'selected' : '' %>>Chờ Khám</option>
-                <option value="DA_DEN" <%= query.status === 'DA_DEN' ? 'selected' : '' %>>Đã Đến</option>
-                <option value="TAI_KHAM" <%= query.status === 'TAI_KHAM' ? 'selected' : '' %>>Tái Khám</option>
-            </select>
-            
-            <label for="dateFrom">Từ ngày:</label>
-            <input type="date" id="dateFrom" name="dateFrom" value="<%= query.dateFrom || '' %>">
+            <div class="form-group d-inline-block mr-3">
+                <label for="status">Trạng thái:</label>
+                <select id="status" name="status" class="form-control">
+                    <option value="">Tất cả</option>
+                    <option value="CHO_KHAM" <%= query.status === 'CHO_KHAM' ? 'selected' : '' %>>Chờ Khám</option>
+                    <option value="DA_DEN" <%= query.status === 'DA_DEN' ? 'selected' : '' %>>Đã Đến</option>
+                    <option value="TAI_KHAM" <%= query.status === 'TAI_KHAM' ? 'selected' : '' %>>Tái Khám</option>
+                    <option value="DA_HUY" <%= query.status === 'DA_HUY' ? 'selected' : '' %>>Đã Hủy</option>
+                    </select>
+            </div>
+
+            <div class="form-group d-inline-block mr-3">
+                <label for="dateFrom">Từ ngày:</label>
+                <input type="text" id="dateFrom" name="dateFrom" value="<%= query.dateFrom || '' %>" class="datepicker-input form-control" placeholder="dd/mm/yyyy">
+            </div>
 
             <button type="submit" class="btn btn-primary">Áp dụng</button>
             <button type="button" onclick="danhSachLichHen()" class="btn btn-secondary">Xóa lọc</button>

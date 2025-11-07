@@ -293,7 +293,7 @@ router.post('/appointments/new', async (req, res) => {
             RETURNING *;
         `;
         const appointmentResult = await client.query(newAppointmentQuery, [
-            patientIdToUse, ngay_hen, khung_gio, trang_thai || 'CHO_KHAM', ghi_chu
+            patientIdToUse, ngay_hen, khung_gio, trang_thai || 'TAI_KHAM', ghi_chu
         ]);
 
         await client.query('COMMIT');
@@ -356,5 +356,7 @@ router.post('/schedule', async (req, res) => {
         if (client) client.release();
     }
 });
+
+
 
 module.exports = router;

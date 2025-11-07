@@ -7,53 +7,59 @@ function checkAppointment(appointmentId) {
     }
 }
 
-function suaLichHen(buttonElement) {
-    
-    const appointmentId = buttonElement.getAttribute('data-id');
-
-    checkAppointment(appointmentId);
-
+function suaLichHen(element) {
+    const appointmentId = getAppointmentId(element);
+    if (!appointmentId) {
+        console.error("Thiếu ID lịch hẹn để chỉnh sửa.");
+        return;
+    }
     const editUrl = `/api/appointments/edit/${appointmentId}`;
-    console.log("URL CHUYỂN HƯỚNG:", editUrl);
-
-    console.log(`Chuyển hướng đến trang sửa lịch hẹn ID: ${appointmentId}`);
     window.location.href = editUrl;
 }
 
-async function xoaLichHen(buttonElement) {
+function getAppointmentId(element) {
+    if (element && typeof element.getAttribute === 'function') {
+        return element.getAttribute('data-id');
+    }
+    return element; 
+}
 
+let appointmentIdToDelete = null;
+
+function xoaLichHen(buttonElement) {
     const appointmentId = buttonElement.getAttribute('data-id');
-
+    
     if (!appointmentId) {
         console.error("Lỗi: Không tìm thấy ID lịch hẹn để xóa.");
+        alert("Không thể xóa lịch hẹn. Mã ID không hợp lệ.");
         return;
     }
+    appointmentIdToDelete = appointmentId; 
+    $('#deleteConfirmModal').modal('show');
+}
 
-    const isConfirmed = confirm("Có chắc chắn muốn xóa lịch hẹn này không?");
-
-    if (!isConfirmed) {
-        return;
-    }
+async function confirmDeletion() {
+    const appointmentId = appointmentIdToDelete;
+    
+    if (!appointmentId) return;
+    $('#deleteConfirmModal').modal('hide'); 
 
     const apiUrl = `/api/appointments/${appointmentId}`;
-
+    
     try {
-        const response = await fetch(apiUrl, {
+        const response = await fetch(apiUrl, { 
             method: 'DELETE',
         });
-
+        
         if (!response.ok) {
-            const errorText = await response.text();
-            console.error("Lỗi HTTP Status:", response.status, "Chi tiết:", errorText);
-            throw new Error(`Xóa không thành công. Mã lỗi ${response.status}.`);
+            const errorResult = await response.json();
+            throw new Error(errorResult.message || `Mã lỗi HTTP: ${response.status}`);
         }
-
-        alert("Xóa mềm lịch hẹn thành công!");
-        window.location.reload();
+        window.location.reload(); 
 
     } catch (error) {
         console.error("Lỗi khi gửi yêu cầu xóa:", error);
-        alert(`Lỗi: ${error.message || 'Không thể xóa lịch hẹn.'}`);
+        alert(`Lỗi kết nối hoặc server: ${error.message || 'Không thể xóa lịch hẹn.'}`);
     }
 }
 
@@ -74,6 +80,35 @@ function applyFilters() {
         
     window.location.href = '/api/appointments?' + params.toString();
 }
+
+$(document).ready(function() {
+
+    $("#dateFrom").datepicker({
+        dateFormat: 'dd/mm/yy',
+        changeMonth: true,
+        changeYear: true,
+        yearRange: "1940:2030",
+        minDate: null, 
+        closeText: 'Đóng',
+        currentText: 'Hôm nay',
+    });
+
+    $("#dateFrom").each(function() {
+        let $input = $(this);
+        let isoValue = $input.val(); 
+        
+        if (isoValue && isoValue.includes('-')) {
+            let parts = isoValue.split('-');
+            let displayValue = parts[2] + '/' + parts[1] + '/' + parts[0]; 
+            $input.val(displayValue);
+        }
+    });
+
+    $('#filterForm').off('submit').on('submit', function(e) {
+        e.preventDefault(); 
+        applyFilters();  
+    });
+});
 
 function danhSachBenhNhan(){
     window.location.href = "/api/patients";
