@@ -19,18 +19,12 @@
 </head>
 
 <body>
+    <%- include('partials/header') %>
     <main>
         <div class="form-container">
             <h1>
                 <%= title %>
             </h1>
-
-
-            <div class="">
-                <button onclick="window.location.href='/'" class="btn btn-primary">Trang chủ</button>
-                <button onclick="danhSachBenhNhan()" class="btn btn-primary">Danh sách bệnh nhân</button>
-                <button onclick="danhSachLichHen()" class="btn btn-primary">Danh sách lịch hẹn</button>
-            </div>
 
             <div class="button-group mb-4">
                 <button type="button" class="btn btn-secondary" onclick="showTab('existing')">Bệnh nhân có sẵn</button>
@@ -133,8 +127,8 @@
     </main>
 
     <%- include('partials/appointment_new') %>
+    <script src="/js/partials/header.js"></script>
     <script src="/js/appointment_new_form.js"></script>
-
     <script>
         $(document).ready(function() {
             initializeNewAppointmentForm();

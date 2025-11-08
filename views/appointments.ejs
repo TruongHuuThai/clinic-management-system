@@ -21,27 +21,11 @@
 </head>
 
 <body>
-    <header>
-    </header>
-
+    <%- include('partials/header') %>
     <main class="container">
         <h1>
             <%= title %>
         </h1>
-        <div class="">
-            <button onclick="window.location.href='/'" class="btn btn-primary">
-                Trang chủ
-            </button>
-            <button onclick="danhSachBenhNhan()" class="btn btn-primary">
-                Danh sách bệnh nhân
-            </button>
-            
-            <button onclick="danhSachLichHen()" class="btn btn-primary">
-                Danh sách lịch hẹn
-            </button>
-
-        </div>
-
 
     <div id='calendar-container' style="display: none;">
         <div id='fullCalendar'></div>
@@ -153,6 +137,7 @@
         </table>
     </main>
     <%- include('partials/delete_form') %>
+    <script src="/js/partials/header.js"></script>
     <script src="/js/appointments.js"></script>
 </body>
 

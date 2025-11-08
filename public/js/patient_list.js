@@ -14,14 +14,6 @@ function chiTietBenhNhan(bn_ma) {
     window.location.href = `/api/patients/${bn_ma}`;
 }
 
-function danhSachBenhNhan(){
-    window.location.href = "/api/patients";
-}
-
-function danhSachLichHen(){
-    window.location.href = "/api/appointments";
-}
-
 function themMoiBenhNhan() {
     window.location.href = '/api/patients/new';
 }

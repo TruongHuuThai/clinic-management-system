@@ -27,15 +27,31 @@
             </div>
 
             <div class="form-group">
-                <label for="gioi_tinh">Giới Tính</label>
-                <select id="gioi_tinh" name="gioi_tinh" class="form-control">
-                    <option value="Nam" <%= patient.gioi_tinh === 'Nam' ? 'selected' : '' %>>Nam</option>
-                    <option value="Nữ" <%= patient.gioi_tinh === 'Nữ' ? 'selected' : '' %>>Nữ</option>
-                </select>
+                <label>Giới Tính</label>
+                <% const currentGender = 'Nam'; %>
+                
+                <div class="radio-group-container">
+                    
+                    <label for="gioi_tinh_nam" class="radio-label">
+                        <input type="radio" id="gioi_tinh_nam" name="gioi_tinh" value="Nam" 
+                        <%= currentGender === 'Nam' ? 'checked' : '' %> required> 
+                        Nam
+                    </label>
+                    
+                    <label for="gioi_tinh_nu" class="radio-label">
+                        <input type="radio" id="gioi_tinh_nu" name="gioi_tinh" value="Nữ" 
+                        <%= currentGender === 'Nữ' ? 'checked' : '' %> required> 
+                        Nữ
+                    </label>
+                    
+                </div>
+                
+                <% if (!currentGender) { %>
+                    <% } %>
             </div>
             
             <div class="form-group">
-                <label for="so_dien_thoai">Số Điện Thoại <span class="text-danger">*</span></label>
+                <label for="so_dien_thoai">Số Điện Thoại</label>
                 <input type="text" id="so_dien_thoai" name="so_dien_thoai" class="form-control" value="<%= patient.so_dien_thoai || '' %>" required>
             </div>
 
@@ -45,13 +61,13 @@
             </div>
 
             <button type="submit" class="btn btn-primary">Lưu Bệnh nhân</button>
-            <a href="/api/patients" class="btn btn-secondary">Hủy</a>
+            <button type="button" class="btn btn-primary" onclick="danhSachBenhNhan()">Hủy</button>
         </form>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-
+    <script src="/js/partials/header.js"></script>
     <script>
         $(document).ready(function() {
             $("#ngay_sinh").datepicker({

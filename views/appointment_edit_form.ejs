@@ -10,10 +10,10 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.3/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-datepicker/1.13.0/i18n/jquery.ui.datepicker-vi.min.js"></script>
-
 </head>
 
 <body>
+    <%- include('partials/header') %>
     <script>
         function getCurrentDateISO() {
             const now = new Date();
@@ -24,25 +24,11 @@
         const minDate = getCurrentDateISO();
     </script>
     <main>
+
         <div class="form-container">
             <h1>
                 <%= title %>
             </h1>
-
-            <div class="">
-                <button onclick="window.location.href='/'" class="btn btn-primary">
-                    Trang chủ
-                </button>
-
-                <button onclick="danhSachBenhNhan()" class="btn btn-primary">
-                    Danh sách bệnh nhân
-                </button>
-
-                <button onclick="danhSachLichHen()" class="btn btn-primary">
-                    Danh sách lịch hẹn
-                </button>
-            </div>
-
             <div class="form-group">
                 <label for="bn_ho_ten">Tên Bệnh Nhân:</label>
                 <input type="text" class="form-control" id="bn_ho_ten" value="<%= appointmentData.bn_ho_ten %>"
@@ -101,6 +87,7 @@
             </form>
         </div>
     </main>
+    <script src="/js/partials/header.js"></script>
     <script src="/js/appointment_edit_form.js"></script>
 </body>
 

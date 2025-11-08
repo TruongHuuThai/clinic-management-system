@@ -7,22 +7,11 @@
 </head>
 
 <body>
+    <%- include('partials/header') %>
     <main>
         <div class="detail-container">
             <h1><%= title %></h1>
-            <div class="">
-                <button onclick="window.location.href='/'" class="btn btn-primary">
-                    Trang chủ
-                </button>
 
-                <button onclick="danhSachBenhNhan()" class="btn btn-primary">
-                    Danh sách bệnh nhân
-                </button>
-
-                <button onclick="danhSachLichHen()" class="btn btn-primary">
-                    Danh sách lịch hẹn
-                </button>
-            </div>
 
 
             <% if (typeof patient !== 'undefined' && patient) { %>
@@ -166,7 +155,7 @@
 
         </div>
     </main>
-
+    <script src="/js/partials/header.js"></script>
     <script src="/js/patient_detail.js"></script> 
     
     </script>
