@@ -154,9 +154,24 @@ router.put('/appointments/:id', async (req, res) => {
 router.post('/appointment/:id/status', async (req, res) => {
     const { id } = req.params;
     const { newStatus } = req.body;
-
-    if (!newStatus || newStatus !== 'DA DEN') {
-        return res.status(400).json({ message: 'Trạng thái không hợp lệ.' });
+    if (newStatus !== 'DA_DEN') { 
+        return res.status(400).json({ message: 'Trạng thái chuyển đổi không hợp lệ.' });
+    }
+    try {
+        const updateQuery = `
+            UPDATE lich_hen 
+            SET lh_trang_thai = $1 
+            WHERE lh_ma = $2
+            RETURNING lh_ma;
+        `;
+        await pool.query(updateQuery, [newStatus, id]);
+        res.status(200).json({ 
+            message: 'Đã tiếp đón thành công.', 
+            newStatus: newStatus 
+        });
+    } catch (error) {
+        console.error('LỖI KHI CẬP NHẬT TRẠNG THÁI:', error);
+        res.status(500).json({ message: 'Lỗi máy chủ nội bộ.' });
     }
 });
 

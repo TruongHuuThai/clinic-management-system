@@ -49,17 +49,36 @@
                 <tbody id="appointments-body">
                     <% 
                     if (data.appointmentsList && data.appointmentsList.length > 0) { 
-                        data.appointmentsList.forEach((item, index) => { // <-- Biến là 'item'
+                        data.appointmentsList.forEach((item, index) => {
                     %>
                             <tr>
                                 <td><%= index + 1 %></td>
                                 <td><%= item.time %></td> 
                                 <td><%= item.name %></td> 
                                 <td>
-                                    <% 
-                                        const statusKey = item.status.replace(/\s/g, '').toLowerCase(); 
-                                        const displayStatus = item.status.replace(/_/g, ' ');
-                                    %>
+                                    <%
+                                        const statusKey = item.status.replace(/_/g,' ');
+                                                                                
+                                        let displayStatus = '';
+
+                                        if (statusKey === 'DA DEN') {
+                                            displayStatus = 'Đã đến';
+                                        } else if (statusKey === 'CHO KHAM') {
+                                            displayStatus = 'Chờ khám';
+                                        } else if (statusKey === 'DA HUY') {
+                                            displayStatus = 'Đã hủy';
+                                        } else if (statusKey === 'CHUA DEN') { 
+                                            displayStatus = 'Chưa đến';
+                                        } else if (statusKey === 'TAI KHAM') {
+                                            displayStatus = 'Tái khám';
+                                        } else if (statusKey === 'DANG KHAM') {
+                                            displayStatus ='đang khám';
+                                        } else if (statusKey === 'DA HOAN THANH'){
+                                            displayStatus = 'Đã hoàn thành';
+                                        }   else {
+                                            displayStatus = item.status;
+                                        }
+                                        %>
                                     <span class="status-badge status-<%= statusKey %>">
                                         <%= displayStatus %>
                                     </span>
@@ -75,30 +94,61 @@
                                         <%= displayNote %>
                                     </span>
                                 </td>
+                                <% 
+                                    const maLichHen = item.lh_ma;
+                                    const tenBenhNhan = item.name;
+                                %>
                                 <td>
-                                    <div id="action-buttons-<%= item.lh_ma %>">
-                                        <% if (statusKey === 'da den' || statusKey === 'daden') { %>
+                                    <div id="action-buttons-<%= maLichHen %>" class="btn-group">
+                                        <% 
+                                            if (statusKey === 'CHO KHAM' || statusKey === 'TAI KHAM' || statusKey === 'CHUA DEN') { 
+                                        %>
                                             <button 
-                                                class="btn-action btn-primary btn-bat-dau-kham" 
-                                                data-id="<%= item.lh_ma %>"
+                                                class="btn-action btn-sm btn-success" 
+                                                data-id="<%= maLichHen %>"
+                                                data-name="<%= tenBenhNhan %>"
+                                                onclick="receive(this)">
+                                                Tiếp Đón
+                                            </button>
+                                            
+                                        <% 
+                                            } else if (statusKey === 'DA DEN') { 
+                                        %>
+                                            <button 
+                                                class="btn-action btn-sm btn-warning" 
+                                                data-id="<%= maLichHen %>"
                                                 onclick="examination(this)">
                                                 Bắt Đầu Khám
                                             </button>
-                                        <% } else { %>
+                                            
+                                        <% 
+                                            } else if (statusKey === 'DANG KHAM') { 
+                                        %>
                                             <button 
-                                                class="btn-action btn-secondary btn-tiep-don" 
-                                                data-id="<%= item.lh_ma %>" 
-                                                onclick="receive(this)">
-                                                Tiếp Đón
-                                                
+                                                class="btn-action btn-sm btn-primary" 
+                                                data-id="<%= maLichHen %>"
+                                                onclick="completeExamination(this)">
+                                                Kết Thúc Khám
                                             </button>
+                                            
+                                        <% 
+                                            } else { 
+                                        %>
+                                            <span class="text-muted font-italic">Không có hành động</span>
+                                        <% } %>
 
+                                        <% if (statusKey !== 'DA HOAN THANH' && statusKey !== 'DA HUY') { %>
                                             <button 
-                                                class="btn-action btn-primary btn-bat-dau-kham" 
-                                                data-id="<%= item.lh_ma %>"
-                                                onclick="examination(this)"
-                                                style="display:none;">
-                                                Bắt Đầu Khám
+                                                class="btn-action btn-sm btn-info ml-1" 
+                                                data-id="<%= maLichHen %>"
+                                                onclick="suaLichHen(this)">
+                                                Sửa
+                                            </button>
+                                            <button 
+                                                class="btn-action btn-sm btn-outline-danger ml-1" 
+                                                data-id="<%= maLichHen %>" 
+                                                onclick="xoaLichHen(this)">
+                                                Hủy
                                             </button>
                                         <% } %>
                                     </div>
