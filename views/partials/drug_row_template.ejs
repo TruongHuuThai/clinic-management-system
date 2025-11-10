@@ -1,0 +1,34 @@
+<% const rowId = 'initial-' + Math.random().toString(36).substring(2, 5); %>
+<tr class="drug-row" data-id="<%= rowId %>">
+  <td>
+    <select
+      name="maNhom[]"
+      class="form-select drug-group-select"
+      id="drugGroupSelect-<%= rowId %>"
+    ></select>
+  </td>
+  <td>
+    <input
+      type="text"
+      name="thuoc_ten[]"
+      class="form-control"
+      placeholder="Gõ tên thuốc..."
+      id="drugNameInput-<%= rowId %>"
+    />
+    <input type="hidden" name="thuoc_ma[]" id="drugIdHidden-<%= rowId %>" />
+  </td>
+  <td>
+    <input type="number" name="so_luong[]" class="form-control" min="1" />
+  </td>
+  <td>
+    <input
+      type="text"
+      name="cach_dung[]"
+      class="form-control"
+      placeholder="Ngày 2 lần, mỗi lần 1 viên..."
+    />
+  </td>
+  <td>
+    <button type="button" class="btn btn-danger btn-sm remove-drug">Xóa</button>
+  </td>
+</tr>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Phiếu Khám Bệnh và Chẩn Đoán</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css"
+    />
+
+    <style>
+      .form-section-title {
+        background-color: #f0f8ff;
+        color: #1e90ff;
+        padding: 12px;
+        margin-top: 30px;
+        margin-bottom: 10px;
+        border-left: 5px solid #1e90ff;
+        font-weight: bold;
+        font-size: 1.25rem;
+      }
+      .patient-info-display {
+        background-color: #e9ecef;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        font-size: 0.95rem;
+      }
+      .patient-info-field {
+        font-weight: 600;
+        color: #007bff;
+      }
+      /* Fix cho Autocomplete */
+      .ui-autocomplete {
+        max-height: 200px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        z-index: 1100; /* Đảm bảo hiển thị trên Bootstrap modal */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container my-5">
+      <h2 class="text-center text-danger mb-4">PHIẾU KHÁM BỆNH VÀ CHẨN ĐOÁN</h2>
+
+      <div class="form-section-title">1. THÔNG TIN HÀNH CHÍNH BỆNH NHÂN</div>
+      <div class="patient-info-display row g-3">
+        <div class="col-md-3">
+          **Mã BN:**
+          <span class="patient-info-field"><%= benhNhan.bn_ma || 'N/A' %></span>
+        </div>
+        <div class="col-md-5">
+          **Họ và Tên:**
+          <span class="patient-info-field"
+            ><%= benhNhan.bn_ho_ten || 'N/A' %></span
+          >
+        </div>
+        <div class="col-md-2">
+          **Ngày sinh:**
+          <span class="patient-info-field"
+            ><%= benhNhan.bn_ngay_sinh ? new
+            Date(benhNhan.bn_ngay_sinh).toLocaleDateString('vi-VN') : 'N/A'
+            %></span
+          >
+        </div>
+        <div class="col-md-2">
+          **Giới tính:**
+          <span class="patient-info-field"
+            ><%= benhNhan.bn_gioi_tinh || 'N/A' %></span
+          >
+        </div>
+        <div class="col-md-8">
+          **Địa chỉ:**
+          <span class="patient-info-field"
+            ><%= benhNhan.bn_dia_chi || 'N/A' %></span
+          >
+        </div>
+        <div class="col-md-4">
+          **SĐT:**
+          <span class="patient-info-field"
+            ><%= benhNhan.bn_sdt || 'N/A' %></span
+          >
+        </div>
+        <div class="col-md-12">
+          **Ngày hẹn khám:**
+          <span class="patient-info-field"
+            ><%= benhNhan.ngayKham ? new
+            Date(benhNhan.ngayKham).toLocaleString('vi-VN') : 'N/A' %></span
+          >
+        </div>
+      </div>
+
+      <form
+        id="phieuKhamBenhForm"
+        method="POST"
+        action="/api/phieukhambenh/save"
+      >
+        <input
+          type="hidden"
+          name="pkb_ma_bn"
+          value="<%= benhNhan.bn_ma || '' %>"
+        />
+        <input type="hidden" name="lh_ma" value="<%= lh_ma || '' %>" />
+        <div class="form-section-title">2. KHÁM BỆNH VÀ CHẨN ĐOÁN</div>
+        <div class="p-3 border rounded-3">
+          <h5 class="mt-3 text-secondary">A. Thông tin Khám</h5>
+          <div class="row g-3">
+            <div class="col-12">
+              <label for="pkb_trieu_chung" class="form-label"
+                >Triệu chứng/Lý do khám
+                <span class="text-danger">*</span></label
+              >
+              <textarea
+                class="form-control"
+                id="pkb_trieu_chung"
+                name="pkb_trieu_chung"
+                rows="3"
+                required
+              ></textarea>
+            </div>
+            <div class="col-12">
+              <label for="pkb_ghi_chu" class="form-label"
+                >Ghi chú Khám (Sinh hiệu, Khám lâm sàng chi tiết)</label
+              >
+              <textarea
+                class="form-control"
+                id="pkb_ghi_chu"
+                name="pkb_ghi_chu"
+                rows="4"
+              ></textarea>
+            </div>
+          </div>
+
+          <h5 class="mt-4 text-secondary">B. Chẩn Đoán và Xử trí</h5>
+          <div class="row g-3">
+            <div class="col-12">
+              <label for="pcd_ghi_chu" class="form-label"
+                >Chẩn đoán và Kết luận <span class="text-danger">*</span></label
+              >
+              <textarea
+                class="form-control"
+                id="pcd_ghi_chu"
+                name="pcd_ghi_chu"
+                rows="2"
+                required
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section-title">3. ĐƠN THUỐC</div>
+        <div class="p-3 border rounded-3 bg-light">
+          <table class="table table-bordered table-striped" id="drugTable">
+            <thead>
+              <tr>
+                <th width="25%">Nhóm Thuốc</th>
+                <th width="35%">Tên Thuốc</th>
+                <th width="15%">Số lượng</th>
+                <th width="20%">Cách dùng</th>
+                <th width="5%"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <%- include('partials/drug_row_template') %>
+            </tbody>
+          </table>
+          <button
+            type="button"
+            class="btn btn-success btn-sm"
+            id="addDrugButton"
+          >
+            + Thêm Thuốc
+          </button>
+
+          <div class="mt-4">
+            <label for="dt_ghi_chu" class="form-label"
+              >Ghi chú Đơn thuốc / Lời dặn dò</label
+            >
+            <textarea
+              class="form-control"
+              id="dt_ghi_chu"
+              name="dt_ghi_chu"
+              rows="2"
+              placeholder="Hẹn tái khám, kiêng cữ..."
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="text-center mt-5">
+          <button type="submit" class="btn btn-primary btn-lg px-5">
+            <i class="bi bi-save"></i> Lưu & Hoàn tất Khám
+          </button>
+          <button type="reset" class="btn btn-secondary btn-lg px-5">
+            Nhập lại
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    <script src="/js/phieukhambenh_form.js"></script>
+  </body>
+</html>

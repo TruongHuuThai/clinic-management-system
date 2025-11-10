@@ -1,4 +1,3 @@
-// /router/dashboard.js
 const express = require('express');
 const router = express.Router();
 const pool = require('../config/db');
@@ -9,7 +8,6 @@ router.get('/', async (req, res) => {
     let waitingPatientsList = [];
 
     try {
-        // TRUY VẤN LỊCH HẸN HÔM NAY 
         const appointmentsQuery = `
             SELECT 
                 lh.lh_ma,
@@ -33,8 +31,6 @@ router.get('/', async (req, res) => {
             lh_ma: row.lh_ma,
             status: row.status.replace(/_/g, ' ')
         }));
-
-        // TRUY VẤN TỔNG THU DỰ KIẾN
         const revenueQuery = `
             SELECT COALESCE(SUM(tt.tt_tong_tien), 0) AS total_revenue
             FROM thanh_toan tt
@@ -75,8 +71,6 @@ router.get('/', async (req, res) => {
         totalRevenue = 'LỖI CSDL';
         waitingPatientsList = [];
     }
-
-    // CHUYỂN DỮ LIỆU VÀO VIEW
     const dashboardData = {
         userName: 'Bác sĩ Phòng Khám (Quản trị)',
         kpi: {

@@ -154,9 +154,13 @@ router.put('/appointments/:id', async (req, res) => {
 router.post('/appointment/:id/status', async (req, res) => {
     const { id } = req.params;
     const { newStatus } = req.body;
-    if (newStatus !== 'DA_DEN') { 
+
+    const VALID_STATUSES = ['DA_DEN', 'DANG_KHAM', 'DA_HOAN_THANH', 'DA_HUY', 'NO_SHOW'];
+    
+    if (!newStatus || !VALID_STATUSES.includes(newStatus)) {
         return res.status(400).json({ message: 'Trạng thái chuyển đổi không hợp lệ.' });
     }
+
     try {
         const updateQuery = `
             UPDATE lich_hen 
@@ -164,11 +168,14 @@ router.post('/appointment/:id/status', async (req, res) => {
             WHERE lh_ma = $2
             RETURNING lh_ma;
         `;
+        
         await pool.query(updateQuery, [newStatus, id]);
+
         res.status(200).json({ 
-            message: 'Đã tiếp đón thành công.', 
+            message: 'Cập nhật trạng thái thành công.', 
             newStatus: newStatus 
         });
+
     } catch (error) {
         console.error('LỖI KHI CẬP NHẬT TRẠNG THÁI:', error);
         res.status(500).json({ message: 'Lỗi máy chủ nội bộ.' });

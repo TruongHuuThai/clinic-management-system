@@ -7,7 +7,7 @@ router.get('/new/:lh_ma', async (req, res) => {
 
     try {
         const lichHenQuery = `
-            SELECT bn_ma, bs_ma, lh_ngay_kham 
+            SELECT lh_ma_bn, lh_ngay_hen 
             FROM lich_hen 
             WHERE lh_ma = $1;
         `;
@@ -17,12 +17,10 @@ router.get('/new/:lh_ma', async (req, res) => {
             return res.status(404).render('error_page', { message: 'Không tìm thấy Lịch Hẹn này.' });
         }
 
-        const bn_ma = lichHenRes.rows[0].bn_ma;
-        const ngayKham = lichHenRes.rows[0].lh_ngay_kham; 
-
-        // TRUY VẤN 2: Lấy thông tin Bệnh Nhân (Sử dụng chữ thường: benh_nhan)
+        const bn_ma = lichHenRes.rows[0].lh_ma_bn; 
+        const ngayKham = lichHenRes.rows[0].lh_ngay_hen; 
         const benhNhanQuery = `
-            SELECT bn_ma, bn_ho_ten, bn_tuoi, bn_gioi_tinh, bn_dia_chi, bn_tien_su
+            SELECT bn_ma, bn_ho_ten, bn_gioi_tinh, bn_ngay_sinh, bn_sdt, bn_dia_chi
             FROM benh_nhan 
             WHERE bn_ma = $1;
         `;
@@ -33,8 +31,8 @@ router.get('/new/:lh_ma', async (req, res) => {
         benhNhan.ngayKham = ngayKham;
         
         return res.render('phieukhambenh_form', {
-            benhNhan: benhNhan,     
-            lh_ma: lh_ma      
+            benhNhan: benhNhan,
+            lh_ma: lh_ma
         });
 
     } catch (error) {
@@ -46,16 +44,17 @@ router.get('/new/:lh_ma', async (req, res) => {
 router.post('/save', async (req, res) => {
     const { 
         pkb_ma_bn, lh_ma, pkb_trieu_chung, pkb_ghi_chu, 
-        b_ma, 
-        dt_ghi_chu, 
-        thuoc_ma, so_luong, cach_dung
+        pcd_ghi_chu,
+        dt_ghi_chu,
+        thuoc_ma, so_luong, cach_dung 
     } = req.body; 
+    if (!pkb_ma_bn || !lh_ma || !pkb_trieu_chung || !pcd_ghi_chu) {
+        return res.status(400).send('Dữ liệu khám bệnh và chẩn đoán không được để trống.');
+    }
 
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
-        
-        // INSERT: Phiếu Khám Bệnh
         const pkbQuery = `
             INSERT INTO phieu_kham_benh (pkb_ma_bn, pkb_ngay_kham, pkb_trieu_chung, pkb_ghi_chu)
             VALUES ($1, NOW(), $2, $3) 
@@ -63,17 +62,11 @@ router.post('/save', async (req, res) => {
         `;
         const pkbRes = await client.query(pkbQuery, [pkb_ma_bn, pkb_trieu_chung, pkb_ghi_chu]);
         const pkb_ma = pkbRes.rows[0].pkb_ma;
-
-        // INSERT: Chẩn Đoán
-        if (b_ma) {
-            const chanDoanQuery = `
-                INSERT INTO chan_doan (cd_ma_pkb, cd_ma_b) 
-                VALUES ($1, $2);
-            `;
-            await client.query(chanDoanQuery, [pkb_ma, b_ma]);
-        }
-
-        // INSERT: Đơn Thuốc
+        const chanDoanQuery = `
+            INSERT INTO pcd (pcd_ma_pkb, pcd_trang_thai, pcd_ghi_chu) 
+            VALUES ($1, $2, $3);
+        `;
+        await client.query(chanDoanQuery, [pkb_ma, 'HOAN_THANH', pcd_ghi_chu]);
         const dtQuery = `
             INSERT INTO don_thuoc (dt_ma_pkb, dt_ghi_chu, dt_ngay_tao)
             VALUES ($1, $2, NOW()) 
@@ -81,30 +74,25 @@ router.post('/save', async (req, res) => {
         `;
         const dtRes = await client.query(dtQuery, [pkb_ma, dt_ghi_chu]);
         const dt_ma = dtRes.rows[0].dt_ma;
-
-        // INSERT: Chi tiết Đơn Thuốc
         if (Array.isArray(thuoc_ma)) {
             const chiTietDtQuery = `
-                INSERT INTO chi_tiet_don_thuoc (ctdt_ma_dt, ctdt_ma_t, ctdt_so_luong, ctdt_cach_dung)
+                INSERT INTO chi_tiet_don_thuoc (ctdt_ma_dt, ctdt_ma_thuoc, ctdt_so_luong, ctdt_cacl_dung)
                 VALUES ($1, $2, $3, $4);
             `;
             for (let i = 0; i < thuoc_ma.length; i++) {
-                if (thuoc_ma[i] && so_luong[i] && cach_dung[i]) {
+                if (thuoc_ma[i] && so_luong[i] && cach_dung[i]) {                
                     await client.query(chiTietDtQuery, [dt_ma, thuoc_ma[i], so_luong[i], cach_dung[i]]);
                 }
             }
         }
-
         const updateLhQuery = `
             UPDATE lich_hen 
             SET lh_trang_thai = 'DA_HOAN_THANH' 
             WHERE lh_ma = $1;
         `;
         await client.query(updateLhQuery, [lh_ma]);
-
         await client.query('COMMIT'); 
         res.redirect(`/api/patients/${pkb_ma_bn}`); 
-
     } catch (error) {
         await client.query('ROLLBACK');
         console.error("LỖI TRANSACTION KHI LƯU KHÁM BỆNH:", error);
@@ -113,5 +101,6 @@ router.post('/save', async (req, res) => {
         client.release();
     }
 });
+
 
 module.exports = router;

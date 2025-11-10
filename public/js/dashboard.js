@@ -9,7 +9,6 @@ function receive(buttonElement) {
     const confirmation = confirm(`Xác nhận tiếp đón bệnh nhân ${appointmentName} cho lịch hẹn?`);
 
     if (confirmation) {
-        // Router: /api/appointment/:id/status
         const apiUrl = `/api/appointment/${appointmentId}/status`; 
         
         fetch(apiUrl, {
@@ -45,6 +44,7 @@ function receive(buttonElement) {
             }
             
             alert(`Đã tiếp đón ${appointmentName} thành công!`);
+            window.location.reload();
         })
         .catch(error => {
             console.error("Lỗi khi cập nhật trạng thái:", error);
@@ -58,55 +58,37 @@ function receive(buttonElement) {
 
 async function examination(buttonElement) {
     const appointmentId = buttonElement.getAttribute('data-id');
-    
+    const appointmentName = buttonElement.getAttribute('data-name');
+
     if (!appointmentId) {
         console.error("Lỗi JS: Không tìm thấy Mã Lịch Hẹn (data-id).");
         return;
     }
-    
-    const confirmation = confirm(`Xác nhận bắt đầu khám cho lịch hẹn ${appointmentId}?`);
+    const confirmation = confirm(`Xác nhận bắt đầu khám cho bệnh nhân ${appointmentName} có lịch hẹn ${appointmentId}?`);
 
     if (confirmation) {
-        const apiUrl = `/api/appointment/${appointmentId}/status`; 
+        const statusApiUrl = `/api/appointment/${appointmentId}/status`; 
         
         try {
-            const response = await fetch(apiUrl, {
+            const statusResponse = await fetch(statusApiUrl, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ 
-                    newStatus: 'DANG_KHAM'
-                }),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ newStatus: 'DANG_KHAM' }), 
             });
             
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`Cập nhật thất bại. Chi tiết: ${errorText}`);
+            if (!statusResponse.ok) {
+                const errorText = await statusResponse.text();
+                throw new Error(`Lỗi cập nhật trạng thái: ${errorText}`);
             }
-            const tdElement = buttonElement.closest('td');
-            const statusSpan = tdElement.querySelector('.status-badge');
-            const batDauKhamBtn = tdElement.querySelector('.btn-bat-dau-kham');
-            const ketThucKhamBtn = tdElement.querySelector('.btn-ket-thuc-kham'); 
-            if (statusSpan) {
-                statusSpan.textContent = 'Đang khám';
-                statusSpan.className = 'status-badge status status-dangkham'; 
-            }
-            if (batDauKhamBtn) {
-                batDauKhamBtn.style.display = 'none';
-            }
-            if (ketThucKhamBtn) {
-                ketThucKhamBtn.style.display = 'inline-block';
-            } else {
-                alert(`Đã bắt đầu khám cho lịch hẹn ${appointmentId}.`);
-            }
-            
+
+            window.location.href = `/api/phieukhambenh/new/${appointmentId}`; 
+
         } catch (error) {
-            console.error("Lỗi khi cập nhật trạng thái:", error);
+            console.error("LỖI KHỞI TẠO KHÁM BỆNH:", error);
             alert(`Thao tác thất bại: ${error.message || 'Không thể bắt đầu khám.'}`);
         }
-    } else {
-        console.log("Hủy thao tác bắt đầu khám.");
     }
 }
+
+
 

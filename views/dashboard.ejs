@@ -57,7 +57,7 @@
                                 <td><%= item.name %></td> 
                                 <td>
                                     <%
-                                        const statusKey = item.status.replace(/_/g,' ');
+                                        const statusKey = item.status;
                                                                                 
                                         let displayStatus = '';
 
@@ -72,7 +72,7 @@
                                         } else if (statusKey === 'TAI KHAM') {
                                             displayStatus = 'Tái khám';
                                         } else if (statusKey === 'DANG KHAM') {
-                                            displayStatus ='đang khám';
+                                            displayStatus ='Đang khám';
                                         } else if (statusKey === 'DA HOAN THANH'){
                                             displayStatus = 'Đã hoàn thành';
                                         }   else {
@@ -117,6 +117,7 @@
                                             <button 
                                                 class="btn-action btn-sm btn-warning" 
                                                 data-id="<%= maLichHen %>"
+                                                data-name="<%= tenBenhNhan %>"
                                                 onclick="examination(this)">
                                                 Bắt Đầu Khám
                                             </button>
@@ -127,10 +128,16 @@
                                             <button 
                                                 class="btn-action btn-sm btn-primary" 
                                                 data-id="<%= maLichHen %>"
+                                                data-name="<%= tenBenhNhan %>"
                                                 onclick="completeExamination(this)">
                                                 Kết Thúc Khám
                                             </button>
-                                            
+                                            <button 
+                                                class="btn-action btn-sm btn-primary" 
+                                                data-id="<%= maLichHen %>"
+                                                onclick="examination(this)">
+                                                Quay lại quy trình Khám
+                                            </button>                                            
                                         <% 
                                             } else { 
                                         %>

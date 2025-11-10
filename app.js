@@ -6,6 +6,8 @@ const pool = require('./config/db');
 const dashboardRoute = require('./route/dashboard');
 const appointmentsRoute = require('./route/appointments');
 const patientsRoute = require('./route/patients');
+const phieukhambenhRoute = require('./route/phieukhambenh');
+const chandoanRoute = require('./route/chandoan');
 
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: true }));
@@ -16,7 +18,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', dashboardRoute); 
 app.use('/api', appointmentsRoute);
-app.use('/api/patients', patientsRoute); 
+app.use('/api/patients', patientsRoute);
+app.use('/api/phieukhambenh', phieukhambenhRoute);
+app.use('/api/chandoan', chandoanRoute);
 
 const PORT = process.env.PORT || 3000;
 
