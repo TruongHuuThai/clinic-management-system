@@ -19,6 +19,10 @@ function initAutocomplete(rowId) {
   const $drugInput = $(`#drugNameInput-${rowId}`);
   const $hiddenId = $(`#drugIdHidden-${rowId}`);
   const $groupSelect = $(`#drugGroupSelect-${rowId}`);
+  const $unitInput = $(`#drugUnitInput-${rowId}`);
+
+  const $row = $drugInput.closest("tr");
+  const $quantityInput = $row.find('input[name="so_luong[]"]');
 
   let currentDrugList = [];
 
@@ -27,6 +31,8 @@ function initAutocomplete(rowId) {
 
     $drugInput.val("");
     $hiddenId.val("");
+    $unitInput.val("");
+    $quantityInput.val("");
 
     if (!nt_ma) {
       currentDrugList = [];
@@ -34,26 +40,32 @@ function initAutocomplete(rowId) {
       return;
     }
 
-    fetch(`/api/thuoc/theo-nhom/${nt_ma}`)
+    fetch(`/api/thuoc/theo_nhom/${nt_ma}`)
       .then((res) => res.json())
       .then((data) => {
         currentDrugList = data.map((item) => ({
           label: item.t_ten_thuoc,
           value: item.t_ten_thuoc,
           id: item.t_ma,
+          unit: item.t_don_vi_tinh,
         }));
-
         $drugInput.autocomplete("option", "source", currentDrugList);
       })
       .catch((error) => console.error("Lỗi tải thuốc:", error));
   });
 
   $drugInput.autocomplete({
-    minLength: 2,
+    minLength: 1,
     source: [],
     select: function (event, ui) {
       $drugInput.val(ui.item.value);
       $hiddenId.val(ui.item.id);
+      $unitInput.val(ui.item.unit);
+
+      if ($quantityInput.length) {
+        $quantityInput.val(1);
+      }
+
       return false;
     },
 
@@ -70,7 +82,7 @@ $(document).ready(function () {
   const drugTableBody = $("#drugTable tbody");
   const addDrugButton = $("#addDrugButton");
 
-  fetch("/api/nhom-thuoc")
+  fetch("/api/thuoc/nhom_thuoc")
     .then((res) => res.json())
     .then((data) => {
       drugGroups = data;
@@ -97,21 +109,12 @@ $(document).ready(function () {
             `);
     drugTableBody.append(newRow);
 
-    // Khởi tạo các hàm cho hàng mới
     initDrugRow(newRow);
   }
 
-  // Hàm khởi tạo các thành phần của hàng (select, autocomplete)
   function initDrugRow($row) {
-    const rowId = $row
-      .find(".drug-group-select")
-      .attr("id")
-      .replace("drugGroupSelect-", "");
-
-    // 1. Điền Nhóm Thuốc
+    const rowId = $row.attr("data-id");
     populateGroupSelect($row.find(".drug-group-select"));
-
-    // 2. Khởi tạo Autocomplete và sự kiện change
     initAutocomplete(rowId);
   }
 
@@ -121,5 +124,23 @@ $(document).ready(function () {
     if (drugTableBody.children().length > 1) {
       $(this).closest("tr").remove();
     }
+  });
+
+  drugTableBody.on("input", 'input[name="so_luong[]"]', function () {
+    let value = parseInt($(this).val());
+
+    if (isNaN(value) || value < 1) {
+      $(this).val(1);
+    }
+  });
+
+  $("#phieuKhamBenhForm").on("submit", function (e) {
+    let isValid = true;
+    $('input[name="so_luong[]"]').each(function () {
+      let value = parseInt($(this).val());
+      if (isNaN(value) || value < 1) {
+        $(this).val(1);
+      }
+    });
   });
 });

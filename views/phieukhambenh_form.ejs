@@ -13,7 +13,7 @@
       href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css"
     />
 
-    <style>
+    <!-- <style>
       .form-section-title {
         background-color: #f0f8ff;
         color: #1e90ff;
@@ -42,7 +42,7 @@
         overflow-x: hidden;
         z-index: 1100; /* Đảm bảo hiển thị trên Bootstrap modal */
       }
-    </style>
+    </style> -->
   </head>
   <body>
     <div class="container my-5">
@@ -51,17 +51,17 @@
       <div class="form-section-title">1. THÔNG TIN HÀNH CHÍNH BỆNH NHÂN</div>
       <div class="patient-info-display row g-3">
         <div class="col-md-3">
-          **Mã BN:**
+          Mã Bệnh Nhân:
           <span class="patient-info-field"><%= benhNhan.bn_ma || 'N/A' %></span>
         </div>
         <div class="col-md-5">
-          **Họ và Tên:**
+          Họ và Tên:
           <span class="patient-info-field"
             ><%= benhNhan.bn_ho_ten || 'N/A' %></span
           >
         </div>
         <div class="col-md-2">
-          **Ngày sinh:**
+          Ngày sinh:
           <span class="patient-info-field"
             ><%= benhNhan.bn_ngay_sinh ? new
             Date(benhNhan.bn_ngay_sinh).toLocaleDateString('vi-VN') : 'N/A'
@@ -69,25 +69,25 @@
           >
         </div>
         <div class="col-md-2">
-          **Giới tính:**
+          Giới tính:
           <span class="patient-info-field"
             ><%= benhNhan.bn_gioi_tinh || 'N/A' %></span
           >
         </div>
         <div class="col-md-8">
-          **Địa chỉ:**
+          Địa chỉ:
           <span class="patient-info-field"
             ><%= benhNhan.bn_dia_chi || 'N/A' %></span
           >
         </div>
         <div class="col-md-4">
-          **SĐT:**
+          SĐT:
           <span class="patient-info-field"
             ><%= benhNhan.bn_sdt || 'N/A' %></span
           >
         </div>
         <div class="col-md-12">
-          **Ngày hẹn khám:**
+          Ngày hẹn khám:
           <span class="patient-info-field"
             ><%= benhNhan.ngayKham ? new
             Date(benhNhan.ngayKham).toLocaleString('vi-VN') : 'N/A' %></span
@@ -158,10 +158,11 @@
           <table class="table table-bordered table-striped" id="drugTable">
             <thead>
               <tr>
-                <th width="25%">Nhóm Thuốc</th>
-                <th width="35%">Tên Thuốc</th>
-                <th width="15%">Số lượng</th>
-                <th width="20%">Cách dùng</th>
+                <th width="20%">Nhóm Thuốc</th>
+                <th width="25 %">Tên Thuốc</th>
+                <th width="10%">Số lượng</th>
+                <th width="15%">Đơn vị tính</th>
+                <th width="25%">Cách dùng</th>
                 <th width="5%"></th>
               </tr>
             </thead>
