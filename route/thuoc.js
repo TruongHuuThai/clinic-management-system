@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../config/db");
 
-router.get("/nhom_thuoc", async (req, res) => {
+router.get("/nhom-thuoc", async (req, res) => {
   try {
     const query = `
             SELECT nt_ma, nt_ten 
@@ -18,7 +18,7 @@ router.get("/nhom_thuoc", async (req, res) => {
   }
 });
 
-router.get("/theo_nhom/:nt_ma", async (req, res) => {
+router.get("/theo-nhom/:nt_ma", async (req, res) => {
   const nt_ma = req.params.nt_ma;
 
   try {

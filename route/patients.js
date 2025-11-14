@@ -2,6 +2,73 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../config/db'); 
 
+router.get("/", async (req, res) => {
+  const query = req.query;
+  let whereString = "";
+  const queryParams = [];
+
+  if (query.search) {
+    whereString = `WHERE (bn_ho_ten ILIKE $1 OR bn_sdt ILIKE $1)`; 
+    queryParams.push(`%${query.search}%`);
+  }
+
+  try {
+    const patientsQuery = `
+            SELECT bn_ma, bn_ho_ten, bn_sdt, bn_dia_chi, bn_ngay_tao
+            FROM benh_nhan 
+            ${whereString}
+            ORDER BY bn_ngay_tao DESC;
+        `;
+    const patientResult = await pool.query(patientsQuery, queryParams);
+
+    res.render("patient_list", {
+      patients: patientResult.rows,
+      title: "Danh Sách Bệnh Nhân",
+      query: query,
+    });
+  } catch (error) {
+    console.error("Lỗi khi tải danh sách bệnh nhân:", error);
+    res
+      .status(500)
+      .render("error_page", {
+        message: "Lỗi hệ thống khi tải danh sách bệnh nhân.",
+      });
+  }
+});
+
+router.get('/:bn_ma', async (req, res) => {
+    const bn_ma = req.params.bn_ma;
+    
+    try {
+
+        const patientQuery = `SELECT * FROM benh_nhan WHERE bn_ma = $1`;
+        const patientResult = await pool.query(patientQuery, [bn_ma]);
+        
+        if (patientResult.rows.length === 0) {
+            return res.status(404).render('error_page', { message: 'Không tìm thấy bệnh nhân.' });
+        }
+        
+        const patient = patientResult.rows[0];
+
+        const historyQuery = `
+            SELECT pkb_ma, pkb_ngay_kham, pkb_trieu_chung 
+            FROM phieu_kham_benh 
+            WHERE pkb_ma_bn = $1 
+            ORDER BY pkb_ngay_kham DESC;
+        `;
+        const historyResult = await pool.query(historyQuery, [bn_ma]);
+
+        res.render('patient_detail_page', {
+            patient: patient,
+            history: historyResult.rows
+        });
+
+    } catch (error) {
+        console.error("Lỗi khi tải hồ sơ bệnh nhân:", error);
+        res.status(500).render('error_page', { message: 'Lỗi hệ thống khi tải hồ sơ.' });
+    }
+});
+
 router.get('/new/:lh_ma', async (req, res) => {
     const lh_ma = req.params.lh_ma;
 
@@ -20,7 +87,6 @@ router.get('/new/:lh_ma', async (req, res) => {
         const bn_ma = lichHenRes.rows[0].bn_ma;
         const ngayKham = lichHenRes.rows[0].lh_ngay_kham; 
 
-        // TRUY VẤN 2: Lấy thông tin Bệnh Nhân (Sử dụng chữ thường: benh_nhan)
         const benhNhanQuery = `
             SELECT bn_ma, bn_ho_ten, bn_tuoi, bn_gioi_tinh, bn_dia_chi, bn_tien_su
             FROM benh_nhan 
@@ -55,7 +121,6 @@ router.post('/save', async (req, res) => {
     try {
         await client.query('BEGIN');
         
-        // INSERT: Phiếu Khám Bệnh
         const pkbQuery = `
             INSERT INTO phieu_kham_benh (pkb_ma_bn, pkb_ngay_kham, pkb_trieu_chung, pkb_ghi_chu)
             VALUES ($1, NOW(), $2, $3) 
@@ -64,7 +129,6 @@ router.post('/save', async (req, res) => {
         const pkbRes = await client.query(pkbQuery, [pkb_ma_bn, pkb_trieu_chung, pkb_ghi_chu]);
         const pkb_ma = pkbRes.rows[0].pkb_ma;
 
-        // INSERT: Chẩn Đoán
         if (b_ma) {
             const chanDoanQuery = `
                 INSERT INTO chan_doan (cd_ma_pkb, cd_ma_b) 
@@ -73,7 +137,6 @@ router.post('/save', async (req, res) => {
             await client.query(chanDoanQuery, [pkb_ma, b_ma]);
         }
 
-        // INSERT: Đơn Thuốc
         const dtQuery = `
             INSERT INTO don_thuoc (dt_ma_pkb, dt_ghi_chu, dt_ngay_tao)
             VALUES ($1, $2, NOW()) 
@@ -82,7 +145,6 @@ router.post('/save', async (req, res) => {
         const dtRes = await client.query(dtQuery, [pkb_ma, dt_ghi_chu]);
         const dt_ma = dtRes.rows[0].dt_ma;
 
-        // INSERT: Chi tiết Đơn Thuốc
         if (Array.isArray(thuoc_ma)) {
             const chiTietDtQuery = `
                 INSERT INTO chi_tiet_don_thuoc (ctdt_ma_dt, ctdt_ma_t, ctdt_so_luong, ctdt_cach_dung)

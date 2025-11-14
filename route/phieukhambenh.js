@@ -19,7 +19,7 @@ router.get("/new/:lh_ma", async (req, res) => {
         .render("error_page", { message: "Không tìm thấy Lịch Hẹn này." });
     }
 
-    const bn_ma = lichHenRes.rows[0].lh_ma_bn; // Lấy mã BN từ lh_ma_bn
+    const bn_ma = lichHenRes.rows[0].lh_ma_bn;
     const ngayKham = lichHenRes.rows[0].lh_ngay_hen;
 
     const benhNhanQuery = `
@@ -56,6 +56,8 @@ router.post("/save", async (req, res) => {
     so_luong,
     cach_dung,
     ma_benh,
+    service_ma,
+    service_so_luong,
   } = req.body;
 
   if (!pkb_ma_bn || !lh_ma || !pkb_trieu_chung) {
@@ -65,6 +67,7 @@ router.post("/save", async (req, res) => {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
+
     const pkbQuery = `
             INSERT INTO phieu_kham_benh (pkb_ma_bn, pkb_ngay_kham, pkb_trieu_chung, pkb_ghi_chu)
             VALUES ($1, CURRENT_TIMESTAMP, $2, $3) 
@@ -76,6 +79,7 @@ router.post("/save", async (req, res) => {
       pkb_ghi_chu,
     ]);
     const pkb_ma = pkbRes.rows[0].pkb_ma;
+
     const dtQuery = `
             INSERT INTO don_thuoc (dt_ma_pkb, dt_ngay_tao, dt_ghi_chu)
             VALUES ($1, CURRENT_TIMESTAMP, $2) 
@@ -83,6 +87,7 @@ router.post("/save", async (req, res) => {
         `;
     const dtRes = await client.query(dtQuery, [pkb_ma, dt_ghi_chu]);
     const dt_ma = dtRes.rows[0].dt_ma;
+
     if (ma_benh) {
       const chanDoanQuery = `
                 INSERT INTO chan_doan (cddt_ma_dt, cddt_ma_benh) 
@@ -90,6 +95,7 @@ router.post("/save", async (req, res) => {
             `;
       await client.query(chanDoanQuery, [dt_ma, ma_benh]);
     }
+
     if (Array.isArray(thuoc_ma)) {
       const chiTietDtQuery = `
                 INSERT INTO chi_tiet_don_thuoc (ctdt_ma_dt, ctdt_ma_thuoc, ctdt_so_luong, ctdt_cacl_dung)
@@ -106,6 +112,40 @@ router.post("/save", async (req, res) => {
         }
       }
     }
+
+    if (Array.isArray(service_ma) && service_ma.length > 0) {
+      const pcdQuery = `
+                INSERT INTO phieu_chi_dinh (pcd_ma_pkb, pcd_trang_thai, pcd_ghi_chu) 
+                VALUES ($1, $2, $3) 
+                RETURNING pcd_ma;
+            `;
+      const pcdResult = await client.query(pcdQuery, [
+        pkb_ma,
+        "CHO_THUC_HIEN",
+        req.body.pcd_ghi_chu || null,
+      ]);
+      const pcd_ma = pcdResult.rows[0].pcd_ma;
+
+      const ctcdQuery = `
+                INSERT INTO chi_tiet_chi_dinh (ctcd_ma_pcd, ctcd_ma_dvcls, ctcd_so_luong, ctcd_trang_thai)
+                VALUES ($1, $2, $3, $4); 
+            `;
+
+      for (let i = 0; i < service_ma.length; i++) {
+        const dvcls_ma = service_ma[i];
+
+        if (dvcls_ma) {
+          await client.query(ctcdQuery, [
+            pcd_ma,
+            dvcls_ma,
+            service_so_luong[i] || 1,
+            "DA_CHI_DINH",
+          ]);
+        }
+      }
+      console.log(`Đã tạo Phiếu Chỉ Định (PCD_MA: ${pcd_ma})`);
+    }
+
     const updateLhQuery = `
             UPDATE lich_hen 
             SET lh_trang_thai = $1 

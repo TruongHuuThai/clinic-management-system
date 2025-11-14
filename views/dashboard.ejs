@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %> | Hệ Thống QL Hồ Sơ Bệnh Án</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-</head>
+    </head>
 <body>
     <%- include('partials/header') %>
 
@@ -26,14 +26,14 @@
             <div class="card card-revenue">
                 <i class="fas fa-money-bill-wave icon"></i>
                 <p>Tổng Thu Dự Kiến</p>
-                <span class="kpi-value" id="kpi-revenue"><%= data.kpi.revenue %></span>
+                <span class="kpi-value" id="kpi-revenue"><%= data.kpi.revenue ? data.kpi.revenue.toLocaleString('vi-VN') : '0' %> VNĐ</span>
             </div>
         </section>
         
         <hr>
 
-            <section class="appointments-list">
-                <h2>Lịch Hẹn Chi Tiết</h2>
+        <section class="appointments-list">
+            <h2>Lịch Hẹn Chi Tiết</h2>
 
             <table class="data-table">
                 <thead>
@@ -48,103 +48,77 @@
                 </thead>
                 <tbody id="appointments-body">
                     <% 
+                    const statusMap = {
+                        'CHO_KHAM': 'Chờ Khám',
+                        'TAI_KHAM': 'Tái khám',
+                        'DA_DEN': 'Đã đến',
+                        'DANG_KHAM': 'Đang khám',
+                        'DA_HOAN_THANH': 'Đã hoàn thành',
+                        'DA_HUY': 'Đã hủy',
+                        'CHUA_DEN': 'Chưa đến'
+                    };
+
                     if (data.appointmentsList && data.appointmentsList.length > 0) { 
                         data.appointmentsList.forEach((item, index) => {
+                            const statusKey = item.lh_trang_thai; // SỬ DỤNG TRƯỜNG CHÍNH TỪ DB
+                            const displayStatus = statusMap[statusKey] || statusKey;
+                            const maLichHen = item.lh_ma;
+                            const tenBenhNhan = item.bn_ho_ten; 
+                            const timeDisplay = item.lh_khung_gio ? item.lh_khung_gio.substring(0, 5) : '—'; 
                     %>
                             <tr>
                                 <td><%= index + 1 %></td>
-                                <td><%= item.time %></td> 
-                                <td><%= item.name %></td> 
+                                <td><%= timeDisplay %></td> 
+                                <td><%= tenBenhNhan %></td> 
                                 <td>
-                                    <%
-                                        const statusKey = item.status;
-                                                                                
-                                        let displayStatus = '';
-
-                                        if (statusKey === 'DA DEN') {
-                                            displayStatus = 'Đã đến';
-                                        } else if (statusKey === 'CHO KHAM') {
-                                            displayStatus = 'Chờ khám';
-                                        } else if (statusKey === 'DA HUY') {
-                                            displayStatus = 'Đã hủy';
-                                        } else if (statusKey === 'CHUA DEN') { 
-                                            displayStatus = 'Chưa đến';
-                                        } else if (statusKey === 'TAI KHAM') {
-                                            displayStatus = 'Tái khám';
-                                        } else if (statusKey === 'DANG KHAM') {
-                                            displayStatus ='Đang khám';
-                                        } else if (statusKey === 'DA HOAN THANH'){
-                                            displayStatus = 'Đã hoàn thành';
-                                        }   else {
-                                            displayStatus = item.status;
-                                        }
-                                        %>
                                     <span class="status-badge status-<%= statusKey %>">
                                         <%= displayStatus %>
                                     </span>
-                                    <span id="display-status-<%= item.lh_ma %>" style="display:none;"><%= item.status %></span> 
                                 </td>
                                 <td>
-                                    <%
-                                        const noteValue = item.note || ''; 
-                                        const noteKey = noteValue.replace(/\s/g, '');
-                                        const displayNote = noteValue.replace(/_/g, ' ');
-                                    %>
-                                    <span class="note-badge note-<%= noteKey %>">
-                                        <%= displayNote %>
+                                    <span class="note-content">
+                                        <%= item.lh_ghi_chu || '—' %>
                                     </span>
                                 </td>
-                                <% 
-                                    const maLichHen = item.lh_ma;
-                                    const tenBenhNhan = item.name;
-                                %>
                                 <td>
                                     <div id="action-buttons-<%= maLichHen %>" class="btn-group">
                                         <% 
-                                            if (statusKey === 'CHO KHAM' || statusKey === 'TAI KHAM' || statusKey === 'CHUA DEN') { 
+                                            // LOGIC HÀNH ĐỘNG
+                                            if (statusKey === 'CHO_KHAM' || statusKey === 'TAI_KHAM' || statusKey === 'CHUA_DEN') { 
                                         %>
                                             <button 
                                                 class="btn-action btn-sm btn-success" 
                                                 data-id="<%= maLichHen %>"
-                                                data-name="<%= tenBenhNhan %>"
                                                 onclick="receive(this)">
                                                 Tiếp Đón
                                             </button>
                                             
                                         <% 
-                                            } else if (statusKey === 'DA DEN') { 
+                                            } else if (statusKey === 'DA_DEN') { 
                                         %>
                                             <button 
                                                 class="btn-action btn-sm btn-warning" 
                                                 data-id="<%= maLichHen %>"
-                                                data-name="<%= tenBenhNhan %>"
                                                 onclick="examination(this)">
                                                 Bắt Đầu Khám
                                             </button>
                                             
                                         <% 
-                                            } else if (statusKey === 'DANG KHAM') { 
+                                            } else if (statusKey === 'DANG_KHAM') { 
                                         %>
                                             <button 
                                                 class="btn-action btn-sm btn-primary" 
                                                 data-id="<%= maLichHen %>"
-                                                data-name="<%= tenBenhNhan %>"
-                                                onclick="completeExamination(this)">
-                                                Kết Thúc Khám
-                                            </button>
-                                            <button 
-                                                class="btn-action btn-sm btn-primary" 
-                                                data-id="<%= maLichHen %>"
                                                 onclick="examination(this)">
-                                                Quay lại quy trình Khám
-                                            </button>                                            
+                                                Tiếp tục Khám
+                                            </button> 
                                         <% 
                                             } else { 
                                         %>
                                             <span class="text-muted font-italic">Không có hành động</span>
                                         <% } %>
 
-                                        <% if (statusKey !== 'DA HOAN THANH' && statusKey !== 'DA HUY') { %>
+                                        <% if (statusKey !== 'DA_HOAN_THANH' && statusKey !== 'DA_HUY') { %>
                                             <button 
                                                 class="btn-action btn-sm btn-info ml-1" 
                                                 data-id="<%= maLichHen %>"
@@ -165,13 +139,15 @@
                     } else { 
                     %>
                         <tr>
-                            <td colspan="5" style="text-align: center;">Hôm nay không có lịch hẹn nào.</td>
+                            <td colspan="6" style="text-align: center;">Hôm nay không có lịch hẹn nào.</td>
                         </tr>
                     <% } %>
                 </tbody>
             </table>
         </section>
-         
+        
+        <hr>
+
         <section class="waiting-patients">
             <h2>Bệnh Nhân Đang Trong Quy Trình</h2>
             <ul id="waiting-list" class="simple-list">
@@ -181,7 +157,7 @@
                 %>
                     <li>
                         <i class="fas fa-procedures"></i> 
-                        <%= patient.name %> - <%= patient.status %>
+                        <%= patient.bn_ho_ten %> - <%= statusMap[patient.lh_trang_thai] || patient.lh_trang_thai %>
                         <a href="/khambenh/<%= patient.pkb_ma %>" 
                             style="margin-left: 10px; text-decoration: none;">[Xem chi tiết]</a>
                     </li>

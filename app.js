@@ -13,10 +13,12 @@ const chitietdonthuocRoute = require("./route/chitietdonthuoc");
 const benhRoute = require("./route/benh");
 const donthuocRoute = require("./route/donthuoc");
 const phieuchidinhRoute = require("./route/phieuchidinh");
+
 const thanhtoanRoute = require("./route/thanhtoan");
+
 const chitietchidinh = require("./route/chitietchidinh");
-const dichvucanlamsan = require("./route/dichvucanlamsan");
 const ketquacanlamsan = require("./route/ketquacanlamsan");
+const dichvucanlamsan = require("./route/dichvucanlamsan");
 const cogiadichvu = require("./route/cogiadichvu");
 const cogiathuoc = require("./route/cogiathuoc");
 const thoigian = require("./route/thoigian");
@@ -41,7 +43,8 @@ app.use("/api/phieuchidinh", phieuchidinhRoute);
 app.use("/api/chitietchidinh", chitietchidinh);
 app.use("/api/dichvucanlamsan", dichvucanlamsan);
 app.use("/api/ketquacanlamsan", ketquacanlamsan);
-app.use("/api/thanhtoan", thanhtoanRoute);
+
+app.use("/api/thanhtoan", thanhtoanRoute)
 app.use("/api/gia/dichvu", cogiadichvu);
 app.use("/api/gia/thuoc", cogiathuoc);
 app.use("/api/thoigian", thoigian);

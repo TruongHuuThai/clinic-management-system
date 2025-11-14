@@ -12,37 +12,6 @@
       rel="stylesheet"
       href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css"
     />
-
-    <!-- <style>
-      .form-section-title {
-        background-color: #f0f8ff;
-        color: #1e90ff;
-        padding: 12px;
-        margin-top: 30px;
-        margin-bottom: 10px;
-        border-left: 5px solid #1e90ff;
-        font-weight: bold;
-        font-size: 1.25rem;
-      }
-      .patient-info-display {
-        background-color: #e9ecef;
-        padding: 15px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-        font-size: 0.95rem;
-      }
-      .patient-info-field {
-        font-weight: 600;
-        color: #007bff;
-      }
-      /* Fix cho Autocomplete */
-      .ui-autocomplete {
-        max-height: 200px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        z-index: 1100; /* Đảm bảo hiển thị trên Bootstrap modal */
-      }
-    </style> -->
   </head>
   <body>
     <div class="container my-5">
@@ -191,10 +160,33 @@
             ></textarea>
           </div>
         </div>
+        <div class="form-section-title mt-5">4. CHỈ ĐỊNH CẬN LÂM SÀNG</div>
+        <div class="p-3 border rounded-3 bg-light">
+          <table class="table table-bordered table-striped" id="serviceTable">
+            <thead>
+              <tr>
+                <th width="55%">Dịch vụ Cận Lâm Sàng</th>
+                <th width="20%">Số lần</th>
+                <th width="20%">Đơn giá (VNĐ)</th>
+                <th width="5%"></th>
+              </tr>
+            </thead>
+            <tbody id="serviceTableBody">
+              <%- include('partials/service_row_template') %>
+            </tbody>
+          </table>
+          <button
+            type="button"
+            class="btn btn-primary btn-sm"
+            id="addServiceButton"
+          >
+            + Thêm Dịch Vụ
+          </button>
+        </div>
 
         <div class="text-center mt-5">
           <button type="submit" class="btn btn-primary btn-lg px-5">
-            <i class="bi bi-save"></i> Lưu & Hoàn tất Khám
+            <i class="bi bi-save"></i> Lưu và hoàn tất khám
           </button>
           <button type="reset" class="btn btn-secondary btn-lg px-5">
             Nhập lại

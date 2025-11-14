@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhập Kết Quả Cận Lâm Sàng - PCD #<%= pcdMa %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .table > :not(caption)>*>* {
+            padding: 0.5rem 0.5rem; /* Giảm padding cho bảng nhập liệu */
+        }
+        .form-control, .form-select {
+            font-size: 0.85rem;
+        }
+        .file-upload-cell {
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+<div class="container my-5">
+    <h2 class="text-primary">NHẬP KẾT QUẢ CẬN LÂM SÀNG</h2>
+    <p class="fs-5">
+        Phiếu Chỉ Định **#<%= pcdMa %>** | 
+        Bệnh Nhân: **<%= bn_ho_ten %>** | 
+        Mã BN: **<%= bn_ma %>**
+    </p>
+    <hr>
+    
+    <form method="POST" action="/api/ketquacanlamsan/save" enctype="multipart/form-data">
+        <input type="hidden" name="pcd_ma" value="<%= pcdMa %>">
+        
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th width="20%">Dịch vụ (SL)</th>
+                    <th width="40%">KQCLS Mô tả / Giá trị chính</th>
+                    <th width="20%">Trạng thái</th>
+                    <th width="20%">Tải File</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% ctcdList.forEach(function(ctcd) { %>
+                    <tr data-ctcd-ma="<%= ctcd.ctcd_ma %>">
+                        <td>
+                            <strong><%= ctcd.dvcls_ten %></strong>
+                            <small class="text-muted d-block">SL: <%= ctcd.ctcd_so_luong %></small>
+                            <input type="hidden" name="ctcd_ma[]" value="<%= ctcd.ctcd_ma %>">
+                        </td>
+                        <td>
+                            <textarea 
+                                name="kqcls_mota_<%= ctcd.ctcd_ma %>" 
+                                class="form-control mb-1" 
+                                rows="2" 
+                                placeholder="Mô tả hoặc Kết quả định tính"
+                            ></textarea>
+                            
+                            <% if (ctcd.dvcls_loai === 'XET_NGHIEM') { %>
+                                <small class="text-success fw-bold">Cần nhập dữ liệu chỉ số (JSON/Modal).</small>
+                                <% } %>
+                        </td>
+                        <td>
+                            <select name="ctcd_trang_thai_<%= ctcd.ctcd_ma %>" class="form-select">
+                                <option value="DA_CO_KET_QUA" <%= ctcd.ctcd_trang_thai === 'DA_CO_KET_QUA' ? 'selected' : '' %>>Đã có KQ</option>
+                                <option value="DANG_THUC_HIEN" <%= ctcd.ctcd_trang_thai === 'DANG_THUC_HIEN' ? 'selected' : '' %>>Đang thực hiện</option>
+                                <option value="HUY" <%= ctcd.ctcd_trang_thai === 'HUY' ? 'selected' : '' %>>Hủy</option>
+                            </select>
+                        </td>
+                        <td class="file-upload-cell">
+                             <input 
+                                type="file" 
+                                name="kqcls_file_<%= ctcd.ctcd_ma %>" 
+                                class="form-control form-control-sm"
+                                accept="image/png, image/jpeg, image/gif" 
+                            >
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+        
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-success btn-lg">
+                <i class="bi bi-save"></i> Lưu Tất Cả Kết Quả
+            </button>
+        </div>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
