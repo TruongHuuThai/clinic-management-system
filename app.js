@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 const path = require("path");
 const pool = require("./config/db");
+const multer = require("multer");
+const upload = multer();
 
 const dashboardRoute = require("./route/dashboard");
 const appointmentsRoute = require("./route/appointments");

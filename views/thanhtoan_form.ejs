@@ -30,25 +30,72 @@
       <hr />
 
       <h4 class="mb-3">Chi Tiết Khoản Phí</h4>
-      <table class="table table-bordered summary-table">
+      
+      <% if (typeof chiTietThuoc !== 'undefined' && chiTietThuoc.length > 0) { %>
+          <h5 class="mt-4 mb-2 text-primary">1. Chi Tiết Đơn Thuốc</h5>
+          <table class="table table-sm table-bordered">
+              <thead class="table-light">
+                  <tr>
+                      <th width="35%">Tên Thuốc</th>
+                      <th width="15%" class="text-center">Số Lượng</th>
+                      <th width="15%" class="text-end">Đơn Giá</th>
+                      <th width="20%" class="text-end">Thành Tiền</th>
+                      <th width="15%">Cách Dùng</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <% chiTietThuoc.forEach((t, index) => { %>
+                      <tr>
+                          <td><%= t.t_ten_thuoc %></td>
+                          <td class="text-center"><%= t.ctdt_so_luong %></td>
+                          <td class="text-end"><%= parseFloat(t.cgt_gia_thuoc).toLocaleString('vi-VN') %></td>
+                          <td class="text-end fw-bold"><%= parseFloat(t.thanh_tien).toLocaleString('vi-VN') %></td>
+                          <td><%= t.ctdt_cacl_dung %></td>
+                      </tr>
+                  <% }); %>
+              </tbody>
+          </table>
+      <% } %>
+      
+      <% if (typeof chiTietDichVu !== 'undefined' && chiTietDichVu.length > 0) { %>
+          <h5 class="mt-4 mb-2 text-primary">2. Chi Tiết Dịch Vụ Cận Lâm Sàng</h5>
+          <table class="table table-sm table-bordered">
+              <thead class="table-light">
+                  <tr>
+                      <th width="50%">Tên Dịch Vụ</th>
+                      <th width="15%" class="text-center">Số Lần</th>
+                      <th width="15%" class="text-end">Đơn Giá</th>
+                      <th width="20%" class="text-end">Thành Tiền</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <% chiTietDichVu.forEach((d, index) => { %>
+                      <tr>
+                          <td><%= d.dvcls_ten %></td>
+                          <td class="text-center"><%= d.ctcd_so_luong %></td>
+                          <td class="text-end"><%= parseFloat(d.don_gia).toLocaleString('vi-VN') %></td>
+                          <td class="text-end fw-bold"><%= parseFloat(d.thanh_tien).toLocaleString('vi-VN') %></td>
+                      </tr>
+                  <% }); %>
+              </tbody>
+          </table>
+      <% } %>
+
+      <table class="table table-bordered summary-table mt-4">
         <thead>
           <tr>
-            <th>Mục Chi Phí</th>
+            <th>TỔNG CỘNG</th>
             <th class="text-end" width="30%">Số Tiền (VNĐ)</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>Chi phí Thuốc (Đã kê đơn)</td>
-            <td class="text-end">
-              <%= tongTienThuoc.toLocaleString('vi-VN') %>
-            </td>
+            <td>Chi phí Thuốc</td>
+            <td class="text-end"><%= tongTienThuoc.toLocaleString('vi-VN') %></td>
           </tr>
           <tr>
             <td>Chi phí Dịch vụ Cận lâm sàng</td>
-            <td class="text-end">
-              <%= tongTienDichVu.toLocaleString('vi-VN') %>
-            </td>
+            <td class="text-end"><%= tongTienDichVu.toLocaleString('vi-VN') %></td>
           </tr>
           <tr class="table-primary">
             <td><strong>TỔNG CỘNG CẦN THANH TOÁN</strong></td>
@@ -74,9 +121,16 @@
               class="form-select form-select-lg"
               required
             >
-              <option value="TIEN_MAT" selected>Tiền Mặt</option>
-              <option value="CHUYEN_KHOAN">Chuyển Khoản</option>
-              <option value="THE_ATM">Thẻ ATM/Visa</option>
+                <% if (typeof ptttList !== 'undefined' && ptttList.length > 0) { %>
+                    <% ptttList.forEach(pttt => { %>
+                        <option value="<%= pttt.pttt_ma %>" 
+                            <%= pttt.pttt_ten === 'selected' %>>
+                            <%= pttt.pttt_ten %>
+                        </option>
+                    <% }); %>
+                <% } else { %>
+                    <option value="" disabled>Không có phương thức thanh toán nào.</option>
+                <% } %>
             </select>
           </div>
 

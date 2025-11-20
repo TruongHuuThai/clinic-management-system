@@ -1,6 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../config/db");
+const multer = require("multer");
+const fs = require("fs");
+const path = require("path");
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 router.get("/nhap/:pcdMa", async (req, res) => {
   const pcdMa = req.params.pcdMa;
@@ -65,33 +71,61 @@ router.get("/nhap/:pcdMa", async (req, res) => {
   }
 });
 
-router.post("/save", async (req, res) => {
-  const pcdMa = req.body.pcd_ma;
-
+router.post("/save", upload.any(), async (req, res) => {
+  const pcdMa = req.body.pcdMa;
   const ctcdMAs = Array.isArray(req.body["ctcd_ma[]"])
     ? req.body["ctcd_ma[]"]
     : req.body["ctcd_ma[]"]
     ? [req.body["ctcd_ma[]"]]
     : [];
 
+  if (!pcdMa) {
+    return res.status(400).send("Thiếu mã Phiếu Chỉ Định (PCD).");
+  }
+
+  const uploadedFileMap = {};
+  if (req.files && req.files.length > 0) {
+    for (const file of req.files) {
+      const match = file.fieldname.match(/kqcls_file_(\d+)/);
+      if (match) {
+        const ctcdMa = match[1];
+        const fileName = `kqcls_${ctcdMa}_${Date.now()}${path.extname(
+          file.originalname
+        )}`;
+        const filePath = path.join("uploads", fileName);
+
+        try {
+          fs.writeFileSync(filePath, file.buffer);
+          uploadedFileMap[ctcdMa] = filePath;
+        } catch (err) {
+          console.error(`Lỗi khi lưu file cho CTCD ${ctcdMa}:`, err);
+        }
+      }
+    }
+  }
+
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
-
-    let savedCount = 0;
 
     for (const ctcdMa of ctcdMAs) {
       if (!ctcdMa) continue;
 
       const kqclsMota = req.body[`kqcls_mota_${ctcdMa}`];
       const kqclsTrangThai = req.body[`ctcd_trang_thai_${ctcdMa}`];
+      const filePath = uploadedFileMap[ctcdMa] || null;
 
-      if (kqclsMota) {
+      if (kqclsMota || filePath) {
         const insertKqclsQuery = `
-					INSERT INTO ket_qua_can_lam_san (kqcls_ma_ctcd, kqcls_mota, kqcls_ket_luan)
-					VALUES ($1, $2, $3);
+					INSERT INTO ket_qua_can_lam_san (kqcls_ma_ctcd, kqcls_mota, kqcls_ket_luan, kqcls_file_dinh_kem)
+					VALUES ($1, $2, $3, $4);
 				`;
-        await client.query(insertKqclsQuery, [ctcdMa, kqclsMota, null]);
+        await client.query(insertKqclsQuery, [
+          ctcdMa,
+          kqclsMota,
+          null,
+          filePath,
+        ]);
 
         const updateCtcdQuery = `
 					UPDATE chi_tiet_chi_dinh
@@ -102,12 +136,10 @@ router.post("/save", async (req, res) => {
           kqclsTrangThai || "DA_CO_KET_QUA",
           ctcdMa,
         ]);
-        savedCount++;
       }
     }
 
     await client.query("COMMIT");
-
     res.redirect(`/api/thanhtoan/lap-phieu/${pcdMa}`);
   } catch (error) {
     await client.query("ROLLBACK");

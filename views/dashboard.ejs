@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %> | Hệ Thống QL Hồ Sơ Bệnh Án</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+
     </head>
 <body>
     <%- include('partials/header') %>
@@ -60,7 +62,7 @@
 
                     if (data.appointmentsList && data.appointmentsList.length > 0) { 
                         data.appointmentsList.forEach((item, index) => {
-                            const statusKey = item.lh_trang_thai; // SỬ DỤNG TRƯỜNG CHÍNH TỪ DB
+                            const statusKey = item.lh_trang_thai; 
                             const displayStatus = statusMap[statusKey] || statusKey;
                             const maLichHen = item.lh_ma;
                             const tenBenhNhan = item.bn_ho_ten; 
@@ -83,12 +85,12 @@
                                 <td>
                                     <div id="action-buttons-<%= maLichHen %>" class="btn-group">
                                         <% 
-                                            // LOGIC HÀNH ĐỘNG
                                             if (statusKey === 'CHO_KHAM' || statusKey === 'TAI_KHAM' || statusKey === 'CHUA_DEN') { 
                                         %>
                                             <button 
                                                 class="btn-action btn-sm btn-success" 
                                                 data-id="<%= maLichHen %>"
+                                                data-name="<%= tenBenhNhan %>"
                                                 onclick="receive(this)">
                                                 Tiếp Đón
                                             </button>
@@ -99,6 +101,7 @@
                                             <button 
                                                 class="btn-action btn-sm btn-warning" 
                                                 data-id="<%= maLichHen %>"
+                                                data-name="<%= tenBenhNhan %>"
                                                 onclick="examination(this)">
                                                 Bắt Đầu Khám
                                             </button>
@@ -109,6 +112,7 @@
                                             <button 
                                                 class="btn-action btn-sm btn-primary" 
                                                 data-id="<%= maLichHen %>"
+                                                data-name="<%= tenBenhNhan %>"
                                                 onclick="examination(this)">
                                                 Tiếp tục Khám
                                             </button> 
@@ -122,12 +126,14 @@
                                             <button 
                                                 class="btn-action btn-sm btn-info ml-1" 
                                                 data-id="<%= maLichHen %>"
+                                                data-name="<%= tenBenhNhan %>"
                                                 onclick="suaLichHen(this)">
                                                 Sửa
                                             </button>
                                             <button 
                                                 class="btn-action btn-sm btn-outline-danger ml-1" 
-                                                data-id="<%= maLichHen %>" 
+                                                data-id="<%= maLichHen %>"
+                                                data-name="<%= tenBenhNhan %>"
                                                 onclick="xoaLichHen(this)">
                                                 Hủy
                                             </button>
@@ -175,6 +181,8 @@
         <p style="text-align: center; padding: 20px; color: #666;">&#169; 2025 Hệ Thống Quản Lý Hồ Sơ Bệnh Án</p>
     </footer>
     <script src="/js/partials/header.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js"></script>
     <script src="/js/dashboard.js"></script>
 </body>
 </html>

@@ -55,7 +55,7 @@ function initAutocomplete(rowId) {
       return;
     }
 
-    fetch(`/api/thuoc/theo_nhom/${nt_ma}`)
+    fetch(`/api/thuoc/theo-nhom/${nt_ma}`)
       .then((res) => res.json())
       .then((data) => {
         currentDrugList = data.map((item) => ({

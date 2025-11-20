@@ -60,6 +60,8 @@ router.post("/save", async (req, res) => {
     service_so_luong,
   } = req.body;
 
+  let pcd_ma_created = null; 
+
   if (!pkb_ma_bn || !lh_ma || !pkb_trieu_chung) {
     return res.status(400).send("Dữ liệu khám bệnh không được để trống.");
   }
@@ -124,7 +126,8 @@ router.post("/save", async (req, res) => {
         "CHO_THUC_HIEN",
         req.body.pcd_ghi_chu || null,
       ]);
-      const pcd_ma = pcdResult.rows[0].pcd_ma;
+
+      pcd_ma_created = pcdResult.rows[0].pcd_ma;
 
       const ctcdQuery = `
                 INSERT INTO chi_tiet_chi_dinh (ctcd_ma_pcd, ctcd_ma_dvcls, ctcd_so_luong, ctcd_trang_thai)
@@ -133,17 +136,18 @@ router.post("/save", async (req, res) => {
 
       for (let i = 0; i < service_ma.length; i++) {
         const dvcls_ma = service_ma[i];
+        console.log(`dvcls_ma: ${dvcls_ma}`);
 
         if (dvcls_ma) {
           await client.query(ctcdQuery, [
-            pcd_ma,
+            pcd_ma_created,
             dvcls_ma,
             service_so_luong[i] || 1,
             "DA_CHI_DINH",
           ]);
         }
       }
-      console.log(`Đã tạo Phiếu Chỉ Định (PCD_MA: ${pcd_ma})`);
+      console.log(`Đã tạo Phiếu Chỉ Định (PCD_MA: ${pcd_ma_created})`);
     }
 
     const updateLhQuery = `
@@ -154,7 +158,12 @@ router.post("/save", async (req, res) => {
     await client.query(updateLhQuery, ["DA_HOAN_THANH", lh_ma]);
 
     await client.query("COMMIT");
-    res.redirect(`/api/patients/${pkb_ma_bn}`);
+
+    if (pcd_ma_created) {
+      res.redirect(`/api/ketquacanlamsan/nhap/${pcd_ma_created}`);
+    } else {
+      res.redirect(`/api/thanhtoan/lap-phieu/${pkb_ma}`);
+    }
   } catch (error) {
     await client.query("ROLLBACK");
     console.error("LỖI TRANSACTION KHI LƯU KHÁM BỆNH:", error);

@@ -11,10 +11,10 @@ router.get('/', async (req, res) => {
         const appointmentsQuery = `
             SELECT 
                 lh.lh_ma,
-                lh.lh_khung_gio AS time,
-                bn.bn_ho_ten AS name,
-                lh.lh_trang_thai AS status,
-                lh.lh_ghi_chu AS note
+                lh.lh_khung_gio,
+                bn.bn_ho_ten,
+                lh.lh_trang_thai,
+                lh.lh_ghi_chu
             FROM 
                 lich_hen lh
             JOIN 
@@ -29,7 +29,7 @@ router.get('/', async (req, res) => {
         appointmentsList = appointmentResult.rows.map(row => ({
             ...row,
             lh_ma: row.lh_ma,
-            status: row.status.replace(/_/g, ' ')
+            status: row.status
         }));
         const revenueQuery = `
             SELECT COALESCE(SUM(tt.tt_tong_tien), 0) AS total_revenue
