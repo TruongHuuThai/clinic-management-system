@@ -1,0 +1,49 @@
+body {
+            background-color: #f8f9fa; 
+            padding-top: 80px; 
+            font-family: 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .kpi-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .kpi-icon-bg {
+            position: absolute;
+            right: -10px;
+            bottom: -10px;
+            font-size: 5rem;
+            opacity: 0.2;
+            transform: rotate(-15deg);
+        }
+        
+        /* Bảng dữ liệu */
+        .table-custom thead {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+        .table-custom th {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+        .avatar-circle {
+            width: 35px;
+            height: 35px;
+            background-color: #e9ecef;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #495057;
+            margin-right: 10px;
+        }

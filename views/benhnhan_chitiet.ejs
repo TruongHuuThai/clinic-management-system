@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title><%= title %></title>
+    <%- include('partials/thuvien_js') %>
+    <link rel="stylesheet" href="/css/benhnhan_chitiet.css">
+    <link rel="stylesheet" href="/css/partials/placehoder_nghien.css">
+</head>
+<body>
+    <%- include('partials/header') %>
+    <main class="container-fluid" style="padding-top: 70px;">
+        <div class="row">
+            
+            <div class="col-md-3 patient-sidebar">
+                <h3 class="text-primary fw-bold mb-4">Hồ Sơ Bệnh Nhân: <%= patient.bn_ma %></h3>
+                
+                <div class="info-card">
+                    <h5 class="text-muted small text-uppercase fw-bold mb-3">Thông tin Hành chính</h5>
+                    <p class="mb-1"><strong>Họ Tên:</strong> <span class="fw-bold"><%= patient.bn_ho_ten %></span></p>
+                    <p class="mb-1"><strong>Giới Tính:</strong> <%= patient.bn_gioi_tinh || '—' %></p>
+                    <p class="mb-1"><strong>Ngày Sinh:</strong> 
+                        <%= patient.bn_ngay_sinh ? new Date(patient.bn_ngay_sinh).toLocaleDateString('vi-VN') : '—' %>
+                    </p>
+                    <p class="mb-1"><strong>SĐT:</strong> <%= patient.bn_sdt || '—' %></p>
+                    <p class="mb-1"><strong>Địa Chỉ:</strong> <%= patient.bn_dia_chi || '—' %></p>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button onclick="moModalSuaBenhNhan('<%= patient.bn_ma %>')" class="btn btn-warning btn-sm">
+                        <i class="fas fa-edit me-2"></i>Cập nhật Hồ Sơ
+                    </button>
+                    <button onclick="modalThemLichTaiKham('<%= patient.bn_ma %>')" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-calendar-plus me-2"></i>Đặt Lịch Tái Khám
+                    </button>
+                </div>
+
+                <div id="reschedule-form-container" class="mt-4 p-3 border rounded" style="display: none;">
+                    </div>
+            </div>
+
+            <div class="col-md-9 p-4">
+                <ul class="nav nav-tabs" id="historyTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="exam-tab" data-bs-toggle="tab" data-bs-target="#exam-history" type="button" role="tab">
+                            Hồ Sơ Khám Bệnh
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="appt-tab" data-bs-toggle="tab" data-bs-target="#appt-history" type="button" role="tab">
+                            Lịch Sử Lịch Hẹn
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="historyTabContent">
+                    
+                    <div class="tab-pane fade show active p-3" id="exam-history" role="tabpanel">
+                        <% if (examHistory && examHistory.length > 0) { %>
+                            <h4 class="text-primary mb-3">Tổng cộng: <%= examHistory.length %> lần khám</h4>
+                            <% examHistory.forEach((exam) => { %>
+                                <div class="info-card border-start border-3 border-primary mb-3">
+                                    <h5 class="fw-bold mb-2">Phiếu Khám #<%= exam.pkb_ma %>
+                                        <small class="text-muted ms-3 fw-normal">
+                                            (<%= new Date(exam.pkb_ngay_kham).toLocaleDateString('vi-VN') %>)
+                                        </small>
+                                    </h5>
+                                    <p><strong>Triệu chứng:</strong> <%= exam.pkb_trieu_chung %></p>
+                                    <p><strong>Chẩn đoán:</strong> <%= exam.ten_benh_chinh || '—' %></p>
+                                    <p class="small text-muted mb-0">Ghi chú: <%= exam.pkb_ghi_chu || '—' %></p>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <div class="alert alert-info mt-3">Bệnh nhân chưa có lịch sử khám bệnh nào.</div>
+                        <% } %>
+                    </div>
+
+                    <div class="tab-pane fade p-3" id="appt-history" role="tabpanel">
+                         <% if (history && history.length > 0) { %>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">Ngày Hẹn</th>
+                                        <th class="text-center">Giờ</th>
+                                        <th class="text-center">Trạng Thái</th>
+                                        <th class="text-center">Ghi Chú</th>
+                                        <th class="text-center">Hành Động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% history.forEach((appt) => { %>
+                                        <tr>
+                                            <td><%= new Date(appt.lh_ngay_hen).toLocaleDateString('vi-VN') %></td>
+                                            <td><%= appt.lh_khung_gio %></td>
+                                            <td>
+                                                <% 
+                                                    const statusClass = {
+                                                        'DA_DEN': 'bg-info text-dark',
+                                                        'CHO_KHAM': 'bg-warning text-dark',
+                                                        'DA_HOAN_THANH': 'bg-success',
+                                                        'DA_HUY': 'bg-danger',
+                                                        'TAI_KHAM': 'bg-primary'
+                                                    };
+                                                    const statusText = {
+                                                        'DA_DEN': 'Đã đến', 'CHO_KHAM': 'Chờ khám',
+                                                        'DA_HOAN_THANH': 'Hoàn thành', 'DA_HUY': 'Đã hủy',
+                                                        'TAI_KHAM': 'Tái khám', 'CHUA_DEN': 'Chưa đến',
+                                                        'DANG_KHAM': 'Đang khám'
+                                                    };
+                                                %>
+                                                <span class="badge <%= statusClass[appt.lh_trang_thai] || 'bg-secondary' %>">
+                                                    <%= statusText[appt.lh_trang_thai] || appt.lh_trang_thai %>
+                                                </span>
+                                            </td>
+                                            <td><%= appt.lh_ghi_chu || '—' %></td>
+                                            <td class="text-center">
+                                                <% 
+                                                    if (appt.lh_trang_thai !== 'DA_HOAN_THANH' && appt.lh_trang_thai !== 'DA_HUY') { 
+                                                %>
+                                                    <button onclick="modalSuaLichHen('<%= appt.lh_ma %>')" class="btn btn-sm btn-outline-primary" title="Sửa lịch hẹn">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button onclick="modalXoaLichHen('<%= appt.lh_ma %>')" class="btn btn-sm btn-outline-danger ms-1" title="Hủy lịch hẹn">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                <% } else { %>
+                                                    <span class="text-muted small fs-6"><i class="fas fa-lock"></i> Đã khóa</span>
+                                                <% } %>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        <% } else { %>
+                            <div class="alert alert-info mt-3">Bệnh nhân chưa có lịch sử đặt hẹn nào.</div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <%- include('partials/benhnhan/modal_sua') %>
+
+        <%- include('partials/lichhen/modal_them') %>
+        <%- include('partials/lichhen/modal_sua') %>
+        <%- include('partials/lichhen/modal_xoa') %>
+
+        <%- include('partials/modal_thanhcong') %>
+    </main>
+    <script src="/js/benhnhan_chitiet.js"></script>
+    <script src="/js/benhnhan_danhsach.js"></script>
+    <script src="/js/partials/benhnhan/modal_sua.js"></script>
+</body>
+</html>

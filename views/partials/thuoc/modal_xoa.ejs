@@ -1,0 +1,73 @@
+<div
+  class="modal fade"
+  id="deleteConfirmModal"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-danger text-white justify-content-center">
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>Xác Nhận Xóa
+        </h5>
+      </div>
+      <div class="modal-body p-4 text-center">
+        <p class="mb-2">Bạn có chắc chắn muốn xóa thuốc này không?</p>
+        <h4 id="delete-drug-name" class="fw-bold text-danger my-3">...</h4>
+        <p class="text-muted small mb-0">Hành động này không thể hoàn tác.</p>
+      </div>
+      <div class="modal-footer bg-light d-flex justify-content-between">
+        <button
+          type="button"
+          class="btn btn-secondary px-4"
+          data-bs-dismiss="modal"
+          style="background-color: #ffca2c; border-color: #ffca2c"
+        >
+          Hủy bỏ
+        </button>
+        <button
+          type="button"
+          class="btn btn-danger px-4 fw-bold"
+          id="btn-confirm-delete"
+        >
+          Xóa Ngay
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteErrorModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-warning text-dark justify-content-center">
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-slash-circle-fill me-2"></i>Không Thể Xóa
+        </h5>
+      </div>
+      <div class="modal-body p-4 text-center">
+        <div class="mb-3 text-warning display-4">
+          <i class="bi bi-file-medical"></i>
+        </div>
+        <h5 class="fw-bold text-dark">Thuốc đã được kê đơn!</h5>
+        <p class="text-muted mt-2">
+          Thuốc
+          <strong id="error-drug-name" class="text-primary">...</strong> đã tồn
+          tại trong lịch sử khám bệnh. Để đảm bảo tính toàn vẹn dữ liệu, bạn
+          không thể xóa thuốc này.
+        </p>
+      </div>
+      <div class="modal-footer bg-light justify-content-center">
+        <button
+          type="button"
+          class="btn btn-warning px-5 fw-bold"
+          data-bs-dismiss="modal"
+        >
+          Đã Hiểu
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

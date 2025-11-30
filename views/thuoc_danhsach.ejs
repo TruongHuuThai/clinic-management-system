@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title><%= title %></title>
+    <%- include('partials/thuvien_js') %>
+    <link rel="stylesheet" href="/css/thuoc_danhsach.css">
+</head>
+<body>
+    <%- include('partials/header') %>
+    <main class="container my-5">
+        <h1><%= title %></h1>
+        <hr>
+
+        <div id="filter-section" class="mb-4 bg-light p-3 rounded">
+            <form action="/api/thuoc" method="GET" class="row g-3 align-items-center">
+                <div class="col-auto">
+                    <select name="nt_ma" class="form-select" style="min-width: 200px;">
+                        <option value="">Loc theo Nhom Thuoc</option>
+                        <% groups.forEach(g => { %>
+                            <option value="<%= g.nt_ma %>" <%= query.nt_ma == g.nt_ma ? 'selected' : '' %>>
+                                <%= g.nt_ten %>
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <input type="text" name="search" placeholder="Tim kiem thuoc..." value="<%= query.search || '' %>" class="form-control" style="min-width: 300px;">
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">Loc</button>
+                    <a href="/api/thuoc" class="btn btn-secondary">Xoa Loc</a>
+                </div>
+            </form> 
+        </div>
+
+        <button onclick="moModalThemThuoc()" class="btn btn-success mb-3">
+            <i class="fas fa-plus"></i> Them Thuoc Moi
+        </button>
+
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Mã</th>
+                    <th>Tên Thuốc</th>
+                    <th>Nhóm</th>
+                    <th>Hàm Lượng</th>
+                    <th>Đơn Vị</th>
+                    <th width="15%">Cách Dùng</th>
+                    <th width="20%">Hướng Dẫn</th>
+                    <th class="text-end">Giá (VND)</th>
+                    <th class="text-center">Hành Động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% drugs.forEach(t => { %>
+                    <tr data-ma="<%= t.t_ma %>">
+                        <td><%= t.t_ma %></td>
+                        <td class="fw-bold text-primary"><%= t.t_ten_thuoc %></td>
+                        <td><%= t.nhom_thuoc %></td>
+                        <td><%= t.t_ham_luong %></td>
+                        <td><%= t.t_don_vi_tinh %></td>
+                        <td><div class="scrollable-cell"><%= t.t_cach_dung_mac_dinh %></div></td>
+                        <td><div class="scrollable-cell"><%= t.t_huong_dan %></div></td>
+                        <td class="text-end fw-bold text-success">
+                            <%= parseFloat(t.gia_hien_tai || 0).toLocaleString('vi-VN') %>
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group">
+                                <button onclick="xemLichSuGia(this)" class="btn btn-sm btn-secondary" data-id="<%= t.t_ma %>" title="Lich su">Lịch sử</button>
+                                <button onclick="moModalSua(this)" class="btn btn-sm btn-info text-white" data-id="<%= t.t_ma %>">Sửa</button>
+                                <button onclick="moModalGia(this)" class="btn btn-sm btn-warning text-white" data-id="<%= t.t_ma %>">Giá</button>
+                                <button onclick="xoaThuoc(this)" class="btn btn-sm btn-danger" data-id="<%= t.t_ma %>">Xóa</button>
+                            </div>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+
+        <%- include('partials/thuoc/modal_sua') %>
+        <%- include('partials/thuoc/modal_gia') %>
+        <%- include('partials/thuoc/modal_xoa') %>
+        <%- include('partials/thuoc/modal_lichsu') %>
+        <%- include('partials/modal_thanhcong') %>
+        
+    </main>
+    <script src="/js/thuoc_danhsach.js"></script>
+</body>
+</html>

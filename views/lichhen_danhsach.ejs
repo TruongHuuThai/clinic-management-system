@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title><%= title %> - Quan Ly Phong Kham</title>
+    <%- include('partials/thuvien_js') %>
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.min.js'></script>
+</head>
+<body>
+    <%- include('partials/header') %>
+    <main class="container my-4">
+        <h1><%= title %></h1>
+
+        <div id="filter-container" class="mb-4 p-3 border rounded bg-light">
+            <form id="filterForm" onsubmit="event.preventDefault(); apDungBoLoc()">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-4">
+                        <label for="search" class="form-label fw-bold">Tim kiem (Ten/SDT):</label>
+                        <input type="text" id="search" name="search" value="<%= query.tim_kiem || '' %>" class="form-control" placeholder="Nhap ten hoac SDT...">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="status" class="form-label fw-bold">Trang thai:</label>
+                        <select id="status" name="status" class="form-select">
+                            <option value="">Tat ca</option>
+                            <option value="CHO_KHAM" <%= query.trang_thai === 'CHO_KHAM' ? 'selected' : '' %>>Cho Kham</option>
+                            <option value="DA_DEN" <%= query.trang_thai === 'DA_DEN' ? 'selected' : '' %>>Da Den</option>
+                            <option value="TAI_KHAM" <%= query.trang_thai === 'TAI_KHAM' ? 'selected' : '' %>>Tai Kham</option>
+                            <option value="DA_HUY" <%= query.trang_thai === 'DA_HUY' ? 'selected' : '' %>>Da Huy</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="dateFrom" class="form-label fw-bold">Tu ngay:</label>
+                        <input type="text" id="dateFrom" name="dateFrom" value="<%= query.tu_ngay || '' %>" class="form-control datepicker-input" placeholder="dd/mm/yyyy">
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary me-2">Loc</button>
+                        <button type="button" onclick="danhSachLichHen()" class="btn btn-secondary">Xoa</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <p class="mb-0">Tong so lich hen: <strong><%= data.totalCount %></strong></p>
+            <button onclick="themLichHen()" class="btn btn-success"><i class="fas fa-plus"></i> Them Lich Hen</button>
+        </div>
+
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-primary">
+                <tr>
+                    <th>STT</th>
+                    <th>Thoi Gian</th>
+                    <th>Ngay Hen</th>
+                    <th>Benh Nhan</th>
+                    <th>SDT</th>
+                    <th>Trang Thai</th>
+                    <th>Ghi Chu</th>
+                    <th>Hanh Dong</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (data.appointments && data.appointments.length > 0) { 
+                    data.appointments.forEach((item, index) => { %>
+                    <tr>
+                        <td><%= index + 1 %></td>
+                        <td><%= item.gio %></td>
+                        <td><%= new Date(item.ngay).toLocaleDateString('vi-VN') %></td>
+                        <td class="fw-bold"><%= item.ten_benh_nhan %></td>
+                        <td><%= item.bn_sdt || '—' %></td>
+                        <td>
+                            <% 
+                                const trangThaiClass = {
+                                    'DA_DEN': 'bg-success', 'CHO_KHAM': 'bg-warning text-dark',
+                                    'DA_HUY': 'bg-danger', 'CHUA_DEN': 'bg-secondary',
+                                    'TAI_KHAM': 'bg-info text-dark', 'DA_HOAN_THANH': 'bg-primary',
+                                    'DANG_KHAM': 'bg-primary'
+                                };
+                            %>
+                            <span class="badge <%= trangThaiClass[item.trang_thai] || 'bg-secondary' %>">
+                                <%= item.trang_thai_hien_thi %>
+                            </span>
+                        </td>
+                        <td><%= item.ghi_chu || '—' %></td>
+                        <td>
+                            <button class="btn btn-sm btn-info text-white" data-id="<%= item.lh_ma %>" onclick="suaLichHen(this)">Sua</button>
+                            <button class="btn btn-sm btn-danger" data-id="<%= item.lh_ma %>" onclick="xoaLichHen(this)">Xoa</button>
+                        </td>
+                    </tr>
+                <% }); } else { %>
+                    <tr><td colspan="8" class="text-center">Khong tim thay lich hen nao.</td></tr>
+                <% } %>
+            </tbody>
+        </table>
+
+        <%- include('partials/lichhen/modal_xoa') %>
+        <%- include('partials/modal_thanhcong') %>
+
+    </main>
+    <script src="/js/lichhen_danhsach.js"></script>
+</body>
+</html>

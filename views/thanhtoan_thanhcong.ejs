@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh Toán Thành Công - Hóa Đơn <%= invoice.tt_ma %></title>
+    
+    <%- include('partials/thuvien_js') %>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <link rel="stylesheet" href="/css/thanhtoan_thanhcong.css">
+</head>
+<body>
+    <%- include('partials/header') %>
+
+    <main class="container my-5">
+        <input type="hidden" id="hiddenInvoiceId" value="<%= invoice.tt_ma %>">
+        <div class="text-center mb-5">
+            <div class="success-icon mb-3"><i class="fas fa-check-circle"></i></div>
+            <h2 class="text-success fw-bold">GIAO DỊCH THÀNH CÔNG!</h2>
+            <p class="text-muted">Cảm ơn quý khách đã sử dụng dịch vụ.</p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm bill-card">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="fw-bold text-primary m-0">
+                                <i class="fas fa-file-invoice me-2"></i>Chi Tiết Hóa Đơn #<%= invoice.tt_ma %>
+                            </h5>
+                            <span class="badge bg-success fs-6">ĐÃ THANH TOÁN</span>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <p class="mb-1">Khách hàng: <strong class="fs-5"><%= invoice.bn_ho_ten %></strong></p>
+                                <p class="mb-1 text-muted">Mã PKB: <%= invoice.tt_ma_pkb %></p>
+                            </div>
+                            <div class="col-md-6 text-md-end">
+                                <p class="mb-1">Ngày lập: <strong><%= new Date(invoice.tt_thoi_gian_lap).toLocaleDateString('vi-VN') %></strong></p>
+                                <p class="mb-1 text-muted">PTTT: <%= invoice.pttt_ten %></p>
+                            </div>
+                        </div>
+
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Khoản mục</th>
+                                    <th class="text-end">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Chi phí Thuốc (<%= chiTietThuoc.length %> loại)</td>
+                                    <td class="text-end"><%= tongTienThuoc.toLocaleString('vi-VN') %></td>
+                                </tr>
+                                <tr>
+                                    <td>Dịch vụ Cận lâm sàng (<%= chiTietDichVu.length %> dịch vụ)</td>
+                                    <td class="text-end"><%= tongTienDichVu.toLocaleString('vi-VN') %></td>
+                                </tr>
+                                <tr class="table-active">
+                                    <td class="fw-bold fs-5">TỔNG CỘNG</td>
+                                    <td class="text-end fw-bold fs-5 text-primary">
+                                        <%= parseFloat(invoice.tt_tong_tien).toLocaleString('vi-VN') %> VNĐ
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="/" class="btn btn-outline-primary">
+                                <i class="fas fa-home me-2"></i>Về Trang Chủ
+                            </a>
+                            <button onclick="moModalEmail()" class="btn btn-info text-white px-3 me-2">
+                                <i class="fas fa-envelope me-2"></i>Gửi Email
+                            </button>
+                            <button onclick="inHoaDonPDF('<%= invoice.tt_ma %>')" class="btn btn-primary px-4">
+                                <i class="fas fa-print me-2"></i>In Hóa Đơn
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="invoice-area">
+        <div class="invoice-header">
+            <div class="invoice-title">PHIẾU THANH TOÁN DỊCH VỤ</div>
+            <div class="invoice-meta">Mã hóa đơn: <%= invoice.tt_ma %> | Ngày: <%= new Date(invoice.tt_thoi_gian_lap).toLocaleDateString('vi-VN') %></div>
+        </div>
+
+        <div class="invoice-info">
+            <p><strong>Bệnh nhân:</strong> <%= invoice.bn_ho_ten %> &nbsp;&nbsp;&nbsp; <strong>Mã hồ sơ:</strong> <%= invoice.tt_ma_pkb %></p>
+            <p><strong>Phương thức thanh toán:</strong> <%= invoice.pttt_ten %></p>
+        </div>
+
+        <table class="invoice-table">
+            <thead>
+                <tr>
+                    <th width="5%">STT</th>
+                    <th>Nội dung (Thuốc / Dịch vụ)</th>
+                    <th width="10%">SL</th>
+                    <th width="20%">Đơn giá</th>
+                    <th width="20%">Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% let stt = 1; %>
+                
+                <% if (chiTietDichVu && chiTietDichVu.length > 0) { %>
+                    <tr><td colspan="5" style="font-weight:bold; background-color:#fafafa;">I. Dịch vụ Cận lâm sàng</td></tr>
+                    <% chiTietDichVu.forEach(d => { %>
+                    <tr>
+                        <td class="text-center"><%= stt++ %></td>
+                        <td><%= d.dvcls_ten %></td>
+                        <td class="text-center"><%= d.ctcd_so_luong %></td>
+                        <td class="text-right"><%= parseFloat(d.don_gia).toLocaleString('vi-VN') %></td>
+                        <td class="text-right"><%= parseFloat(d.thanh_tien).toLocaleString('vi-VN') %></td>
+                    </tr>
+                    <% }); %>
+                <% } %>
+
+                <% if (chiTietThuoc && chiTietThuoc.length > 0) { %>
+                    <tr><td colspan="5" style="font-weight:bold; background-color:#fafafa;">II. Thuốc & Dược phẩm</td></tr>
+                    <% chiTietThuoc.forEach(t => { %>
+                    <tr>
+                        <td class="text-center"><%= stt++ %></td>
+                        <td><%= t.t_ten_thuoc %> <br><i style="font-size:12px;">(<%= t.ctdt_cacl_dung %>)</i></td>
+                        <td class="text-center"><%= t.ctdt_so_luong %></td>
+                        <td class="text-right"><%= parseFloat(t.cgt_gia_thuoc).toLocaleString('vi-VN') %></td>
+                        <td class="text-right"><%= parseFloat(t.thanh_tien).toLocaleString('vi-VN') %></td>
+                    </tr>
+                    <% }); %>
+                <% } %>
+
+                <tr>
+                    <td colspan="4" class="text-right" style="font-weight:bold;">TỔNG CỘNG THANH TOÁN</td>
+                    <td class="text-right" style="font-weight:bold; font-size:16px;">
+                        <%= parseFloat(invoice.tt_tong_tien).toLocaleString('vi-VN') %>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="footer-sign">
+            <div class="sign-box">
+                <p><strong>Bệnh nhân</strong></p>
+                <p>(Ký, họ tên)</p>
+            </div>
+            <div class="sign-box">
+                <p><strong>Người lập phiếu</strong></p>
+                <p>(Ký, họ tên)</p>
+            </div>
+        </div>
+    </div>
+
+    <%- include('partials/thanhtoan/modal_email') %>
+    <%- include('partials/modal_thanhcong') %>
+    <script src="/js/thanhtoan_thanhcong.js"></script>
+</body>
+</html>

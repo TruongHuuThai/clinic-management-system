@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lập Phiếu Thanh Toán - PKB #<%= pkbMa %></title>
+    
+    <%- include('partials/thuvien_js') %>
+    <link rel="stylesheet" href="/css/thanhtoan_hoadon.css">
+</head>
+<body>
+    <%- include('partials/header') %>
+
+    <main class="container my-5">
+      <div class="d-flex align-items-center mb-4">
+           <i class="fas fa-file-invoice-dollar fa-2x text-success me-3"></i>
+           <h2 class="text-success fw-bold mb-0">LẬP PHIẾU THANH TOÁN</h2>
+      </div>
+
+      <div class="card shadow-sm border-0 mb-4">
+          <div class="card-body bg-light">
+              <div class="row">
+                  <div class="col-md-4">
+                      <strong>Tên bệnh nhân:</strong> 
+                      <span class="fw-bold text-primary fs-5 ms-2"><%= patientInfo.bn_ho_ten %></span>
+                  </div>
+                  <div class="col-md-4">
+                      <strong>Mã PKB:</strong> <%= pkbMa %>
+                  </div>
+                  <div class="col-md-4 text-md-end">
+                      <strong>Ngày lập:</strong> 
+                      <span class="badge bg-info text-dark">
+                          <% const dateObj = new Date(ngayThanhToan); %>
+                          <%= dateObj.toLocaleDateString('vi-VN') %>
+                      </span>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <hr class="text-muted opacity-25">
+
+      <h4 class="mb-3 text-secondary"><i class="fas fa-list-ul me-2"></i>Chi Tiết Khoản Phí</h4>
+      
+      <% if (typeof chiTietThuoc !== 'undefined' && chiTietThuoc.length > 0) { %>
+          <div class="card mb-3 border-0 shadow-sm">
+              <div class="card-header bg-white fw-bold text-primary">1. Chi Tiết Đơn Thuốc</div>
+              <div class="card-body p-0">
+                  <table class="table table-striped mb-0">
+                      <thead class="table-light">
+                          <tr>
+                              <th width="35%">Tên Thuốc</th>
+                              <th width="10%" class="text-center">SL</th>
+                              <th width="15%" class="text-end">Đơn Giá</th>
+                              <th width="20%" class="text-end">Thành Tiền</th>
+                              <th width="20%">Cách Dùng</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <% chiTietThuoc.forEach((t) => { %>
+                              <tr>
+                                  <td class="fw-bold"><%= t.t_ten_thuoc %></td>
+                                  <td class="text-center"><%= t.ctdt_so_luong %></td>
+                                  <td class="text-end"><%= parseFloat(t.cgt_gia_thuoc).toLocaleString('vi-VN') %></td>
+                                  <td class="text-end fw-bold"><%= parseFloat(t.thanh_tien).toLocaleString('vi-VN') %></td>
+                                  <td class="small text-muted"><%= t.ctdt_cacl_dung %></td>
+                              </tr>
+                          <% }); %>
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+      <% } %>
+      
+      <% if (typeof chiTietDichVu !== 'undefined' && chiTietDichVu.length > 0) { %>
+          <div class="card mb-3 border-0 shadow-sm">
+              <div class="card-header bg-white fw-bold text-primary">2. Chi Tiết Dịch Vụ Cận Lâm Sàng</div>
+              <div class="card-body p-0">
+                  <table class="table table-striped mb-0">
+                      <thead class="table-light">
+                          <tr>
+                              <th width="50%">Tên Dịch Vụ</th>
+                              <th width="15%" class="text-center">Số Lần</th>
+                              <th width="15%" class="text-end">Đơn Giá</th>
+                              <th width="20%" class="text-end">Thành Tiền</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <% chiTietDichVu.forEach((d) => { %>
+                              <tr>
+                                  <td><%= d.dvcls_ten %></td>
+                                  <td class="text-center"><%= d.ctcd_so_luong %></td>
+                                  <td class="text-end"><%= parseFloat(d.don_gia).toLocaleString('vi-VN') %></td>
+                                  <td class="text-end fw-bold"><%= parseFloat(d.thanh_tien).toLocaleString('vi-VN') %></td>
+                              </tr>
+                          <% }); %>
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+      <% } %>
+
+      <div class="payment-section">
+          <div class="row">
+              <div class="col-md-6">
+                  <table class="table table-bordered summary-table bg-white">
+                    <tbody>
+                      <tr>
+                        <td>Chi phí Thuốc</td>
+                        <td class="text-end"><%= tongTienThuoc.toLocaleString('vi-VN') %></td>
+                      </tr>
+                      <tr>
+                        <td>Chi phí Dịch vụ CLS</td>
+                        <td class="text-end"><%= tongTienDichVu.toLocaleString('vi-VN') %></td>
+                      </tr>
+                      <tr class="table-primary">
+                        <td class="fs-5"><strong>TỔNG CỘNG</strong></td>
+                        <td class="text-end fs-4 text-primary">
+                          <strong><%= tongCong.toLocaleString('vi-VN') %> VNĐ</strong>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+              </div>
+
+              <div class="col-md-6">
+                  <form method="POST" id="thanhtoanForm" action="/api/thanh-toan/luu">
+                    <input type="hidden" name="pkb_ma" value="<%= pkbMa %>" />
+                    <input type="hidden" name="tong_cong" value="<%= tongCong %>" />
+
+                    <label for="phuong_thuc_tt" class="form-label fw-bold mb-2">3. Chọn Phương Thức Thanh Toán</label>
+                    <select id="phuong_thuc_tt" name="phuong_thuc_tt" class="form-select form-select-lg mb-3" required>
+                        <% if (typeof ptttList !== 'undefined' && ptttList.length > 0) { %>
+                            <% ptttList.forEach(pttt => { %>
+                                <option value="<%= pttt.pttt_ma %>" 
+                                    <%= pttt.pttt_ten === 'Tiền Mặt' ? 'selected' : '' %>>
+                                    <%= pttt.pttt_ten %>
+                                </option>
+                            <% }); %>
+                        <% } else { %>
+                            <option value="" disabled>Không có phương thức nào.</option>
+                        <% } %>
+                    </select>
+                    
+                    <div id="qr-section" class="card border-primary mb-4 d-none" style="background-color: #f0f8ff;">
+                      <div class="card-header bg-primary text-white fw-bold">
+                          <i class="fas fa-qrcode me-2"></i>THÔNG TIN CHUYỂN KHOẢN
+                      </div>
+                      <div class="card-body">
+                          <div class="row align-items-center">
+                              <div class="col-md-5 text-center border-end">
+                                  <div class="p-2 bg-white rounded shadow-sm d-inline-block">
+                                      <img id="vietqr-image" src="" alt="QR Code" class="img-fluid" style="max-width: 200px;">
+                                  </div>
+                                  <p class="mt-2 small text-muted fst-italic">Quét mã bằng App Ngân hàng</p>
+                              </div>
+
+                              <div class="col-md-7">
+                                  <ul class="list-group list-group-flush bg-transparent">
+                                      <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0">
+                                          <span><i class="fas fa-university me-2 text-primary"></i>Ngân hàng:</span>
+                                          <span class="fw-bold" id="qr-bank-name">BIDV</span>
+                                      </li>
+                                      
+                                      <li class="list-group-item bg-transparent px-0">
+                                          <div class="d-flex justify-content-between align-items-center mb-1">
+                                              <span><i class="fas fa-credit-card me-2 text-primary"></i>Số Tài Khoản:</span>
+                                              <button type="button" class="btn btn-sm btn-outline-secondary py-0" onclick="copyText('qr-account-num')">
+                                                  <i class="fas fa-copy"></i> Copy
+                                              </button>
+                                          </div>
+                                          <div class="fs-4 fw-bold text-primary text-end" id="qr-account-num">V3CASS7411139399</div>
+                                      </li>
+
+                                      <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0">
+                                          <span><i class="fas fa-user me-2 text-primary"></i>Chủ tài khoản:</span>
+                                          <span class="fw-bold text-uppercase" id="qr-account-name">TRUONG HUU THAI</span>
+                                      </li>
+
+                                      <li class="list-group-item bg-transparent px-0">
+                                          <div class="d-flex justify-content-between align-items-center mb-1">
+                                              <span><i class="fas fa-comment-alt me-2 text-primary"></i>Nội dung CK:</span>
+                                              <button type="button" class="btn btn-sm btn-outline-secondary py-0" onclick="copyText('qr-content')">
+                                                  <i class="fas fa-copy"></i> Copy
+                                              </button>
+                                          </div>
+                                          <div class="fw-bold text-danger text-end" id="qr-content">...</div>
+                                      </li>
+                                      
+                                      <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0 border-bottom-0">
+                                          <span><i class="fas fa-money-bill-wave me-2 text-primary"></i>Số tiền:</span>
+                                          <span class="fs-5 fw-bold text-success" id="qr-amount">...</span>
+                                      </li>
+                                  </ul>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success btn-lg shadow">
+                          <i class="fas fa-check-circle me-2"></i> XÁC NHẬN ĐÃ THANH TOÁN
+                        </button>
+                    </div>
+                  </form>
+              </div>
+          </div>
+      </div>
+
+    </main>
+
+    <script src="/js/thanhtoan_hoadon.js"></script>
+  </body>
+</html>

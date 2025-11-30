@@ -1,0 +1,24 @@
+.patient-sidebar {
+            background-color: #f8f9fa; /* Màu nền xám nhẹ */
+            border-right: 1px solid #e9ecef;
+            padding: 20px;
+            position: sticky;
+            top: 70px; /* Bù trừ chiều cao header */
+            height: calc(100vh - 70px); /* Chiếm trọn chiều cao còn lại */
+            overflow-y: auto; /* Cuộn nếu nội dung quá dài */
+        }
+        .info-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .history-section h5 {
+            border-bottom: 2px solid #0d6efd;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+body {
+  padding-top: 70px;
+}

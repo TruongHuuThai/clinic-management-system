@@ -1,0 +1,21 @@
+<tr class="service-row">
+    <td>
+        <select name="service_ma[]" class="form-select service-select" required>
+            <option value=""> Chọn dịch vụ </option>
+            </select>
+    </td>
+    <td>
+        <input 
+            type="number" name="service_so_luong[]" class="form-control text-center service-qty" value="1" min="1" required
+        >
+    </td>
+    <td>
+        <input type="text" class="form-control text-end service-price"  readonly placeholder="0"
+        >
+    </td>
+    <td class="text-center">
+        <button type="button" class="btn btn-danger btn-sm remove-service" title="Xóa dịch vụ">
+            <i class="fas fa-trash"></i>
+        </button>
+    </td>
+</tr>

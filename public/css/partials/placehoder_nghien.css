@@ -1,0 +1,18 @@
+/* Áp dụng cho các ô input và textarea */
+input::placeholder, 
+textarea::placeholder {
+  font-style: italic;
+  color: #a0a0a0; /* Tùy chọn: Làm cho chữ nhạt hơn một chút */
+  opacity: 1; /* Đảm bảo chữ hiển thị rõ, vì một số trình duyệt giảm opacity mặc định */
+}
+
+/* Các bộ chọn cho trình duyệt cũ hơn (đảm bảo tương thích) */
+:-ms-input-placeholder, /* Microsoft Edge / Internet Explorer */
+::-ms-input-placeholder, /* Edge (cũ) */
+::-moz-placeholder, /* Firefox 19+ */
+:-moz-placeholder /* Firefox 18- */
+{ 
+  font-style: italic;
+  color: #a0a0a0;
+  opacity: 1; 
+}

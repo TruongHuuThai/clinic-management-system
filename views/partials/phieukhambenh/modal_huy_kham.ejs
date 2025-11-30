@@ -1,0 +1,27 @@
+<div class="modal fade" id="cancelDataModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-warning text-dark border-0">
+                <h5 class="modal-title fw-bold">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Cảnh Báo Dữ Liệu
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <p class="fs-5 mb-2">Bạn có chắc chắn muốn hủy không?</p>
+                <p class="text-danger mb-0">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Mọi thông tin bạn vừa nhập (Triệu chứng, Thuốc, Dịch vụ) sẽ <strong>BỊ MẤT HOÀN TOÀN</strong> và không được lưu.
+                </p>
+            </div>
+            <div class="modal-footer justify-content-center bg-light border-0">
+                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
+                    Không, tôi muốn nhập tiếp
+                </button>
+                <button type="button" id="btnConfirmCancel" class="btn btn-warning px-4 fw-bold text-dark">
+                    Đồng ý Hủy
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

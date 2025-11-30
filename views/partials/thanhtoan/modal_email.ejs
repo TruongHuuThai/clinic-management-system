@@ -1,0 +1,29 @@
+<div class="modal fade" id="emailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title fw-bold"><i class="fas fa-paper-plane me-2"></i>Gửi Hóa Đơn Điện Tử</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="sendEmailForm" onsubmit="event.preventDefault(); guiEmailHoaDon()">
+                    <label for="customerEmail" class="form-label fw-bold">Nhập địa chỉ Email nhận:</label>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text bg-light"><i class="fas fa-envelope text-muted"></i></span>
+                        <input type="email" class="form-control form-control-lg" id="customerEmail" placeholder="vidu@gmail.com" required>
+                    </div>
+                    <p class="text-muted small mb-0">
+                        <i class="fas fa-info-circle me-1"></i> Hóa đơn sẽ được gửi ngay lập tức sau khi xác nhận.
+                    </p>
+                </form>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" onclick="guiEmailHoaDon()" class="btn btn-info text-white fw-bold" id="btnSendEmailAction">
+                    <i class="fas fa-paper-plane me-1"></i> Gửi Ngay
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+

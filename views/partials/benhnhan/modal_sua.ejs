@@ -1,0 +1,54 @@
+<div class="modal fade" id="editPatientModal" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title fw-bold">Chỉnh Sửa Thông Tin Bệnh Nhân</h5>
+            </div>
+            <div class="modal-body">
+                <form id="editPatientForm" onsubmit="event.preventDefault(); luuThongTinSua()">
+                    <input type="hidden" id="edit_bn_ma">
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Họ và Tên <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="edit_bn_ho_ten" required>
+                            <div class="invalid-feedback">Vui lòng nhập họ và tên.</div> </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Số Điện Thoại <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="edit_bn_sdt" required>
+                            <div class="invalid-feedback">SĐT không hợp lệ (Phải bắt đầu bằng 0 và đủ 10 số).</div> </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Ngày Sinh</label>
+                            <input type="text" class="form-control datepicker-input" id="edit_bn_ngay_sinh" placeholder="dd/mm/yyyy">
+                            <div class="invalid-feedback">Ngày sinh không hợp lệ.</div> </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Giới Tính</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="edit_bn_gioi_tinh" value="Nam" id="gender_nam">
+                                    <label class="form-check-label" for="gender_nam">Nam</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="edit_bn_gioi_tinh" value="Nu" id="gender_nu">
+                                    <label class="form-check-label" for="gender_nu">Nữ</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-bold">Địa Chỉ</label>
+                            <input type="text" class="form-control" id="edit_bn_dia_chi" maxlength="255">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer bg-light d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Hủy bỏ</button>
+                <button type="button" onclick="luuThongTinSua()" class="btn btn-warning fw-bold">Lưu Cập Nhật</button>
+            </div>
+        </div>
+    </div>
+</div>

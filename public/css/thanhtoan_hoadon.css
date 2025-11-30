@@ -1,0 +1,21 @@
+.summary-table th,
+      .summary-table td {
+        vertical-align: middle;
+      }
+      .summary-table .table-primary strong {
+        font-size: 1.25em;
+        color: #0d6efd;
+      }
+      .summary-table th:last-child, .summary-table td:last-child {
+        width: 30%; 
+      }
+      .payment-section {
+          background-color: #f8f9fa;
+          border-radius: 8px;
+          padding: 20px;
+          margin-top: 20px;
+          border: 1px solid #dee2e6;
+      }
+body {
+  padding-top: 70px;
+}

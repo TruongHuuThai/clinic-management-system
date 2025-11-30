@@ -1,0 +1,149 @@
+<div
+  class="modal fade"
+  id="editDrugModal"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="editDrugModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <form id="editDrugForm" method="POST">
+        <div class="modal-header bg-info text-white">
+          <h5 class="modal-title fw-bold" id="editDrugModalLabel">
+            <i class="bi bi-pencil-square me-2"></i>Chỉnh Sửa Thông Tin
+          </h5>
+        </div>
+
+        <div class="modal-body p-4">
+          <input type="hidden" name="t_ma" id="edit-t-ma" />
+
+          <div class="mb-4">
+            <label
+              for="edit-t-ten-thuoc"
+              class="form-label text-uppercase text-muted small fw-bold"
+            >
+              Tên Thuốc <span class="text-danger">*</span>
+            </label>
+            <input
+              type="text"
+              id="edit-t-ten-thuoc"
+              name="t_ten_thuoc"
+              class="form-control form-control-lg fw-bold"
+              placeholder="Nhập tên thuốc đầy đủ..."
+              required
+            />
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label
+                for="edit-t-loai-thuoc"
+                class="form-label text-uppercase text-muted small"
+              >
+                Nhóm Thuốc <span class="text-danger">*</span>
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"
+                  ><i class="bi bi-collection"></i
+                ></span>
+                <select
+                  id="edit-t-loai-thuoc"
+                  name="t_loai_thuoc"
+                  class="form-select form-select-lg border-start-0 ps-0 "
+                  required
+                ></select>
+              </div>
+            </div>
+            <div class="col-md-3 col-6">
+              <label
+                for="edit-t-don-vi-tinh"
+                class="form-label text-uppercase text-muted small fw-bold"
+                >Đơn vị</label
+              >
+              <input
+                type="text"
+                id="edit-t-don-vi-tinh"
+                name="t_don_vi_tinh"
+                class="form-control form-control-lg"
+              />
+            </div>
+            <div class="col-md-3 col-6">
+              <label
+                for="edit-t-ham-luong"
+                class="form-label text-uppercase text-muted small fw-bold"
+                >Hàm lượng</label
+              >
+              <input
+                type="text"
+                id="edit-t-ham-luong"
+                name="t_ham_luong"
+                class="form-control form-control-lg"
+              />
+            </div>
+          </div>
+
+          <hr class="text-muted opacity-25" />
+
+          <div class="row g-3">
+            <div class="col-12">
+              <h6 class="fw-bold text-primary mb-3">
+                <i class="bi bi-prescription me-2"></i>Thông tin hỗ trợ kê đơn
+              </h6>
+            </div>
+
+            <div class="col-md-4">
+              <label
+                for="edit-t-cach-dung-mac-dinh"
+                class="form-label text-uppercase text-muted small fw-bold"
+              >
+                Cách dùng
+              </label>
+              <input
+                type="text"
+                id="edit-t-cach-dung-mac-dinh"
+                name="t_cach_dung_mac_dinh"
+                class="form-control"
+                placeholder="VD: Uống, Tiêm..."
+              />
+            </div>
+
+            <div class="col-md-8">
+              <label
+                for="edit-t-huong-dan"
+                class="form-label text-uppercase text-muted small fw-bold"
+              >
+                Hướng dẫn mặc định
+              </label>
+              <input
+                type="text"
+                id="edit-t-huong-dan"
+                name="t_huong_dan"
+                class="form-control"
+                placeholder="VD: Sáng 1 viên, Tối 1 viên sau ăn..."
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer bg-light d-flex justify-content-between">
+          <button
+            type="button"
+            class="btn btn-secondary px-4"
+            data-bs-dismiss="modal"
+          >
+            Hủy bỏ
+          </button>
+          <button
+            type="submit"
+            class="btn text-white px-4 fw-bold shadow-sm"
+            style="background-color: #4cbb17; border-color: #4cbb17"
+          >
+            <i class="bi bi-check-lg me-1"></i> Lưu Thay Đổi
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

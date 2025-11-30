@@ -1,0 +1,44 @@
+<div class="modal fade" id="editAppointmentModal" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title fw-bold">Chỉnh Sửa Lịch Hẹn</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editAppointmentForm" onsubmit="event.preventDefault(); luuCapNhatLichHen()">
+                    <input type="hidden" id="edit_lh_ma"> <div class="form-group mb-3">
+                        <label class="form-label fw-bold">Ngày Hẹn</label>
+                        <input type="text" id="edit_lh_ngay" class="form-control datepicker-input" required placeholder="dd/mm/yyyy">
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label fw-bold">Khung Giờ</label>
+                        <select id="edit_lh_gio" class="form-select" required>
+                            </select>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label fw-bold">Trạng Thái</label>
+                        <select id="edit_lh_trang_thai" class="form-select">
+                            <option value="CHO_KHAM">Chờ khám</option>
+                            <option value="DA_DEN">Đã đến</option>
+                            <option value="TAI_KHAM">Tái khám</option>
+                            <option value="DA_HUY">Đã hủy</option>
+                            <option value="CHUA_DEN">Chưa đến</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label fw-bold">Ghi Chú</label>
+                        <textarea id="edit_lh_ghi_chu" class="form-control" rows="2" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer bg-light d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" onclick="luuCapNhatLichHen()" class="btn btn-info text-white fw-bold">Lưu Thay Đổi</button>
+            </div>
+        </div>
+    </div>
+</div>

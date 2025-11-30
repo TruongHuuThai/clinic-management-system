@@ -1,0 +1,7 @@
+        .table > :not(caption)>*>* { vertical-align: middle; }
+        .form-control, .form-select { font-size: 0.9rem; }
+        .service-name { font-size: 1rem; color: #0d6efd; }
+        .preview-image { max-width: 100px; max-height: 100px; display: none; margin-top: 5px; border: 1px solid #ddd; padding: 2px; }
+body {
+  padding-top: 70px;
+}

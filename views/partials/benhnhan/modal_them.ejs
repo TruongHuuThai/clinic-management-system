@@ -1,0 +1,66 @@
+<div class="modal fade" id="addPatientModal" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title fw-bold">Thêm Hồ Sơ Bệnh Nhân Mới</h5>
+            </div>
+            <div class="modal-body">
+                <form id="patientNewForm" onsubmit="event.preventDefault(); luuBenhNhanMoi()">
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Họ và Tên <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="new_bn_ho_ten" name="ten_benh_nhan" autocomplete="off" placeholder="VD: Nguyễn Văn A" required>
+                            <div class="invalid-feedback"></div> 
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold" >Số Điện Thoại <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="new_bn_sdt" name="so_dien_thoai" autocomplete="off" placeholder="VD: 0867504590" minlength="10" required>
+                            <div class="invalid-feedback"></div> 
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Ngày Sinh <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control datepicker-input" id="new_bn_ngay_sinh" name="ngay_sinh" placeholder="VD: 10/02/2004" autocomplete="off" required>
+                            <div class="invalid-feedback"></div> 
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Giới Tính <span class="text-danger">*</span></label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="gioi_tinh" value="Nam" id="new_gender_nam" checked>
+                                    <label class="form-check-label" for="new_gender_nam">Nam</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="gioi_tinh" value="Nu" id="new_gender_nu">
+                                    <label class="form-check-label" for="new_gender_nu">Nữ</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-bold">Địa Chỉ <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="new_bn_dia_chi" name="dia_chi" autocomplete="off" placeholder="VD: Đường 3/2, Phường Ninh Kiều, TP Cần Thơ" required>
+                        </div>
+
+                        <div class="col-12 mt-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="check_kham_ngay">
+                                <label class="form-check-label fw-bold text-success" for="check_kham_ngay">
+                                    <i class="fas fa-stethoscope me-1"></i> Tạo phiếu khám ngay sau khi lưu
+                                </label>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" onclick="luuBenhNhanMoi()" class="btn btn-success fw-bold">Lưu Bệnh Nhân</button>
+            </div>
+        </div>
+    </div>
+</div>

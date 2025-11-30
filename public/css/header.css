@@ -1,0 +1,34 @@
+/* File: public/css/header.css */
+
+/* Thêm bóng đổ cho menu nổi bật hơn */
+.navbar {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Chỉnh font chữ tiêu đề to đẹp */
+.navbar h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Hiệu ứng cho các nút bấm */
+.navbar-nav .btn {
+  margin-left: 10px;
+  border-radius: 20px; /* Bo tròn nút */
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+/* Hiệu ứng khi di chuột vào nút */
+.navbar-nav .btn:hover {
+  background-color: white;
+  color: #0d6efd !important; /* Màu xanh primary của bootstrap */
+  transform: translateY(-2px); /* Nổi lên nhẹ */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}

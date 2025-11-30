@@ -1,0 +1,27 @@
+<div class="modal fade" id="receiveConfirmModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title fw-bold">
+                    <i class="fas fa-user-check me-2"></i>Xác Nhận Tiếp Đón
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            
+            <div class="modal-body p-4 text-center">
+                <div class="mb-3">
+                    <i class="fas fa-clinic-medical fa-3x text-success bg-light p-3 rounded-circle"></i>
+                </div>
+                <p class="fs-5">Tiếp đón bệnh nhân <strong id="receivePatientName" class="text-success">...</strong>?</p>
+                <p class="text-muted small">Hành động này sẽ chuyển trạng thái sang <strong>"Đã đến"</strong> và đưa vào hàng chờ khám.</p>
+            </div>
+
+            <div class="modal-footer bg-light d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Hủy bỏ</button>
+                <button type="button" class="btn btn-success px-4 fw-bold" onclick="thucHienTiepDon()">
+                    <i class="fas fa-check"></i> Xác Nhận
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

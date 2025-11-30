@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> | Hệ Thống Quản Lý Phòng Khám</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <%- include('partials/thuvien_js') %>
+
+    <link rel="stylesheet" href="/css/trangchu.css">
+</head>
+<body>
+    <%- include('partials/header') %>
+    
+    <%
+    const trangThaiCLS = {
+        'CHO_THUC_HIEN': 'Chờ thực hiện', 
+        'DANG_THUC_HIEN': 'Đang thực hiện',
+        'DA_CO_KET_QUA': 'Đã có kết quả', 
+        'DA_CHI_DINH': 'Đã chỉ định'
+    };
+    
+    const statusMap = {
+        'CHO_KHAM': 'Chờ khám', 
+        'DA_DEN': 'Đã đến', 
+        'DANG_KHAM': 'Đang khám',
+        'DA_HOAN_THANH': 'Đã xong', 
+        'DA_HUY': 'Đã hủy', 
+        'TAI_KHAM': 'Tái khám',
+        'CHUA_DEN': 'Chưa đến'
+    };
+    %>
+
+    <main class="container my-4">
+        
+        <h2 class="mb-4">Tổng Quan Hôm Nay</h2>
+        <section class="row mb-4">
+            <div class="col-md-4">
+                <div class="card bg-primary text-white p-3 mb-3 shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3>Lịch Hẹn</h3>
+                            <h2 class="display-4 fw-bold"><%= data.kpi.appointments %></h2>
+                        </div>
+                        <i class="fas fa-calendar-check fa-4x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-warning text-dark p-3 mb-3 shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3>Chờ Khám</h3>
+                            <h2 class="display-4 fw-bold"><%= data.kpi.waiting %></h2>
+                        </div>
+                        <i class="fas fa-user-clock fa-4x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-success text-white p-3 mb-3 shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3>Doanh Thu</h3>
+                            <h2 class="display-4 fw-bold"><%= data.kpi.revenue %></h2>
+                        </div>
+                        <i class="fas fa-coins fa-4x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <hr>
+
+        <section class="mb-5">
+            <h3>Lịch Hẹn Hôm Nay</h3>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-light">
+                         <tr>
+                            <th>Giờ</th>
+                            <th>Bệnh Nhân</th>
+                            <th>Trạng Thái</th>
+                            <th>Ghi chú</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (data.appointmentsList && data.appointmentsList.length > 0) { %>
+                            <% data.appointmentsList.forEach((item) => { 
+                                const displayStatus = statusMap[item.lh_trang_thai] || item.lh_trang_thai;
+                                
+                                
+                                let badgeClass = 'bg-secondary';
+                                if(item.lh_trang_thai === 'DA_HOAN_THANH') badgeClass = 'bg-success';
+                                else if(item.lh_trang_thai === 'DANG_KHAM') badgeClass = 'bg-primary';
+                                else if(item.lh_trang_thai === 'DA_DEN') badgeClass = 'bg-info text-dark';
+                                else if(item.lh_trang_thai === 'DA_HUY') badgeClass = 'bg-danger';
+                                else if(item.lh_trang_thai === 'CHO_KHAM') badgeClass = 'bg-warning text-dark';
+                            %>
+                                <tr>
+                                    <td><%= item.lh_khung_gio ? item.lh_khung_gio.substring(0, 5) : '' %></td> 
+                                    <td class="fw-bold"><%= item.bn_ho_ten %></td> 
+                                    <td>
+                                        <span class="badge <%= badgeClass %>"><%= displayStatus %></span>
+                                    </td>
+                                    <td><%= item.lh_ghi_chu || '' %></td>
+                                    <td>
+                                        <% if (['CHO_KHAM', 'TAI_KHAM', 'CHUA_DEN'].includes(item.lh_trang_thai)) { %>
+                                            <button 
+                                                class="btn btn-sm btn-success" 
+                                                onclick="tiepDon('<%= item.lh_ma %>', '<%= item.bn_ho_ten %>')"> <i class="fas fa-check"></i> Tiếp Đón
+                                            </button>
+                                        <% } else if (item.lh_trang_thai === 'DA_DEN') { %>
+                                            <button class="btn btn-sm btn-warning" onclick="batDauKham('<%= item.lh_ma %>')">
+                                                <i class="fas fa-stethoscope"></i> Khám
+                                            </button>
+                                        <% } else if (item.lh_trang_thai === 'DANG_KHAM') { %>
+                                            <button class="btn btn-sm btn-primary" onclick="tiepTucKham('<%= item.lh_ma %>')">
+                                                <i class="fas fa-play"></i> Tiếp tục
+                                            </button>
+                                        <% } else { %>
+                                            <span class="text-muted small">--</span>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr><td colspan="5" class="text-center py-4">Hôm nay trống lịch.</td></tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section>
+            <h3>Bệnh Nhân Đang Trong Quy Trình</h3>
+            <div class="card p-3 shadow-sm border-0">
+                <ul class="list-group list-group-flush">
+                    <% if (data.waitingPatients && data.waitingPatients.length > 0) { %>
+                        <% data.waitingPatients.forEach((patient) => { %>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-user-injured text-primary me-2"></i> 
+                                    <strong><%= patient.name %></strong>
+                                    <span class="text-muted mx-2">|</span>
+                                    <span class="text-danger fw-bold"><%= patient.status %></span>
+                                    
+                                    <% if (patient.pendingServices && patient.pendingServices.length > 0) { %>
+                                        <div class="mt-1 ms-4 small text-muted">
+                                            <i class="fas fa-flask"></i> Đang chờ CLS: 
+                                            <% patient.pendingServices.forEach((service, idx) => { %>
+                                                <%= service.ten_dv %> 
+                                                (<%= trangThaiCLS[service.trang_thai] || service.trang_thai %>)
+                                                <%= idx < patient.pendingServices.length - 1 ? ', ' : '' %>
+                                            <% }); %>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                <button class="btn btn-sm btn-outline-primary" onclick="window.location.href='/api/benh-nhan/<%= patient.pkb_ma %>'">
+                                    Xem chi tiết
+                                </button>
+                            </li>
+                        <% }); %>
+                    <% } else { %>
+                        <li class="list-group-item text-center text-muted">Không có bệnh nhân nào đang chờ xử lý thêm.</li>
+                    <% } %>
+                </ul>
+            </div>
+        </section>
+
+        <%- include('partials/trangchu/modal_xac_nhan_don') %>      
+        <%- include('partials/modal_thanhcong') %>
+    </main>
+    <script src="/js/trangchu.js"></script>
+</body>
+</html>

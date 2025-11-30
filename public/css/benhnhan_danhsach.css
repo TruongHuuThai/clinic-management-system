@@ -1,0 +1,29 @@
+body {
+  padding-top: 70px;
+}
+.scrollable-cell {
+  max-height: 60px;
+  overflow-y: auto;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  padding-right: 5px;
+}
+
+.scrollable-cell::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollable-cell::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.scrollable-cell::-webkit-scrollbar-thumb {
+  background: #bbb;
+  border-radius: 10px;
+}
+.scrollable-cell::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+
+.table thead th {
+  text-align: center !important;
+  vertical-align: middle !important;
+}

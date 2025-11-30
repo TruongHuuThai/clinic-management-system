@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title><%= title %></title>
+    <%- include('partials/thuvien_js') %>
+</head>
+<body>
+    <%- include('partials/header') %>
+    <main class="container mt-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h3 class="mb-0"><%= title %></h3>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Benh Nhan:</label>
+                    <input type="text" class="form-control" value="<%= appointmentData.bn_ho_ten %>" readonly>
+                </div>
+
+                <form id="editAppointmentForm" onsubmit="event.preventDefault(); luuLichHen()">
+                    <input type="hidden" id="ma_lich_hen" value="<%= appointmentData.lh_ma %>">
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="ngay_hen" class="form-label fw-bold">Ngay Hen</label>
+                            <% 
+                                let hienThiNgay = '';
+                                if(appointmentData.lh_ngay_hen) {
+                                    hienThiNgay = new Date(appointmentData.lh_ngay_hen).toLocaleDateString('en-GB'); // dd/mm/yyyy
+                                }
+                            %>
+                            <input type="text" class="form-control datepicker-input" id="ngay_hen" value="<%= hienThiNgay %>" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="khung_gio" class="form-label fw-bold">Khung Gio</label>
+                            <select class="form-select" id="khung_gio" required>
+                                <option value="<%= appointmentData.lh_khung_gio %>" selected>
+                                    <%= appointmentData.lh_khung_gio %> (Hien tai)
+                                </option>
+                                </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="trang_thai" class="form-label fw-bold">Trang Thai</label>
+                            <select class="form-select" id="trang_thai" required>
+                                <option value="CHO_KHAM" <%= appointmentData.lh_trang_thai === 'CHO_KHAM' ? 'selected' : '' %>>Cho Kham</option>
+                                <option value="DA_DEN" <%= appointmentData.lh_trang_thai === 'DA_DEN' ? 'selected' : '' %>>Da Den</option>
+                                <option value="DANG_KHAM" <%= appointmentData.lh_trang_thai === 'DANG_KHAM' ? 'selected' : '' %>>Dang Kham</option>
+                                <option value="DA_HOAN_THANH" <%= appointmentData.lh_trang_thai === 'DA_HOAN_THANH' ? 'selected' : '' %>>Da Hoan Thanh</option>
+                                <option value="DA_HUY" <%= appointmentData.lh_trang_thai === 'DA_HUY' ? 'selected' : '' %>>Da Huy</option>
+                                <option value="TAI_KHAM" <%= appointmentData.lh_trang_thai === 'TAI_KHAM' ? 'selected' : '' %>>Tai Kham</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="ghi_chu" class="form-label">Ghi Chu</label>
+                            <textarea class="form-control" id="ghi_chu" rows="3"><%= appointmentData.lh_ghi_chu || '' %></textarea>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 text-end">
+                        <button type="button" class="btn btn-secondary" onclick="danhSachLichHen()">Huy</button>
+                        <button type="submit" class="btn btn-primary px-4">Luu Thay Doi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+    <%- include('partials/modal_thanhcong') %>
+    <script src="/js/lichhen_sua.js"></script>
+</body>
+</html>

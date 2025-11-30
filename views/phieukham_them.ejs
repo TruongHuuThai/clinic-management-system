@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Phiếu Khám Bệnh và Chẩn Đoán</title>
+    
+    <%- include('partials/thuvien_js') %>
+    
+    <link rel="stylesheet" href="/css/partials/placeholder_nghien.css">
+    <link rel="stylesheet" href="/css/phieukham_them.css">
+</head>
+<body>
+    <%- include('partials/header') %>
+
+    <div class="container my-5">
+      <h2 class="text-center text-primary fw-bold mb-4">PHIẾU KHÁM BỆNH VÀ CHẨN ĐOÁN</h2>
+
+      <div class="form-section-title">1. THÔNG TIN HÀNH CHÍNH BỆNH NHÂN</div>
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body bg-custom-light">
+            <div class="row g-3">
+                <div class="col-md-3">
+                  Mã Bệnh Nhân: <span class="patient-info-field"><%= benhNhan.bn_ma || 'N/A' %></span>
+                </div>
+                <div class="col-md-3">
+                  Họ và Tên: <span class="patient-info-field "><%= benhNhan.bn_ho_ten || 'N/A' %></span>
+                </div>
+                <div class="col-md-3">
+                  Ngày sinh: <span class="patient-info-field">
+                    <%= benhNhan.bn_ngay_sinh ? new Date(benhNhan.bn_ngay_sinh).toLocaleDateString('vi-VN') : 'N/A' %>
+                  </span>
+                </div>
+                <div class="col-md-3">
+                  Giới tính: <span class="patient-info-field">
+                    <% if(benhNhan.bn_gioi_tinh === 'Nam') { %>
+                        <span class="badge bg-info ">Nam</span>
+                    <% } else if (benhNhan.bn_gioi_tinh === 'Nữ' || benhNhan.bn_gioi_tinh === 'Nu') { %>
+                        <span class="badge bg-danger bg-opacity-75">Nữ</span>
+                    <% } else { %>
+                        -
+                    <% } %>
+                  </span>
+                </div>
+                <div class="col-md-6">
+                  Địa chỉ: <span class="patient-info-field"><%= benhNhan.bn_dia_chi || 'N/A' %></span>
+                </div>
+                <div class="col-md-3">
+                  SĐT: <span class="patient-info-field"><%= benhNhan.bn_sdt || 'N/A' %></span>
+                </div>
+                <div class="col-md-3">
+                  Ngày hẹn khám: <span class="patient-info-field text-danger">
+                    <% if (benhNhan.lh_ngay_hen) { 
+                        const appointmentDate = new Date(benhNhan.lh_ngay_hen); %> 
+                        <%= appointmentDate.toLocaleDateString('vi-VN') %> 
+                    <% } else { %> Chưa cập nhật <% } %>
+                  </span>
+                </div>
+            </div>
+        </div>
+      </div>
+
+      <form id="phieuKhamBenhForm" method="POST">
+        
+        <input type="hidden" name="pkb_ma_bn" value="<%= benhNhan.bn_ma || '' %>" />
+        <input type="hidden" name="lh_ma" value="<%= lh_ma || '' %>" />
+
+        <div class="form-section-title">2. KHÁM BỆNH VÀ CHẨN ĐOÁN</div>
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body">
+                <h5 class="text-secondary mb-3"><i class="fas fa-stethoscope me-2"></i>A. Thông tin Khám</h5>
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label for="pkb_trieu_chung" class="form-label fw-bold">Triệu chứng/Lý do khám <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="pkb_trieu_chung" name="pkb_trieu_chung" rows="3" required placeholder="Mô tả triệu chứng bệnh nhân khai báo..."></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label for="pkb_ghi_chu" class="form-label fw-bold">Ghi chú khám (Sinh hiệu, Khám lâm sàng)</label>
+                        <textarea class="form-control" id="pkb_ghi_chu" name="pkb_ghi_chu" rows="3" placeholder="Mạch, Nhiệt độ, Huyết áp..."></textarea>
+                    </div>
+                </div>
+
+                <h5 class="mt-4 text-secondary mb-3"><i class="fas fa-file-medical-alt me-2"></i>B. Chẩn đoán và xử trí</h5>
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label for="dt_ghi_chu" class="form-label fw-bold">Chẩn đoán sơ bộ / Kết luận</label>
+                        <textarea class="form-control" id="dt_ghi_chu" name="dt_ghi_chu" rows="2" required placeholder="Chẩn đoán bệnh..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section-title">3. ĐƠN THUỐC</div>
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped align-middle" id="drugTable">
+                        <thead class="table-primary">
+                            <tr>
+                                <th width="20%">Nhóm Thuốc</th>
+                                <th width="25%">Tên Thuốc</th>
+                                <th width="10%">Số lượng</th>
+                                <th width="10%">Đơn vị</th>
+                                <th width="30%">Cách dùng & Hướng dẫn</th>
+                                <th width="5%" class="text-center">Xóa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <%- include('partials/phieukhambenh/thuoc_dong_mau') %>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-2">
+                    <button type="button" class="btn btn-success btn-sm" id="addDrugButton">
+                        <i class="fas fa-plus me-1"></i> Thêm Thuốc
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-section-title">4. CHỈ ĐỊNH CẬN LÂM SÀNG</div>
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped align-middle" id="serviceTable">
+                        <thead class="table-warning">
+                            <tr>
+                                <th width="55%">Dịch vụ Cận Lâm Sàng</th>
+                                <th width="15%">Số lần</th>
+                                <th width="25%">Đơn giá (VNĐ)</th>
+                                <th width="5%" class="text-center">Xóa</th>
+                            </tr>
+                        </thead>
+                        <tbody id="serviceTableBody">
+                            <%- include('partials/phieukhambenh/dichvu_dong_mau') %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-2">
+                    <button type="button" class="btn btn-warning btn-sm text-dark" id="addServiceButton">
+                        <i class="fas fa-flask me-1"></i> Thêm Dịch Vụ
+                    </button>
+                </div>
+                
+                <div class="mt-3">
+                    <label for="pcd_ghi_chu" class="form-label fw-bold">Ghi chú chỉ định (nếu có)</label>
+                    <textarea class="form-control" id="pcd_ghi_chu" name="pcd_ghi_chu" rows="2" placeholder="Lưu ý cho kỹ thuật viên..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-5 mb-5">
+            <button type="button" class="btn btn-secondary btn-lg px-4 me-2" onclick="xacNhanHuyPhieu('/api/benh-nhan/<%= benhNhan.bn_ma %>')">
+                Hủy bỏ
+            </button>
+            <button type="button" 
+                    class="btn btn-primary btn-lg px-5" 
+                    onclick="xacNhanLuuPhieu()">
+                <i class="fas fa-save me-2"></i> Lưu và Hoàn Tất Khám
+            </button>
+        </div>
+
+    </form>
+    </div>
+    <%- include('partials/phieukhambenh/modal_luu') %>
+    <%- include('partials/phieukhambenh/modal_huy_kham') %>
+    <%- include('partials/phieukhambenh/modal_trung_thuoc') %>
+    <%- include('partials/phieukhambenh/modal_trung_dichvu') %>
+    <script src="/js/phieukham_them.js"></script>
+  </body>
+</html>
