@@ -5,17 +5,34 @@
                 <h5 class="modal-title fw-bold">Chỉnh Sửa Lịch Hẹn</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
+            
             <div class="modal-body">
                 <form id="editAppointmentForm" onsubmit="event.preventDefault(); luuCapNhatLichHen()">
-                    <input type="hidden" id="edit_lh_ma"> <div class="form-group mb-3">
-                        <label class="form-label fw-bold">Ngày Hẹn</label>
-                        <input type="text" id="edit_lh_ngay" class="form-control datepicker-input" required placeholder="dd/mm/yyyy">
+                    <input type="hidden" id="edit_lh_ma"> 
+                    
+                    <div class="form-group mb-3">
+                         <label class="form-label fw-bold text-secondary small text-uppercase">Bệnh Nhân</label>
+                         <input type="text" id="edit_bn_ten" class="form-control bg-light fw-bold text-primary" readonly>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Ngày Hẹn</label>
+                            <input type="text" id="edit_lh_ngay" class="form-control datepicker-input" required placeholder="dd/mm/yyyy">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Khung Giờ</label>
+                            <select id="edit_lh_gio" class="form-select" required>
+                                </select>
+                        </div>
                     </div>
 
                     <div class="form-group mb-3">
-                        <label class="form-label fw-bold">Khung Giờ</label>
-                        <select id="edit_lh_gio" class="form-select" required>
-                            </select>
+                        <label class="form-label fw-bold">Loại Hẹn</label>
+                        <select id="edit_lh_loai" class="form-select border-info">
+                            <option value="MOI">Khám Mới</option>
+                            <option value="TAI_KHAM">Tái Khám</option>
+                        </select>
                     </div>
 
                     <div class="form-group mb-3">
@@ -23,15 +40,15 @@
                         <select id="edit_lh_trang_thai" class="form-select">
                             <option value="CHO_KHAM">Chờ khám</option>
                             <option value="DA_DEN">Đã đến</option>
-                            <option value="TAI_KHAM">Tái khám</option>
+                            <option value="DANG_KHAM">Đang khám</option>
+                            <option value="TAI_KHAM">Tái khám (Trạng thái cũ)</option> <option value="DA_HOAN_THANH">Đã hoàn thành</option>
                             <option value="DA_HUY">Đã hủy</option>
-                            <option value="CHUA_DEN">Chưa đến</option>
                         </select>
                     </div>
 
                     <div class="form-group mb-3">
                         <label class="form-label fw-bold">Ghi Chú</label>
-                        <textarea id="edit_lh_ghi_chu" class="form-control" rows="2" required></textarea>
+                        <textarea id="edit_lh_ghi_chu" class="form-control" rows="2"></textarea>
                     </div>
                 </form>
             </div>

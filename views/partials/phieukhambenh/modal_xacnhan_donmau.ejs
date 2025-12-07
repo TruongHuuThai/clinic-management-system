@@ -1,0 +1,30 @@
+<div class="modal fade" id="modalConfirmTemplate" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title fw-bold">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Xác nhận áp dụng mẫu
+                </h5>
+                <button type="button" class="btn-close" onclick="huyApDungDonMau()"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2">Bạn có chắc chắn muốn áp dụng đơn thuốc mẫu:</p>
+                <p class="fw-bold text-primary fs-5 text-center" id="lblTenDonMau">...</p>
+                <div class="alert alert-danger d-flex align-items-center mt-3" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <div>
+                        <strong>Lưu ý:</strong> Toàn bộ dữ liệu thuốc và chẩn đoán hiện tại sẽ bị xóa trắng thay thế.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="huyApDungDonMau()">
+                    <i class="fas fa-times me-1"></i> Hủy bỏ
+                </button>
+                <button type="button" class="btn btn-primary fw-bold" onclick="thucHienApDungDonMau()">
+                    <i class="fas fa-check me-1"></i> Đồng ý áp dụng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

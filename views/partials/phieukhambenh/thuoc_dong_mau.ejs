@@ -1,21 +1,24 @@
 <tr class="drug-row">
     <td>
         <select name="nhom_thuoc[]" class="form-select drug-group-select">
-            <option value=""> Chọn Nhóm Thuốc </option>
+            <option value=""> Chọn nhóm thuốc </option>
             </select>
     </td>
     <td>
-        <input type="text" name="thuoc_ten[]" class="form-control drug-name-input" placeholder="Gõ tên thuốc..." required autocomplete="off">
+        <input type="text" name="thuoc_ten[]" class="form-control drug-name-input" placeholder="Gõ tên thuốc" required autocomplete="off">
         <input type="hidden" name="thuoc_ma[]" class="drug-id-input">
     </td>
     <td>
-        <input type="number" name="so_luong[]" class="form-control text-center" value="1" min="1" required>
+        <input type="number" name="so_luong[]" class="form-control text-center" value="1" min="1" placeholder="Số lượng" required>
     </td>
     <td>
-        <input type="text" name="don_vi[]" class="form-control drug-unit-input" readonly>
+        <input type="text" name="don_vi[]" class="form-control drug-unit-input" placeholder="Đon vị" readonly>
     </td>
     <td>
-        <input type="text" name="cach_dung[]" class="form-control drug-usage-input" placeholder="Cách dùng...">
+        <input type="text" name="cach_dung[]" class="form-control drug-usage-input" placeholder="Cách dùng" autocomplete="off">
+    </td>
+    <td>
+        <input type="text" name="lieu_dung[]" class="form-control drug-dosage-input" placeholder="Liều dùng" autocomplete="off">
     </td>
     <td class="text-center">
         <button type="button" class="btn btn-danger btn-sm remove-drug">

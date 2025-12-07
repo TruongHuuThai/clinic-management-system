@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title><%= title %></title>
+    <%- include('partials/thuvien_js') %>
+    <link rel="stylesheet" href="/css/donthuocmau.css">
+    <link rel="stylesheet" href="/css/partials/placehoder_nghien.css">
+<body>
+    <%- include('partials/header') %>
+    <main class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-primary fw-bold"><i class="fas fa-file-prescription me-2"></i>QUẢN LÝ ĐƠN THUỐC MẪU</h2>
+            <button onclick="moModalThemDonMau()" class="btn btn-success">
+                <i class="fas fa-plus-circle"></i> Tạo Đơn Mẫu Mới
+            </button>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover align-middle mb-0">
+                    <thead class="table-primary">
+                        <tr>
+                            <th width="5%" class="text-center">STT</th>
+                            <th width="20%">Tên đơn thuốc mẫu</th>
+                            <th width="25%">Áp dụng cho bệnh</th>
+                            <th width="40%">Chi tiết thuốc</th>
+                            <th width="10%" class="text-center">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="templateTableBody">
+                        </tbody>
+                </table>
+                
+                <div id="empty-state" class="text-center p-5 d-none">
+                    <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">Chưa có đơn mẫu nào. Hãy tạo mới!</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <%- include('partials/modal_thanhcong')%>
+    <%- include('partials/donthuocmau/modal_them') %>
+    <%- include('partials/phieukhambenh/modal_trung_thuoc.ejs')%>
+
+    <script src="/js/donthuocmau.js"></script>
+</body>
+</html>

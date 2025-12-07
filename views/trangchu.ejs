@@ -26,7 +26,6 @@
         'DANG_KHAM': 'Đang khám',
         'DA_HOAN_THANH': 'Đã xong', 
         'DA_HUY': 'Đã hủy', 
-        'TAI_KHAM': 'Tái khám',
         'CHUA_DEN': 'Chưa đến'
     };
     %>
@@ -77,11 +76,12 @@
             <div class="table-responsive">
                 <table class="table table-bordered table-hover align-middle">
                     <thead class="table-light">
-                         <tr>
-                            <th>Giờ</th>
+                         <tr class="text-center">
+                            <th>Khung Giờ</th>
                             <th>Bệnh Nhân</th>
                             <th>Trạng Thái</th>
-                            <th>Ghi chú</th>
+                            <th>Loại Hẹn</th>
+                            <th>Ghi Chú</th>
                             <th>Thao Tác</th>
                         </tr>
                     </thead>
@@ -98,11 +98,23 @@
                                 else if(item.lh_trang_thai === 'DA_HUY') badgeClass = 'bg-danger';
                                 else if(item.lh_trang_thai === 'CHO_KHAM') badgeClass = 'bg-warning text-dark';
                             %>
-                                <tr>
+                                <tr >
                                     <td><%= item.lh_khung_gio ? item.lh_khung_gio.substring(0, 5) : '' %></td> 
                                     <td class="fw-bold"><%= item.bn_ho_ten %></td> 
                                     <td>
                                         <span class="badge <%= badgeClass %>"><%= displayStatus %></span>
+                                    </td>
+                                    <td class="text-center">
+                                        <% 
+                                            const loaiMap = {
+                                                'MOI': { text: 'Mới', class: 'bg-success' },
+                                                'TAI_KHAM': { text: 'Tái Khám', class: 'bg-info text-dark' }
+                                            };
+                                            const loaiObj = loaiMap[item.lh_loai];
+                                        %>
+                                        <span class="badge rounded-pill <%= loaiObj.class %>">
+                                            <i class="fas fa-user-plus"> </i><%= loaiObj.text %>
+                                        </span>
                                     </td>
                                     <td><%= item.lh_ghi_chu || '' %></td>
                                     <td>
@@ -123,6 +135,7 @@
                                             <span class="text-muted small">--</span>
                                         <% } %>
                                     </td>
+
                                 </tr>
                             <% }); %>
                         <% } else { %>

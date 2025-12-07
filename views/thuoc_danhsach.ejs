@@ -16,7 +16,7 @@
             <form action="/api/thuoc" method="GET" class="row g-3 align-items-center">
                 <div class="col-auto">
                     <select name="nt_ma" class="form-select" style="min-width: 200px;">
-                        <option value="">Loc theo Nhom Thuoc</option>
+                        <option value="">Lọc Theo Nhóm Thuốc</option>
                         <% groups.forEach(g => { %>
                             <option value="<%= g.nt_ma %>" <%= query.nt_ma == g.nt_ma ? 'selected' : '' %>>
                                 <%= g.nt_ten %>
@@ -28,18 +28,18 @@
                     <input type="text" name="search" placeholder="Tim kiem thuoc..." value="<%= query.search || '' %>" class="form-control" style="min-width: 300px;">
                 </div>
                 <div class="col-auto">
-                    <button type="submit" class="btn btn-primary">Loc</button>
-                    <a href="/api/thuoc" class="btn btn-secondary">Xoa Loc</a>
+                    <button type="submit" class="btn btn-primary">Lọc</button>
+                    <a href="/api/thuoc" class="btn btn-secondary">Xóa Lọc</a>
                 </div>
             </form> 
         </div>
 
         <button onclick="moModalThemThuoc()" class="btn btn-success mb-3">
-            <i class="fas fa-plus"></i> Them Thuoc Moi
+            <i class="fas fa-plus"></i> Thêm Thuốc Mới
         </button>
 
         <table class="table table-striped table-hover align-middle">
-            <thead class="table-dark">
+            <thead class="table-primary">
                 <tr>
                     <th>Mã</th>
                     <th>Tên Thuốc</th>
@@ -61,7 +61,7 @@
                         <td><%= t.t_ham_luong %></td>
                         <td><%= t.t_don_vi_tinh %></td>
                         <td><div class="scrollable-cell"><%= t.t_cach_dung_mac_dinh %></div></td>
-                        <td><div class="scrollable-cell"><%= t.t_huong_dan %></div></td>
+                        <td><div class="scrollable-cell"><%= t.t_lieu_dung_mac_dinh %></div></td>
                         <td class="text-end fw-bold text-success">
                             <%= parseFloat(t.gia_hien_tai || 0).toLocaleString('vi-VN') %>
                         </td>

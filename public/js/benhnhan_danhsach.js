@@ -8,7 +8,14 @@ async function apDungBoLoc() {
   } else {
     url.searchParams.delete("search");
   }
+  url.searchParams.set("trang", 1);
+  window.location.href = url.toString();
+}
 
+function chuyenTrang(soTrang) {
+  if (soTrang < 1) return;
+  const url = new URL(window.location.href);
+  url.searchParams.set("trang", soTrang);
   window.location.href = url.toString();
 }
 

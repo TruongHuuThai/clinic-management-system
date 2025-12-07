@@ -55,31 +55,27 @@ router.post("/save", async (req, res) => {
     pkb_trieu_chung,
     pkb_ghi_chu,
     dt_ghi_chu,
-    ma_benh,
     pcd_ghi_chu,
   } = req.body;
 
   const toArray = (val) => (val ? (Array.isArray(val) ? val : [val]) : []);
-
+  const ma_benh = toArray(req.body.ma_benh);
   const thuoc_ma = toArray(req.body.thuoc_ma);
   const so_luong = toArray(req.body.so_luong);
+  const lieu_dung = toArray(req.body.lieu_dung);
   const cach_dung = toArray(req.body.cach_dung);
-
   const service_ma = toArray(req.body.service_ma);
   const service_so_luong = toArray(req.body.service_so_luong);
 
   let maPhieuChiDinhMoi = null;
+  let maPhieuKham = null;
 
   if (!pkb_ma_bn || !lh_ma || !pkb_trieu_chung) {
-    return res
-      .status(400)
-      .send("Dữ liệu khám bệnh thiếu (Triệu chứng, Mã BN, Mã LH).");
+    return res.status(400).send("Dữ liệu khám bệnh thiếu.");
   }
-
   const ketNoi = await pool.connect();
   try {
     await ketNoi.query("BEGIN");
-
     const truyVanPkb = `
             INSERT INTO phieu_kham_benh (pkb_ma_bn, pkb_ngay_kham, pkb_trieu_chung, pkb_ghi_chu)
             VALUES ($1, CURRENT_TIMESTAMP, $2, $3) 
@@ -90,13 +86,11 @@ router.post("/save", async (req, res) => {
       pkb_trieu_chung,
       pkb_ghi_chu,
     ]);
-    const maPhieuKham = ketQuaPkb.rows[0].pkb_ma;
+    maPhieuKham = ketQuaPkb.rows[0].pkb_ma;
+    const coThuoc = thuoc_ma.length > 0 && thuoc_ma[0] !== "";
+    const coBenh = ma_benh.length > 0;
 
-    if (ma_benh) {
-      const truyVanChanDoan = `INSERT INTO chan_doan (cd_ma_pkb, cd_ma_b) VALUES ($1, $2);`;
-      await ketNoi.query(truyVanChanDoan, [maPhieuKham, ma_benh]);
-    }
-    if (thuoc_ma.length > 0 && thuoc_ma[0] !== "") {
+    if (coThuoc || coBenh) {
       const truyVanDonThuoc = `
                 INSERT INTO don_thuoc (dt_ma_pkb, dt_ngay_tao, dt_ghi_chu)
                 VALUES ($1, CURRENT_TIMESTAMP, $2) 
@@ -107,24 +101,35 @@ router.post("/save", async (req, res) => {
         dt_ghi_chu,
       ]);
       const maDonThuoc = ketQuaDonThuoc.rows[0].dt_ma;
+      if (coBenh) {
+        const truyVanChanDoan = `
+              INSERT INTO CHAN_DOAN (cd_ma_dt, cd_ma_benh) 
+              VALUES ($1, $2)
+              ON CONFLICT (cd_ma_dt, cd_ma_benh) DO NOTHING;
+          `;
+        for (const idBenh of ma_benh) {
+          await ketNoi.query(truyVanChanDoan, [maDonThuoc, idBenh]);
+        }
+      }
+      if (coThuoc) {
+        const truyVanChiTietDt = `
+              INSERT INTO chi_tiet_don_thuoc (ctdt_ma_dt, ctdt_ma_thuoc, ctdt_so_luong, ctdt_lieu_dung, ctdt_cach_dung)
+              VALUES ($1, $2, $3, $4, $5);
+          `;
 
-      const truyVanChiTietDt = `
-                INSERT INTO chi_tiet_don_thuoc (ctdt_ma_dt, ctdt_ma_thuoc, ctdt_so_luong, ctdt_cacl_dung)
-                VALUES ($1, $2, $3, $4);
-            `;
-
-      for (let i = 0; i < thuoc_ma.length; i++) {
-        if (thuoc_ma[i] && so_luong[i]) {
-          await ketNoi.query(truyVanChiTietDt, [
-            maDonThuoc,
-            thuoc_ma[i],
-            so_luong[i],
-            cach_dung[i] || "",
-          ]);
+        for (let i = 0; i < thuoc_ma.length; i++) {
+          if (thuoc_ma[i] && so_luong[i]) {
+            await ketNoi.query(truyVanChiTietDt, [
+              maDonThuoc,
+              thuoc_ma[i],
+              so_luong[i],
+              lieu_dung[i] || "",
+              cach_dung[i] || "",
+            ]);
+          }
         }
       }
     }
-
     if (service_ma.length > 0 && service_ma[0] !== "") {
       const truyVanPcd = `
                 INSERT INTO phieu_chi_dinh (pcd_ma_pkb, pcd_trang_thai, pcd_ghi_chu) 
@@ -149,7 +154,7 @@ router.post("/save", async (req, res) => {
             maPhieuChiDinhMoi,
             service_ma[i],
             service_so_luong[i] || 1,
-            "DA_CHI_DINH", 
+            "DA_CHI_DINH",
           ]);
         }
       }
@@ -160,8 +165,8 @@ router.post("/save", async (req, res) => {
     }
 
     await ketNoi.query("COMMIT");
-    if (maPhieuChiDinhMoi) {
 
+    if (maPhieuChiDinhMoi) {
       res.redirect(`/api/ket-qua-cls/nhap/${maPhieuChiDinhMoi}`);
     } else {
       res.redirect(

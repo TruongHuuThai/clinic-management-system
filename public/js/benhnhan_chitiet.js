@@ -84,7 +84,7 @@ function modalThemLichTaiKham(maBenhNhan) {
   document.getElementById("reschedule_bn_ma").value = maBenhNhan;
 
   document.getElementById("reschedule_time").innerHTML =
-    '<option value="">-- Vui lòng chọn ngày trước --</option>';
+    '<option value=""> Vui lòng chọn ngày trước </option>';
 
   modalInstance.show();
   $("#reschedule_date").datepicker("destroy");
@@ -105,6 +105,7 @@ async function luuLichTaiKham() {
   const ngayHenVal = document.getElementById("reschedule_date").value;
   const khungGio = document.getElementById("reschedule_time").value;
   const ghiChu = document.getElementById("reschedule_note").value;
+  const loaiHen = document.getElementById("reschedule_loai").value;
 
   if (!ngayHenVal || !khungGio) {
     alert("Vui lòng chọn Ngày và Giờ hẹn.");
@@ -123,7 +124,8 @@ async function luuLichTaiKham() {
         ngay_hen: ngayHenISO,
         khung_gio: khungGio,
         ghi_chu: ghiChu,
-        trang_thai: "TAI_KHAM",
+        trang_thai: "CHO_KHAM",
+        loai: loaiHen,
       }),
     });
 

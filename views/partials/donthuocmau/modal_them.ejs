@@ -1,0 +1,62 @@
+    <div class="modal fade" id="templateModal" data-bs-backdrop="static" tabindex="-1">
+        <div class="modal-dialog modal-xl"> <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title fw-bold" id="modalTitle">Soạn Đơn Thuốc Mẫu</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="templateForm">
+                        <input type="hidden" id="templateId">
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tên Đơn Mẫu <span class="text-danger">*</span></label>
+                            <input type="text" id="templateName" class="form-control form-control-lg" placeholder="VD: Nhập tên mẫu đơn thuốc" required autocomplete="off">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Áp dụng cho bệnh (Chẩn đoán):</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-stethoscope"></i></span>
+                                <input type="text" id="inputTimBenh" class="form-control" placeholder="Gõ tên bệnh để thêm (VD: Viêm họng)...">
+                            </div>
+                            <div id="danhSachBenhTags" class="mt-2 d-flex flex-wrap gap-2"></div>
+                        </div>
+                        <div class="card border-success mb-3">
+                            </div>
+
+                        <div class="card border-success mb-3">
+                            <div class="card-header bg-light fw-bold text-success">Chi tiết thuốc</div>
+                            <div class="card-body p-0">
+                                <table class="table table-bordered mb-0 align-middle" id="drugTable">
+                                    <thead class="table-light text-center">
+                                        <tr>
+                                            <th width="15%">Nhóm Thuốc</th>
+                                            <th width="25%">Tên Thuốc</th>
+                                            <th width="8%">SL</th>
+                                            <th width="10%">Đơn vị</th>
+                                            <th width="20%">Liều dùng</th>
+                                            <th width="17%">Cách dùng</th>
+                                            <th width="5%">Xóa</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        </tbody>
+                                </table>
+                            </div>
+                            <div class="card-footer bg-white">
+                                <button type="button" class="btn btn-outline-success btn-sm" id="btnAddDrugRow">
+                                    <i class="fas fa-plus"></i> Thêm dòng thuốc
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-success fw-bold" onclick="luuDonMau()">
+                        <i class="fas fa-save"></i> Lưu Đơn Mẫu
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>

@@ -18,7 +18,7 @@ router.get("/tim-kiem", async (req, res) => {
             t.t_loai_thuoc,
             nt.nt_ten AS ten_nhom,
             t.t_cach_dung_mac_dinh,
-            t.t_huong_dan
+            t.t_lieu_dung_mac_dinh,
         FROM thuoc t
         LEFT JOIN nhom_thuoc nt ON t.t_loai_thuoc = nt.nt_ma
         WHERE t.t_ten_thuoc ILIKE $1 
@@ -88,7 +88,7 @@ router.get("/", async (req, res) => {
                 t.t_don_vi_tinh,
                 t.t_ham_luong,
                 t.t_cach_dung_mac_dinh,
-                t.t_huong_dan,
+                t.t_lieu_dung_mac_dinh,
                 ${truyVanGiaHienTai} AS gia_hien_tai
             FROM thuoc t
             JOIN nhom_thuoc nt ON t.t_loai_thuoc = nt.nt_ma
@@ -98,7 +98,7 @@ router.get("/", async (req, res) => {
     const ketQuaThuoc = await pool.query(truyVanThuoc, mangThamSo);
 
     res.render("thuoc_danhsach", {
-      title: "Quan Ly Thuoc",
+      title: "Quản Lý Thuốc",
       drugs: ketQuaThuoc.rows,
       groups: ketQuaNhom.rows,
       query: req.query,
@@ -117,7 +117,7 @@ router.post("/them-moi", async (req, res) => {
     t_ham_luong,
     gia_moi,
     t_cach_dung_mac_dinh,
-    t_huong_dan,
+    t_lieu_dung_mac_dinh,
   } = req.body;
 
   if (!t_ten_thuoc || !t_loai_thuoc || !t_don_vi_tinh || !gia_moi) {
@@ -129,7 +129,7 @@ router.post("/them-moi", async (req, res) => {
     await ketNoi.query("BEGIN");
 
     const truyVanThemThuoc = `
-            INSERT INTO thuoc (t_ten_thuoc, t_don_vi_tinh, t_ham_luong, t_loai_thuoc, t_cach_dung_mac_dinh, t_huong_dan)
+            INSERT INTO thuoc (t_ten_thuoc, t_don_vi_tinh, t_ham_luong, t_loai_thuoc, t_cach_dung_mac_dinh, t_lieu_dung_mac_dinh)
             VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING t_ma;
         `;
@@ -139,7 +139,7 @@ router.post("/them-moi", async (req, res) => {
       t_ham_luong || null,
       t_loai_thuoc,
       t_cach_dung_mac_dinh || null,
-      t_huong_dan || null,
+      t_lieu_dung_mac_dinh || null,
     ]);
     const maThuoc = ketQuaThuoc.rows[0].t_ma;
 
@@ -174,7 +174,7 @@ router.post("/cap-nhat-thong-tin/:maThuoc", async (req, res) => {
     t_don_vi_tinh,
     t_ham_luong,
     t_cach_dung_mac_dinh,
-    t_huong_dan,
+    t_lieu_dung_mac_dinh,
   } = req.body;
 
   try {
@@ -186,7 +186,7 @@ router.post("/cap-nhat-thong-tin/:maThuoc", async (req, res) => {
                 t_don_vi_tinh = $3,
                 t_ham_luong = $4,
                 t_cach_dung_mac_dinh = $5,
-                t_huong_dan = $6
+                t_lieu_dung_mac_dinh = $6
             WHERE 
                 t_ma = $7
             RETURNING t_ma;
@@ -198,7 +198,7 @@ router.post("/cap-nhat-thong-tin/:maThuoc", async (req, res) => {
       t_don_vi_tinh || null,
       t_ham_luong || null,
       t_cach_dung_mac_dinh || null,
-      t_huong_dan || null,
+      t_lieu_dung_mac_dinh || null,
       maThuoc,
     ]);
 

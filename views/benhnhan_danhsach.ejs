@@ -10,6 +10,10 @@
 
   <body>
     <%- include('partials/header') %>
+    <% 
+        const LIMIT = 10; 
+        const viTriOffset = (currentPage - 1) * LIMIT; 
+    %>
     <main class="container my-4">
       <h1><%= title %></h1>
 
@@ -52,22 +56,22 @@
       <% } else { %>
       <table class="table table-striped table-hover align-middle">
           <thead class="table-primary">
-            <tr>
-              <th class="text-center">Mã</th>
-              <th class="text-center">Họ và Tên</th>
-              <th class="text-center">Giới Tính</th>
-              <th class="text-center">Ngày Sinh</th>
-              <th class="text-center">SĐT</th>
+            <tr class="text-center">
+              <th >STT</th>
+              <th >Họ và Tên</th>
+              <th >Giới Tính</th>
+              <th >Ngày Sinh</th>
+              <th >SĐT</th>
               <th width="30%" >Địa Chỉ</th>
-              <th class="text-center">Hành động</th>
+              <th >Hành động</th>
             </tr>
           </thead>
           <tbody>
-            <% patients.forEach(p => { %>
-            <tr>
-              <td class="text-center"><%= p.bn_ma %></td>
+            <% patients.forEach((p, index) => { %>
+            <tr class="text-center">
+              <td ><%= viTriOffset + index + 1 %></td>
               <td class="fw-bold text-primary"><%= p.bn_ho_ten %></td>
-              <td class="text-center">
+              <td >
                   <% if(p.bn_gioi_tinh === 'Nam') { %>
                       <span class="badge bg-info ">Nam</span>
                   <% } else if (p.bn_gioi_tinh === 'Nữ' || p.bn_gioi_tinh === 'Nu') { %>
@@ -107,6 +111,28 @@
             <% }); %>
           </tbody>
         </table>
+        <nav aria-label="Page navigation" class="mt-4">
+          <ul class="pagination justify-content-center">
+              
+              <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                  <button class="page-link" onclick="chuyenTrang('<%= currentPage - 1 %>')">
+                      <i class="fas fa-chevron-left"></i>
+                  </button>
+              </li>
+
+              <% for(let i = 1; i <= totalPages; i++) { %>
+                  <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                      <button class="page-link" onclick="chuyenTrang('<%= i %>')"><%= i %></button>
+                  </li>
+              <% } %>
+
+              <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                  <button class="page-link" onclick="chuyenTrang('<%= currentPage + 1 %>')">
+                      <i class="fas fa-chevron-right"></i>
+                  </button>
+              </li>
+          </ul>
+        </nav>
       <% } %> <% } else { %>
       <div class="alert alert-danger">Lỗi dữ liệu hệ thống.</div>
       <% } %>

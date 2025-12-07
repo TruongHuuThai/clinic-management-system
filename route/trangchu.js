@@ -12,7 +12,8 @@ router.get("/", async (req, res) => {
                 lh.lh_khung_gio,
                 bn.bn_ho_ten,
                 lh.lh_trang_thai,
-                lh.lh_ghi_chu
+                lh.lh_ghi_chu,
+                lh.lh_loai
             FROM 
                 lich_hen lh
             JOIN 
@@ -30,6 +31,7 @@ router.get("/", async (req, res) => {
         lh_khung_gio: row.lh_khung_gio,
         bn_ho_ten: row.bn_ho_ten,
         lh_trang_thai: row.lh_trang_thai,
+        lh_loai: row.lh_loai,
         lh_ghi_chu: row.lh_ghi_chu,
         statusKey: row.lh_trang_thai,
       };
@@ -121,7 +123,7 @@ router.get("/", async (req, res) => {
     };
 
     res.render("trangchu", {
-      title: "Bảng Điều Khiển",
+      title: "Trang Chủ",
       data: dashboardData,
     });
   } catch (error) {

@@ -32,7 +32,7 @@ const TRUY_VAN_TONG_DICH_VU = `
 `;
 
 const TRUY_VAN_CHI_TIET_THUOC = `
-    SELECT t.t_ten_thuoc, ctdt.ctdt_so_luong, ctdt.ctdt_cacl_dung, cgt.cgt_gia_thuoc,
+    SELECT t.t_ten_thuoc, ctdt.ctdt_so_luong, ctdt.ctdt_cach_dung, cgt.cgt_gia_thuoc,
     (ctdt.ctdt_so_luong * cgt.cgt_gia_thuoc) AS thanh_tien
     FROM chi_tiet_don_thuoc ctdt
     JOIN don_thuoc dt ON ctdt.ctdt_ma_dt = dt.dt_ma
@@ -209,7 +209,7 @@ router.get("/thanh-cong/:maThanhToan", async (req, res) => {
 
     res.render("thanhtoan_thanhcong", {
       invoice: hoaDon,
-      title: `Thanh Toan Thanh Cong #${maThanhToan}`,
+      title: `Thanh Toán Thành Công #${maThanhToan}`,
       tongTienThuoc: tienThuoc,
       tongTienDichVu: tienDichVu,
       tongCong: tongCong,

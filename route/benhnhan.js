@@ -133,7 +133,7 @@ router.get("/them-moi", (req, res) => {
   const thongBaoLoi = null;
 
   res.render("benhnhan_them", {
-    title: "Them Benh Nhan Moi",
+    title: "Thêm Bệnh Nhân Mới",
     patient: duLieuBenhNhan,
     currentGender: gioiTinhMacDinh,
     error: thongBaoLoi,
@@ -204,34 +204,48 @@ router.post("/them-moi", async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
-  const thamSoTruyVan = req.query;
+  const { search, trang } = req.query;
+
+  const SO_DONG_MOI_TRANG = 10;
+  const trangHienTai = parseInt(trang) || 1;
+  const viTriBatDau = (trangHienTai - 1) * SO_DONG_MOI_TRANG;
+
   let chuoiDieuKien = "";
   const mangThamSo = [];
 
-  if (thamSoTruyVan.search) {
+  if (search) {
     chuoiDieuKien = `WHERE (bn_ho_ten ILIKE $1 OR bn_sdt ILIKE $1)`;
-    mangThamSo.push(`%${thamSoTruyVan.search}%`);
+    mangThamSo.push(`%${search}%`);
   }
 
   try {
-    const truyVanDanhSach = `
-            SELECT bn_ma, bn_ho_ten, bn_sdt, bn_dia_chi, bn_ngay_tao, bn_gioi_tinh, bn_ngay_sinh
+    const demQuery = `SELECT COUNT(*) FROM benh_nhan ${chuoiDieuKien}`;
+    const ketQuaDem = await pool.query(demQuery, mangThamSo);
+    const tongSoLuong = parseInt(ketQuaDem.rows[0].count);
+    const tongSoTrang = Math.ceil(tongSoLuong / SO_DONG_MOI_TRANG);
+
+    const patientsQuery = `
+            SELECT bn_ma, bn_ho_ten, bn_sdt, bn_dia_chi, bn_ngay_sinh, bn_gioi_tinh
             FROM benh_nhan 
             ${chuoiDieuKien}
-            ORDER BY bn_ngay_tao DESC;
+            ORDER BY bn_ngay_tao DESC
+            LIMIT ${SO_DONG_MOI_TRANG} OFFSET ${viTriBatDau}; -- Thêm dòng này
         `;
-    const ketQuaDanhSach = await pool.query(truyVanDanhSach, mangThamSo);
+    const patientResult = await pool.query(patientsQuery, mangThamSo);
 
     res.render("benhnhan_danhsach", {
-      patients: ketQuaDanhSach.rows,
-      title: "Danh Sach Benh Nhan",
-      query: thamSoTruyVan,
+      patients: patientResult.rows,
+      title: "Danh Sách Bệnh Nhân",
+      query: req.query,
+      currentPage: trangHienTai,
+      totalPages: tongSoTrang,
+      totalCount: tongSoLuong,
     });
-  } catch (loi) {
-    console.error(loi);
+  } catch (error) {
+    console.error("Lỗi tải danh sách:", error);
     res
       .status(500)
-      .render("loi_hethong", { message: "Loi tai danh sach benh nhan" });
+      .render("loi_hethong", { message: "Lỗi tải danh sách bệnh nhân." });
   }
 });
 
@@ -269,7 +283,7 @@ router.get("/:maBenhNhan", async (req, res) => {
         patient: thongTinBenhNhan,
         history: ketQuaLichSu.rows, 
         examHistory: ketQuaLichSuKham.rows,
-        title: "Chi Tiet Benh Nhan",
+        title: "Chi Tiết Bệnh Nhân",
     });
   } catch (loi) {
     console.error("Lỗi khi tải hồ sơ bệnh nhân:", loi);
@@ -406,7 +420,7 @@ router.get("/sua/:maBenhNhan", async (req, res) => {
     }
 
     res.render("benhnhan_sua", {
-      title: "Chinh Sua Ho So",
+      title: "Chỉnh Sửa Hồ Sơ",
       patient: ketQua.rows[0],
     });
   } catch (loi) {

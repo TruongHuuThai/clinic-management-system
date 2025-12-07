@@ -1,36 +1,110 @@
-<div class="modal fade" id="rescheduleModal" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
+<div class="modal fade" id="addAppointmentModal" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title fw-bold">Đặt Lịch Tái Khám</h5>
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title fw-bold">Thêm Lịch Hẹn Mới</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form id="rescheduleForm" onsubmit="event.preventDefault(); luuLichTaiKham()">
-                    <input type="hidden" id="reschedule_bn_ma"></input>
+                <div class="btn-group w-100 mb-3" role="group">
+                    <input type="radio" class="btn-check" name="patientType" id="optionExisting" autocomplete="off" checked onchange="chuyenTabBenhNhan('cu')">
+                    <label class="btn btn-outline-success" for="optionExisting">Bệnh nhân đã có hồ sơ</label>
+
+                    <input type="radio" class="btn-check" name="patientType" id="optionNew" autocomplete="off" onchange="chuyenTabBenhNhan('moi')">
+                    <label class="btn btn-outline-success" for="optionNew">Bệnh nhân mới</label>
+                </div>
+
+                <form id="addAppointmentForm" onsubmit="event.preventDefault(); luuLichHenMoi()">
                     
-                    <div class="form-group mb-3">
-                        <label for="reschedule_date" class="form-label">Ngày Hẹn (*)</label>
-                        <input type="text" id="reschedule_date" class="form-control datepicker-input" required placeholder="dd/mm/yyyy"></input>
+                    <div id="tabBenhNhanCu">
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-bold">Tìm kiếm Bệnh nhân <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <!-- <span class="input-group-text"><i class="fas fa-search"></i></span> -->
+                                <input type="text" id="search_patient_input" class="form-control" placeholder="Nhập tên hoặc SĐT để tìm...">
+                            </div>
+                            <input type="hidden" id="add_bn_ma">
+                        </div>
+                        <div class="card bg-light border-0 mb-3" id="selectedPatientInfo" style="display: none;">
+                            <div class="card-body p-2 d-flex justify-content-between align-items-center">
+
+                                <div>
+                                    <strong class="" id="info_bn_ten">...</strong> 
+                                    <span class="text-muted mx-2">|</span> 
+                                    <span id="info_bn_sdt">...</span>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="huyChonBenhNhan()">
+                                    <i class="fas fa-times"></i> Bỏ chọn
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="form-group mb-3">
-                        <label for="reschedule_time" class="form-label">Khung Giờ (*)</label>
-                        <select id="reschedule_time" class="form-select" required>
-                            <option value=""> Chọn khung giờ hẹn --</option>
+                    <div id="tabBenhNhanMoi" style="display: none;">
+                        <div class="row g-2">
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label fw-bold">Họ và Tên <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="new_bn_ten">
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label fw-bold">Số Điện Thoại <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="new_bn_sdt">
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label fw-bold">Ngày Sinh</label>
+                                <input type="text" class="form-control datepicker-input" id="new_bn_ngaysinh" placeholder="dd/mm/yyyy">
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label fw-bold">Giới Tính</label>
+                                <div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="new_bn_gioitinh" value="Nam" checked> <label class="form-check-label">Nam</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="new_bn_gioitinh" value="Nu"> <label class="form-check-label">Nữ</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 mb-2">
+                                <label class="form-label fw-bold">Địa Chỉ</label>
+                                <input type="text" class="form-control" id="new_bn_diachi">
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="text-muted opacity-25">
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Ngày Hẹn <span class="text-danger">*</span></label>
+                            <input type="text" id="add_lh_ngay" class="form-control datepicker-input" required placeholder="dd/mm/yyyy">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Khung Giờ <span class="text-danger">*</span></label>
+                            <select id="add_lh_gio" class="form-select" required>
+                                <option value=""> Vui lòng chọn ngày trước </option>
                             </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Loại Hẹn</label>
+                            <select id="add_lh_loai" class="form-select">
+                                <option value="MOI">Khám Mới</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-bold">Ghi Chú</label>
+                            <textarea id="add_lh_ghi_chu" class="form-control" rows="2"></textarea>
+                        </div>
                     </div>
 
-                    <div class="form-group mb-3">
-                        <label for="reschedule_note" class="form-label">Ghi Chú</label>
-                        <textarea id="reschedule_note" class="form-control" rows="2"></textarea>
-                    </div>
                 </form>
             </div>
             <div class="modal-footer bg-light d-flex justify-content-between">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy Bỏ</button>
-                <button type="button" onclick="luuLichTaiKham()" class="btn btn-primary fw-bold">Xác Nhận Đặt Lịch</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy bỏ</button>
+                <button type="button" onclick="luuLichHenMoi()" class="btn btn-success fw-bold">
+                    <i class="fas fa-plus-circle me-1"></i> Tạo Lịch Hẹn
+                </button>
             </div>
         </div>
     </div>
-</div> 
+</div>
