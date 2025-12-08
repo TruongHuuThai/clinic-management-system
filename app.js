@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const morgan = require("morgan");
@@ -34,16 +35,12 @@ app.use("/api/benh-nhan", routeBenhNhan);
 app.use("/api/phieu-kham", routePhieuKham);
 app.use("/api/chan-doan", routeChanDoan);
 app.use("/api/benh", routeBenh);
-
 app.use("/api/thuoc", routeThuoc);
 app.use("/api/don-thuoc", routeDonThuoc);
-
 app.use("/api/phieu-chi-dinh", routePhieuChiDinh);
 app.use("/api/dich-vu-cls", routeDichVuCLS);
 app.use("/api/ket-qua-cls", routeKetQuaCLS);
-
 app.use("/api/thanh-toan", routeThanhToan);
-
 app.use("/api/ocr", routeOCR);
 app.use("/quan-ly/don-mau", routeDonMau);
 

@@ -31,3 +31,7 @@ function danhSachLichHen() {
 function danhSachThuoc() {
   window.location.href = "/api/thuoc";
 }
+
+function danhSachBenh(){
+  Window.location.href = "/api/benh";
+}

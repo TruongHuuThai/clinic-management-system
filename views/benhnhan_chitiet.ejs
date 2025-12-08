@@ -18,7 +18,17 @@
                 <div class="info-card">
                     <h5 class="text-muted small text-uppercase fw-bold mb-3">Thông tin Hành chính</h5>
                     <p class="mb-1"><strong>Họ Tên:</strong> <span class="fw-bold"><%= patient.bn_ho_ten %></span></p>
-                    <p class="mb-1"><strong>Giới Tính:</strong> <%= patient.bn_gioi_tinh || '—' %></p>
+                    <p class="mb-1"><strong>Giới Tính:</strong> 
+                        <% 
+                            let gioiTinh = '—';
+                            if (patient.bn_gioi_tinh === 'Nu') {
+                                gioiTinh = 'Nữ';
+                            } else if (patient.bn_gioi_tinh === 'Nam') {
+                                gioiTinh = 'Nam';
+                            }
+                        %>
+                        <%= gioiTinh %>
+                    </p>
                     <p class="mb-1"><strong>Ngày Sinh:</strong> 
                         <%= patient.bn_ngay_sinh ? new Date(patient.bn_ngay_sinh).toLocaleDateString('vi-VN') : '—' %>
                     </p>
@@ -60,7 +70,7 @@
                             <h4 class="text-primary mb-3">Tổng cộng: <%= examHistory.length %> lần khám</h4>
                             <% examHistory.forEach((exam) => { %>
                                 <div class="info-card border-start border-3 border-primary mb-3">
-                                    <h5 class="fw-bold mb-2">Phiếu Khám #<%= exam.pkb_ma %>
+                                    <h5 class="fw-bold mb-2">Phiếu Khám <%= exam.pkb_ma %>
                                         <small class="text-muted ms-3 fw-normal">
                                             (<%= new Date(exam.pkb_ngay_kham).toLocaleDateString('vi-VN') %>)
                                         </small>

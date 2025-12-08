@@ -1,0 +1,67 @@
+    <div class="modal fade" id="modalCLS" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="formCLS" method="POST" action="/api/dich-vu-cls/them">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title fw-bold" id="modalTitle">Thêm Dịch Vụ Mới</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="dvcls_ma" id="dvcls_ma">
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tên Dịch Vụ <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="dvcls_ten" id="dvcls_ten" required placeholder="VD: Siêu âm bụng">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Loại Dịch Vụ</label>
+                                
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    name="dvcls_loai" 
+                                    id="dvcls_loai" 
+                                    list="goiYLoaiDichVu" 
+                                    placeholder="Nhập hoặc chọn loại..." 
+                                    required 
+                                    autocomplete="off"
+                                >
+                                <datalist id="goiYLoaiDichVu">
+                                    <option value="Chẩn đoán hình ảnh">
+                                    <option value="Xét nghiệm">
+                                    <option value="Thăm dò chức năng">
+                                    <option value="Thủ thuật">
+                                    
+                                    <% if(danhSachNhom && danhSachNhom.length > 0) { %>
+                                        <% danhSachNhom.forEach(item => { %>
+                                            <% if(!['Chẩn đoán hình ảnh', 'Xét nghiệm', 'Thăm dò chức năng', 'Thủ thuật'].includes(item.dvcls_loai)) { %>
+                                                <option value="<%= item.dvcls_loai %>">
+                                            <% } %>
+                                        <% }); %>
+                                    <% } %>
+                                </datalist>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Phương Pháp</label>
+                                <input type="text" class="form-control" name="dvcls_phuong_pham" id="dvcls_phuong_pham" placeholder="VD: 4D, Digital...">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Ghi chú</label>
+                            <textarea class="form-control" name="dvcls_ghi_chu" id="dvcls_ghi_chu" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-primary fw-bold" onclick="kiemTraVaLuu()">
+                            <i class="fas fa-save me-1"></i> Lưu Dữ Liệu
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>

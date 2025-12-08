@@ -1,0 +1,36 @@
+    <div class="modal fade" id="modalBenh" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="formBenh" method="POST" action="/api/benh/them">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title fw-bold" id="modalTitle">Thêm Bệnh Mới</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="b_ma" id="b_ma">
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tên Bệnh <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="b_ten" id="b_ten" required placeholder="VD: Viêm họng cấp" autocomplete="off">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Mã ICD-10</label>
+                            <input type="text" class="form-control" name="b_ma_icd" id="b_ma_icd" placeholder="VD: J02" autocomplete="off">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Mô tả / Triệu chứng</label>
+                            <textarea class="form-control" name="b_mota" id="b_mota" rows="3" placeholder="Mô tả chi tiết bệnh..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-primary fw-bold" onclick="kiemTraVaHienThiXacNhanLuu()">
+                            <i class="fas fa-save me-1"></i> Lưu Dữ Liệu
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>

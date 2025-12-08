@@ -103,7 +103,7 @@ async function checkPaid(amount, content) {
         alert("Đã nhận được tiền!");
       }
       setTimeout(() => {
-        const form = document.getElementById("thanhtoan"); 
+        const form = document.getElementById("thanhtoanForm"); 
         if (form) form.submit();
       }, 1500);
     } else {

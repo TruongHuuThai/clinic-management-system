@@ -21,7 +21,7 @@ $(document).ready(function () {
   });
 });
 
-async function quetAnhAI(maChiTiet) {
+async function quetAnhAI(maChiTiet, btnElement) {
   const fileInput = document.getElementById(`file-${maChiTiet}`);
   const textAreaMoTa = document.querySelector(
     `textarea[name="kqcls_mota_${maChiTiet}"]`
@@ -33,8 +33,7 @@ async function quetAnhAI(maChiTiet) {
   }
 
   const file = fileInput.files[0];
-
-  const nutBam = event.currentTarget; 
+  const nutBam = btnElement || event.currentTarget;
   const noiDungCu = nutBam.innerHTML;
   nutBam.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Đang đọc...`;
   nutBam.disabled = true;
@@ -42,7 +41,7 @@ async function quetAnhAI(maChiTiet) {
 
   try {
     const formData = new FormData();
-    formData.append("file_anh", file);
+    formData.append("file_anh", file); 
 
     const res = await fetch("/api/ocr/phan-tich", {
       method: "POST",
@@ -53,9 +52,9 @@ async function quetAnhAI(maChiTiet) {
 
     if (res.ok && data.success) {
       textAreaMoTa.value = data.text;
-
       const row = textAreaMoTa.closest("tr");
-      row.querySelector(".status-select").value = "DA_CO_KET_QUA";
+      const statusSelect = row.querySelector(".status-select");
+      if (statusSelect) statusSelect.value = "DA_CO_KET_QUA";
     } else {
       alert("Lỗi AI: " + (data.message || "Không đọc được ảnh"));
     }
@@ -65,6 +64,6 @@ async function quetAnhAI(maChiTiet) {
   } finally {
     nutBam.innerHTML = noiDungCu;
     nutBam.disabled = false;
-    textAreaMoTa.placeholder = "Mô tả hình ảnh, chỉ số...";
+    textAreaMoTa.placeholder = "";
   }
 }

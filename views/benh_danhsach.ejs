@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Danh Mục Bệnh</title>
+    <%- include('partials/thuvien_js') %>
+</head>
+<body class="bg-light">
+    <%- include('partials/header') %>
+
+    <div class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-primary fw-bold"><i class="fas fa-book-medical me-2"></i>DANH MỤC BỆNH (ICD-10)</h2>
+            <button class="btn btn-primary fw-bold shadow-sm" onclick="moModalThem()">
+                <i class="fas fa-plus me-2"></i>Thêm Bệnh Mới
+            </button>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <table class="table table-hover table-striped mb-0 align-middle">
+                    <thead class="table-primary text-center">
+                        <tr>
+                            <th width="5%">STT</th>
+                            <th width="15%">Mã ICD</th>
+                            <th width="30%">Tên Bệnh</th>
+                            <th width="35%">Mô tả</th>
+                            <th width="15%">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if(danhSachBenh && danhSachBenh.length > 0) { %>
+                            <% danhSachBenh.forEach((benh, index) => { %>
+                                <tr>
+                                    <td class="text-center fw-bold">
+                                        <%= (currentPage - 1) * limit + index + 1 %>
+                                    </td>
+                                    
+                                    <td class="text-center">
+                                        <% if(benh.b_ma_icd) { %>
+                                            <span class="badge bg-info text-dark"><%= benh.b_ma_icd %></span>
+                                        <% } else { %>
+                                            <span class="text-muted small">-</span>
+                                        <% } %>
+                                    </td>
+                                    
+                                    <td class="fw-bold text-primary"><%= benh.b_ten %></td>
+                                    
+                                    <td class="small text-muted"><%= benh.b_mota || '' %></td>
+                                    
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-warning me-1" 
+                                            onclick="moModalSua('<%= benh.b_ma %>', `<%= benh.b_ten %>`, '<%= benh.b_ma_icd %>', `<%= benh.b_mota %>`)"
+                                            title="Sửa thông tin">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" 
+                                            onclick="yeuCauXoa('<%= benh.b_ma %>', `<%= benh.b_ten %>`)"
+                                            title="Xóa bệnh này">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        <% } else { %>
+                            <tr><td colspan="5" class="text-center py-5 text-muted fst-italic">Chưa có dữ liệu bệnh nào trong hệ thống.</td></tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+
+            <% if (totalPages > 0) { %>
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                        <button class="page-link" onclick="chuyenTrang('<%= currentPage - 1%>')" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </button>
+                    </li>
+                    <% for(let i = 1; i <= totalPages; i++) { %>
+                        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                        <button class="page-link" onclick="chuyenTrang('<%= i %>')">
+                                    <%= i %>
+                            </button>
+                        </li>
+                    <% } %>
+
+                    <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                        <button class="page-link" onclick="chuyenTrang('<%= currentPage + 1 %>')" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+            <% } %>
+        </div>
+    </div>
+
+    <form id="formXoa" method="POST" style="display: none;"></form>
+
+    <%- include('partials/benh/modal_luu')  %>
+    <%- include('partials/benh/modal_them')  %>
+    <%- include('partials/benh/modal_xoa')  %>
+    <%- include('partials/benh/modal_sua')  %>
+    <%- include('partials/modal_thanhcong') %>
+
+    <script src="/js/benh_danhsach.js"></script>
+</body>
+</html>

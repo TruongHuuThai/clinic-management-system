@@ -1,0 +1,20 @@
+<div class="modal fade" id="modalConfirmDelete" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center border-0 shadow">
+                <div class="modal-header bg-danger text-white border-0 justify-content-center">
+                    <h5 class="modal-title fw-bold"><i class="fas fa-exclamation-triangle me-2"></i>Cảnh Báo Xóa</h5>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="fs-5 mb-1">Bạn có chắc chắn muốn xóa bệnh:</p>
+                    <p class="fw-bold text-danger fs-5" id="lblTenBenhXoa">...</p>
+                    <p class="small text-muted mb-0">Hành động này sẽ chuyển bệnh vào thùng rác.</p>
+                </div>
+                <div class="modal-footer justify-content-center bg-light border-0">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Hủy bỏ</button>
+                    <button type="button" class="btn btn-danger px-4 fw-bold" onclick="thucHienXoa()">
+                        <i class="fas fa-trash-alt me-1"></i> Đồng ý Xóa
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
