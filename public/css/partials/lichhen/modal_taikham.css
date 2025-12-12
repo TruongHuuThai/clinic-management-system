@@ -1,0 +1,31 @@
+/* --- MODAL TÁI KHÁM (#rescheduleModal) --- */
+#rescheduleModal .modal-header {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); /* Xanh dương */
+    color: white;
+}
+
+/* Ô nhập ngày tháng */
+#rescheduleModal .datepicker-input {
+    background-image: url('data:image/svg+xml,...'); /* (Optional: icon lịch) */
+    background-position: right 10px center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+
+/* Focus input */
+#rescheduleModal .form-control:focus,
+#rescheduleModal .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+}
+
+/* Nút Xác nhận */
+#rescheduleModal .btn-primary {
+    background-color: #0d6efd;
+    border: none;
+    box-shadow: 0 4px 6px rgba(13, 110, 253, 0.3);
+}
+#rescheduleModal .btn-primary:hover {
+    background-color: #0a58ca;
+    transform: translateY(-2px);
+}

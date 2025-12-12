@@ -1,0 +1,80 @@
+/* --- MODAL XÓA DỊCH VỤ (#modalConfirmDelete) --- */
+
+/* 1. Khung Modal */
+#modalConfirmDelete .modal-content {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(220, 53, 69, 0.2); /* Bóng đỏ mờ */
+}
+
+/* 2. Header: Gradient Đỏ */
+#modalConfirmDelete .modal-header {
+    background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%) !important; /* Đỏ đậm */
+    color: white;
+    padding: 20px;
+    border-bottom: none;
+}
+
+#modalConfirmDelete .modal-title {
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* 3. Nội dung cảnh báo */
+#modalConfirmDelete .modal-body {
+    padding: 30px 20px;
+}
+
+#modalConfirmDelete .fs-5 {
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* Tên dịch vụ bị xóa (Làm nổi bật) */
+#modalConfirmDelete #lblTenXoa {
+    color: #dc3545 !important;
+    font-size: 1.4rem;
+    font-weight: 800 !important;
+    margin-top: 10px;
+    display: block;
+    
+    /* Hiệu ứng rung nhẹ */
+    animation: shakeName 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shakeName {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* 4. Footer & Nút bấm */
+#modalConfirmDelete .modal-footer {
+    background-color: #fff; /* Nền trắng */
+    padding-bottom: 25px;
+}
+
+#modalConfirmDelete .btn-secondary {
+    background-color: #f1f5f9;
+    color: #64748b;
+    border: none;
+    font-weight: 600;
+}
+#modalConfirmDelete .btn-secondary:hover {
+    background-color: #e2e8f0;
+    color: #333;
+}
+
+#modalConfirmDelete .btn-danger {
+    background-color: #dc3545;
+    border: none;
+    padding: 10px 25px;
+    box-shadow: 0 4px 10px rgba(220, 53, 69, 0.3);
+}
+
+#modalConfirmDelete .btn-danger:hover {
+    background-color: #bb2d3b;
+    transform: translateY(-2px);
+}

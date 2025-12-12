@@ -19,6 +19,7 @@ const routeThanhToan = require("./route/thanhtoan");
 
 const routeOCR = require("./route/ocr");
 const routeDonMau = require("./route/donthuocmau");
+const thongKeRouter = require("./route/thongke");
 
 app.use(morgan("dev"));
 app.use(express.json());
@@ -43,6 +44,7 @@ app.use("/api/ket-qua-cls", routeKetQuaCLS);
 app.use("/api/thanh-toan", routeThanhToan);
 app.use("/api/ocr", routeOCR);
 app.use("/quan-ly/don-mau", routeDonMau);
+app.use("/api/thong-ke", thongKeRouter);
 
 app.use((req, res, next) => {
   const error = new Error("Không tìm thấy trang yêu cầu");

@@ -1,0 +1,93 @@
+/* --- MODAL THÊM BỆNH (#modalBenh) --- */
+
+/* 1. Khung Modal */
+#modalBenh .modal-content {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* 2. Header: Gradient Xanh dương */
+#modalBenh .modal-header {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); /* Xanh dương đậm */
+    color: white;
+    padding: 15px 24px;
+    border-bottom: none;
+}
+
+#modalBenh .modal-title {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+}
+
+#modalBenh .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+    opacity: 0.8;
+}
+
+/* 3. Form nhập liệu */
+#modalBenh .modal-body {
+    padding: 24px;
+    background-color: #fff;
+}
+
+#modalBenh .form-label {
+    font-size: 0.9rem;
+    color: #344767;
+    margin-bottom: 6px;
+}
+
+/* Input chung */
+#modalBenh .form-control {
+    border-radius: 8px;
+    border: 1px solid #d2d6da;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    color: #495057;
+    transition: all 0.2s;
+}
+
+#modalBenh .form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+}
+
+/* Ô nhập mã ICD-10 (Làm nổi bật) */
+#modalBenh #b_ma_icd {
+    text-transform: uppercase; /* Tự động viết hoa khi nhập */
+    font-family: 'Consolas', monospace; /* Font số/code */
+    letter-spacing: 1px;
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+#modalBenh #b_ma_icd:focus {
+    background-color: #fff;
+    border-color: #0d6efd;
+}
+
+/* Textarea Mô tả */
+#modalBenh textarea.form-control {
+    resize: none;
+}
+
+/* 4. Footer & Nút bấm */
+#modalBenh .modal-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    padding: 15px 24px;
+}
+
+#modalBenh .btn-primary {
+    background-color: #0d6efd;
+    border: none;
+    box-shadow: 0 4px 6px rgba(13, 110, 253, 0.3);
+    padding: 10px 20px;
+}
+
+#modalBenh .btn-primary:hover {
+    background-color: #0b5ed7;
+    transform: translateY(-2px);
+}

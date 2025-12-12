@@ -18,7 +18,7 @@ router.get("/tim-kiem", async (req, res) => {
             t.t_loai_thuoc,
             nt.nt_ten AS ten_nhom,
             t.t_cach_dung_mac_dinh,
-            t.t_lieu_dung_mac_dinh,
+            t.t_lieu_dung_mac_dinh
         FROM thuoc t
         LEFT JOIN nhom_thuoc nt ON t.t_loai_thuoc = nt.nt_ma
         WHERE t.t_ten_thuoc ILIKE $1 

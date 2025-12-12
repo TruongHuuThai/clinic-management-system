@@ -1,0 +1,37 @@
+/* --- MODAL XÓA LỊCH HẸN (#deleteAppointmentModal) --- */
+#deleteAppointmentModal .modal-header {
+    background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%); /* Đỏ đậm */
+    color: white;
+}
+
+/* Icon cảnh báo lớn */
+#deleteAppointmentModal .fa-exclamation-circle {
+    color: #dc3545;
+    background-color: #fef2f2;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    
+    /* Hiệu ứng rung */
+    animation: shake 0.8s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* Nút Xóa ngay */
+#deleteAppointmentModal .btn-danger {
+    background-color: #dc3545;
+    box-shadow: 0 4px 6px rgba(220, 53, 69, 0.3);
+}
+#deleteAppointmentModal .btn-danger:hover {
+    background-color: #b02a37;
+}

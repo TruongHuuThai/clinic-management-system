@@ -1,21 +1,215 @@
-.summary-table th,
-      .summary-table td {
-        vertical-align: middle;
-      }
-      .summary-table .table-primary strong {
-        font-size: 1.25em;
-        color: #0d6efd;
-      }
-      .summary-table th:last-child, .summary-table td:last-child {
-        width: 30%; 
-      }
-      .payment-section {
-          background-color: #f8f9fa;
-          border-radius: 8px;
-          padding: 20px;
-          margin-top: 20px;
-          border: 1px solid #dee2e6;
-      }
+:root {
+  --primary-color: #007bff;
+  --success-color: #198754;
+  --warning-bg: #fff3cd;
+  --text-muted: #6c757d;
+  --border-radius: 10px;
+  --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  --hover-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
 body {
-  padding-top: 70px;
+  background-color: #f3f6f9;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: #344767;
+}
+
+/* --- CARD STYLING --- */
+.card {
+  border: none;
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-bottom: 1.5rem;
+  overflow: hidden; 
+}
+
+.card:hover {
+  box-shadow: var(--hover-shadow);
+}
+
+.card-header {
+  border-bottom: 0;
+  padding: 1rem 1.25rem;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+}
+
+.card-body {
+  padding: 1.25rem;
+}
+
+/* --- PATIENT INFO --- */
+.patient-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-right: 5px;
+}
+
+.patient-value {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* --- TABLES (Thuốc & Dịch vụ) --- */
+.table thead th {
+  background-color: #f8f9fa;
+  color: #8898aa;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  border-bottom: 2px solid #eaecf4;
+  padding: 12px 15px;
+}
+
+.table tbody td {
+  padding: 12px 15px;
+  vertical-align: middle;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.015);
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(0, 123, 255, 0.05);
+}
+
+/* --- EXTRA SERVICES CHECKBOXES --- */
+.service-item-wrapper {
+  transition: background-color 0.2s;
+  border-radius: 6px;
+}
+
+.service-item-wrapper:hover {
+  background-color: #fff;
+}
+
+.form-check {
+  padding: 10px 10px 10px 35px; /* Tăng vùng click */
+  margin-bottom: 0;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.form-check:last-child {
+  border-bottom: none;
+}
+
+.form-check:hover {
+  background-color: #fafafa;
+}
+
+.form-check-input {
+  width: 1.2em;
+  height: 1.2em;
+  margin-top: 0.15em;
+  cursor: pointer;
+}
+
+.form-check-label {
+  cursor: pointer;
+  font-weight: 500;
+  width: 100%; /* Label chiếm hết chiều ngang để dễ click */
+}
+
+/* --- BILL SUMMARY (Hóa đơn) --- */
+.bg-bill {
+  background-color: #fff;
+  background-image: radial-gradient(#ced4da 1px, transparent 1px);
+  background-size: 20px 20px;
+  border: 1px solid #e0e0e0;
+}
+
+.summary-row td {
+  padding: 12px 15px;
+  font-size: 1rem;
+  color: #495057;
+}
+
+.summary-row.text-danger td {
+  font-size: 1.25rem; /* Tổng tiền to hơn */
+  padding-top: 20px;
+  border-top: 2px dashed #ced4da;
+  color: #dc3545 !important;
+}
+
+/* --- PAYMENT METHOD & QR --- */
+.form-select-lg {
+  font-size: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border-color: #d1d3e2;
+  font-weight: 600;
+  color: #4e73df;
+}
+
+.form-select-lg:focus {
+  border-color: #bac8f3;
+  box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+}
+
+#qr-section {
+  border: 2px solid #bce3ff;
+  border-radius: 12px;
+  background-color: #f0f9ff;
+  overflow: hidden;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.copy-btn {
+  border: 1px solid #ced4da;
+  background: #fff;
+  color: #6c757d;
+  transition: all 0.2s;
+}
+
+.copy-btn:hover {
+  background: #e2e6ea;
+  color: #2e384d;
+}
+
+.btn-lg {
+  padding: 12px 20px;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 8px;
+}
+
+.btn-success {
+  background-color: var(--success-color);
+  border-color: var(--success-color);
+  box-shadow: 0 4px 6px rgba(25, 135, 84, 0.2);
+}
+
+.btn-success:hover {
+  background-color: #157347;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(25, 135, 84, 0.3);
+}
+
+/* --- RESPONSIVE TWEAKS --- */
+@media (max-width: 768px) {
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .summary-row td {
+    font-size: 0.9rem;
+    padding: 8px;
+  }
 }

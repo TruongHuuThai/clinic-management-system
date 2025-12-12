@@ -1,0 +1,54 @@
+
+#addAppointmentModal .modal-content {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+}
+
+#addAppointmentModal .modal-header {
+    background: linear-gradient(135deg, #198754 0%, #146c43 100%); 
+    color: white;
+    padding: 15px 24px;
+}
+
+#addAppointmentModal .btn-group .btn-outline-success {
+    border: 1px solid #198754;
+    color: #198754;
+    font-weight: 600;
+    padding: 10px;
+}
+
+#addAppointmentModal .btn-group .btn-check:checked + .btn-outline-success {
+    background-color: #198754;
+    color: white;
+    box-shadow: 0 4px 6px rgba(25, 135, 84, 0.3);
+}
+
+#selectedPatientInfo {
+    background-color: #f0fdf4 !important; 
+    border: 1px dashed #198754 !important;
+    border-radius: 8px;
+}
+
+#selectedPatientInfo #info_bn_ten {
+    color: #198754;
+    font-size: 1.1rem;
+}
+
+#addAppointmentModal .form-label {
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+#addAppointmentModal .form-control,
+#addAppointmentModal .form-select {
+    border-radius: 8px;
+    padding: 10px;
+    border: 1px solid #ced4da;
+}
+
+#addAppointmentModal .form-control:focus,
+#addAppointmentModal .form-select:focus {
+    border-color: #198754;
+    box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.15);
+}

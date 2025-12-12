@@ -1,0 +1,31 @@
+/* --- MODAL XÁC NHẬN ĐƠN MẪU (#modalConfirmTemplate) --- */
+#modalConfirmTemplate .modal-header {
+    background: linear-gradient(135deg, #fd7e14 0%, #d9480f 100%); /* Cam đậm */
+    color: white !important;
+}
+
+#modalConfirmTemplate .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* Tên đơn mẫu được làm nổi bật */
+#modalConfirmTemplate #lblTenDonMau {
+    color: #d9480f;
+    font-weight: 800;
+    text-transform: uppercase;
+    background: #fff4e6; /* Nền cam rất nhạt */
+    padding: 12px;
+    border-radius: 8px;
+    margin: 15px 0;
+    border: 1px dashed #d9480f;
+    display: block;
+}
+
+/* Alert đỏ bên dưới */
+#modalConfirmTemplate .alert-danger {
+    background-color: #fff5f5;
+    border: 1px solid #ffc9c9;
+    color: #c92a2a;
+    font-size: 0.9rem;
+    border-radius: 8px;
+}

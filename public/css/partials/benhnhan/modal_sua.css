@@ -1,0 +1,44 @@
+/* --- MODAL SỬA BỆNH NHÂN (#editPatientModal) --- */
+
+/* 1. Header: Gradient Vàng cam */
+#editPatientModal .modal-header {
+    background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%); /* Vàng cam */
+    color: #000; /* Chữ đen cho dễ đọc trên nền vàng */
+    padding: 20px 24px;
+    border-bottom: none;
+}
+
+#editPatientModal .modal-title {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+}
+
+/* 2. Form nhập liệu */
+#editPatientModal .form-control:focus {
+    border-color: #fd7e14; /* Viền cam khi focus */
+    box-shadow: 0 0 0 3px rgba(253, 126, 20, 0.15);
+}
+
+/* Radio Button (Nam/Nữ) */
+#editPatientModal .form-check-input:checked {
+    background-color: #fd7e14;
+    border-color: #fd7e14;
+}
+
+/* 3. Footer & Nút bấm */
+#editPatientModal .modal-footer {
+    background-color: #fff;
+    padding: 15px 24px;
+}
+
+#editPatientModal .btn-warning {
+    background-color: #ffc107;
+    border: none;
+    box-shadow: 0 4px 6px rgba(255, 193, 7, 0.3);
+    color: #000;
+    font-weight: 600;
+}
+#editPatientModal .btn-warning:hover {
+    background-color: #e0a800;
+}

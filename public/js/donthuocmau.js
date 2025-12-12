@@ -82,27 +82,37 @@ function renderDanhSach() {
 
   if (list.length === 0) {
     $("#empty-state").removeClass("d-none");
+    tbody.closest(".card").addClass("d-none"); 
     return;
   }
   $("#empty-state").addClass("d-none");
+  tbody.closest(".card").removeClass("d-none");
 
   list.forEach((mau, index) => {
-    let tomTatThuoc = '<span class="text-muted small">Không có thuốc</span>';
+    let tomTatThuoc = '<div class="drug-list-container">';
+
     if (mau.thuoc && mau.thuoc.length > 0) {
-      tomTatThuoc = mau.thuoc
-        .map(
-          (t) =>
-            `<span class="badge bg-light text-dark border me-1">${t.t_ten_thuoc} <span class="text-danger">(${t.so_luong})</span></span>`
-        )
-        .join(" ");
+      mau.thuoc.forEach((t) => {
+        tomTatThuoc += `
+                    <div class="drug-item-row">
+                        <span class="fw-bold text-dark">${t.t_ten_thuoc}</span> 
+                        <small class="text-muted ms-1">
+                            (SL: <span class="text-danger fw-bold">${t.so_luong}</span>)
+                        </small>
+                    </div>`;
+      });
+    } else {
+      tomTatThuoc +=
+        '<span class="text-muted small fst-italic">Không có thuốc</span>';
     }
+    tomTatThuoc += "</div>";
 
     let tomTatBenh = '<span class="text-muted small">Chưa gắn bệnh</span>';
     if (mau.benh && mau.benh.length > 0) {
       tomTatBenh = mau.benh
         .map((b) => {
-          const label = b.code ? `${b.ten} - ${b.code}` : b.ten;
-          return `<span class="badge bg-info text-dark border me-1"><i class="fas fa-stethoscope"></i> ${label}</span>`;
+          const label = b.code ? `${b.ten}` : b.ten;
+          return `<span class="benh-badge border">${label}</span>`; 
         })
         .join(" ");
     }
@@ -113,12 +123,16 @@ function renderDanhSach() {
                 <td>${tomTatBenh}</td>
                 <td>${tomTatThuoc}</td>
                 <td class="text-center">
-                    <button class="btn btn-sm btn-info text-white" onclick="suaDonMau('${
+                    <button class="btn-action btn-edit" onclick="suaDonMau('${
                       mau.id
-                    }')"><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-sm btn-danger" onclick="xoaDonMau('${
+                    }')" title="Sửa">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-action btn-delete" onclick="xoaDonMau('${
                       mau.id
-                    }')"><i class="fas fa-trash"></i></button>
+                    }')" title="Xóa">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 </td>
             </tr>
         `;

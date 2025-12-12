@@ -1,0 +1,168 @@
+<div class="invoice-header">
+    <div class="header-left">
+        <h4 class="text-primary fw-bold m-0 text-uppercase" style="font-size: 16px;">PHÒNG KHÁM CHUYÊN KHOA NỘI THẦN KINH</h4>
+        <div class="small mt-1">ĐC: 123 Đường 3/2, Q. Ninh Kiều, TP. Cần Thơ</div>
+        <div class="small">Hotline: 1900 1234 - Email: huuthaidev@noithankinh.com</div>
+    </div>
+    <div class="header-right">
+        <div class="invoice-title">HÓA ĐƠN GTGT</div>
+        <div class="mt-1">Mã HĐ: <strong><%= invoice.tt_ma %></strong></div>
+        <div>Ngày: <%= new Date(invoice.tt_thoi_gian_lap).toLocaleDateString('vi-VN') %></div>
+    </div>
+</div>
+
+<div class="mb-3 info-section">
+    <div><strong>Khách hàng:</strong> <span class="text-uppercase"><%= invoice.bn_ho_ten %></span></div>
+    <div><strong>Năm sinh:</strong> <%= invoice.bn_ngay_sinh ? new Date(invoice.bn_ngay_sinh).getFullYear() : '' %> (<%= invoice.bn_la_nam ? 'Nam' : 'Nữ' %>)</div>
+    <div><strong>Địa chỉ:</strong> <%= invoice.bn_dia_chi %></div>
+    
+    <div><strong>Chẩn đoán:</strong> <%= invoice.chan_doan_benh %></div>
+
+    <% if (invoice.pkb_ghi_chu && invoice.pkb_ghi_chu.trim() !== "") { %>
+    <div style="margin-top: 4px;">
+        <strong>Ghi chú khám:</strong> 
+        <span style="font-style: italic; white-space: pre-line;"><%= invoice.pkb_ghi_chu %></span>
+    </div>
+    <% } %>
+
+    <% if (invoice.pkb_chi_dinh_ngoai && invoice.pkb_chi_dinh_ngoai.trim() !== "") { %>
+    <div style="margin-top: 4px; border-top: 1px dashed #ccc; padding-top: 4px;">
+        <strong>Chỉ định thêm:</strong>
+        <span style="white-space: pre-line; color: #d63384; font-weight: 500;">
+            <%= invoice.pkb_chi_dinh_ngoai %>
+        </span>
+    </div>
+    <% } %>
+
+    <% if (invoice.pkb_loi_dan && invoice.pkb_loi_dan.trim() !== "") { %>
+    <div style="margin-top: 4px;">
+        <strong>Lời dặn của bác sĩ:</strong>
+        <div style=" font-style: italic; color: #0d6efd; margin-left: 5px;">
+            <%= invoice.pkb_loi_dan %>
+        </div>
+    </div>
+    <% } %>
+
+    <% if (invoice.pkb_ngay_tai_kham) { %>
+    <div style="margin-top: 4px; font-weight: bold; color: #dc3545;">
+        Hẹn tái khám: <%= new Date(invoice.pkb_ngay_tai_kham).toLocaleDateString('vi-VN') %>
+    </div>
+    <% } %>
+</div>
+
+<div style="font-weight: bold; margin-bottom: 5px;">I. DỊCH VỤ KHÁM & CẬN LÂM SÀNG</div>
+<table class="table-invoice">
+    <colgroup>
+        <col style="width: 10%;">
+        <col style="width: 60%;">
+        <col style="width: 30%;">
+    </colgroup>
+    <thead>
+        <tr>
+            <th>STT</th>
+            <th class="text-start">Tên Dịch Vụ</th>
+            <th class="text-end">Thành Tiền</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="text-center">1</td>
+            <td>Công khám bệnh lâm sàng</td>
+            <td class="text-end fw-bold"><%= parseInt(tienKham).toLocaleString('vi-VN') %></td>
+        </tr>
+        <% if(chiTietDichVu && chiTietDichVu.length > 0) { %>
+            <% chiTietDichVu.forEach((dv, index) => { %>
+            <tr>
+                <td class="text-center"><%= index + 2 %></td>
+                <td><%= dv.dvcls_ten %></td>
+                <td class="text-end fw-bold"><%= parseInt(dv.don_gia).toLocaleString('vi-VN') %></td>
+            </tr>
+            <% }); %>
+        <% } %>
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="2" class="text-end fw-bold" style="padding-right: 10px;">Cộng (I):</td>
+            <td class="text-end fw-bold"><%= (parseInt(tienKham) + parseInt(tongTienDichVu || 0)).toLocaleString('vi-VN') %></td>
+        </tr>
+    </tfoot>
+</table>
+
+<% if(chiTietThuoc && chiTietThuoc.length > 0) { %>
+<div style="font-weight: bold; margin-top: 10px; margin-bottom: 5px;">II. Đơn Thuốc</div>
+<table class="table-invoice">
+    <colgroup>
+        <col style="width: 8%;">
+        <col style="width: 42%;">
+        <col style="width: 10%;">
+        <col style="width: 10%;">
+        <col style="width: 15%;">
+        <col style="width: 15%;">
+    </colgroup>
+    <thead>
+        <tr>
+            <th>STT</th>
+            <th class="text-start">Tên Thuốc</th>
+            <th>ĐVT</th>
+            <th>SL</th>
+            <th class="text-end">Đơn Giá</th>
+            <th class="text-end">Thành Tiền</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% chiTietThuoc.forEach((t, index) => { %>
+        <tr>
+            <td class="text-center"><%= index + 1 %></td>
+            <td>
+                <%= t.t_ten_thuoc %>
+                <div style="font-size: 10px; font-style: italic;"><%= t.ctdt_cach_dung %></div>
+            </td>
+            <td class="text-center"><%= t.t_don_vi_tinh %></td>
+            <td class="text-center"><%= t.ctdt_so_luong %></td>
+            <td class="text-end"><%= parseInt(t.don_gia).toLocaleString('vi-VN') %></td>
+            <td class="text-end fw-bold"><%= parseInt(t.thanh_tien).toLocaleString('vi-VN') %></td>
+        </tr>
+        <% }); %>
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="5" class="text-end fw-bold" style="padding-right: 10px;">Cộng (II):</td>
+            <td class="text-end fw-bold"><%= parseInt(tongTienThuoc).toLocaleString('vi-VN') %></td>
+        </tr>
+    </tfoot>
+</table>
+<% } %>
+
+<div class="total-container">
+    <div class="total-left">
+        * Giá đã bao gồm thuế GTGT.<br>
+        * Phiếu có giá trị thanh toán trong ngày.
+    </div>
+    <div class="total-right">
+        <table style="width: 100%;">
+            <tr>
+                <td class="text-end">Tổng Dịch vụ:</td>
+                <td class="text-end fw-bold"><%= (parseInt(tienKham) + parseInt(tongTienDichVu || 0)).toLocaleString('vi-VN') %></td>
+            </tr>
+            <tr>
+                <td class="text-end">Tổng Thuốc:</td>
+                <td class="text-end fw-bold"><%= parseInt(tongTienThuoc).toLocaleString('vi-VN') %></td>
+            </tr>
+            <tr>
+                <td class="text-end pt-2 fw-bold">TỔNG CỘNG:</td>
+                <td class="text-end pt-2 grand-total"><%= parseInt(invoice.tt_tong_tien).toLocaleString('vi-VN') %> VNĐ</td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div class="footer-sign">
+    <div class="footer-col">
+        <strong>Người Lập Phiếu</strong><br>
+        <div class="fst-italic small mt-4">(Ký, họ tên)</div>
+    </div>
+    <div class="footer-col">
+        <strong>Thu Ngân</strong><br>
+        <div class="fst-italic small mt-4">(Ký, họ tên)</div>
+    </div>
+</div>

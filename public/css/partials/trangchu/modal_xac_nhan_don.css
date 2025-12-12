@@ -1,0 +1,95 @@
+/* --- CSS RIÊNG CHO MODAL XÁC NHẬN TIẾP ĐÓN --- */
+
+/* 1. Khung Modal: Bo góc tròn trịa hơn */
+#receiveConfirmModal .modal-content {
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 15px 40px rgba(16, 185, 129, 0.2); /* Bóng màu xanh lá nhạt */
+    overflow: hidden;
+}
+
+/* 2. Header: Gradient Xanh lá hiện đại */
+#receiveConfirmModal .modal-header {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; /* Xanh Emerald */
+    color: white;
+    padding: 20px 24px;
+    border-bottom: none;
+}
+
+#receiveConfirmModal .modal-title {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+}
+
+#receiveConfirmModal .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%); /* Nút đóng màu trắng */
+    opacity: 0.8;
+}
+
+/* 3. Icon trung tâm (Trái tim phòng khám) */
+#receiveConfirmModal .fa-clinic-medical {
+    width: 90px;
+    height: 90px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%; /* Hình tròn */
+    
+    background-color: #ecfdf5 !important; /* Nền xanh siêu nhạt */
+    color: #10b981 !important;            /* Icon xanh đậm */
+    
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.05); /* Hiệu ứng vòng lan tỏa */
+    margin-bottom: 10px;
+    
+    /* Animation nhẹ */
+    animation: pulseIcon 2s infinite;
+}
+
+@keyframes pulseIcon {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.2); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+/* 4. Tên bệnh nhân */
+#receiveConfirmModal #receivePatientName {
+    color: #059669; /* Xanh đậm */
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+/* 5. Nút bấm (Footer) */
+#receiveConfirmModal .modal-footer {
+    background-color: #f8fafc;
+    border-top: 1px solid #f1f5f9;
+    padding: 20px;
+}
+
+/* Nút Hủy */
+#receiveConfirmModal .btn-secondary {
+    background-color: white;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+#receiveConfirmModal .btn-secondary:hover {
+    background-color: #f1f5f9;
+    color: #333;
+}
+
+/* Nút Xác Nhận (Xanh lá) */
+#receiveConfirmModal .btn-success {
+    background-color: #10b981;
+    border: none;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4); /* Đổ bóng xanh */
+    transition: all 0.2s;
+}
+
+#receiveConfirmModal .btn-success:hover {
+    background-color: #059669;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(16, 185, 129, 0.5);
+}

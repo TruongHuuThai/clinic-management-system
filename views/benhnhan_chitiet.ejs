@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title><%= title %></title>
     <%- include('partials/thuvien_js') %>
-    <link rel="stylesheet" href="/css/benhnhan_chitiet.css">
     <link rel="stylesheet" href="/css/partials/placehoder_nghien.css">
 </head>
 <body>
@@ -21,9 +20,9 @@
                     <p class="mb-1"><strong>Giới Tính:</strong> 
                         <% 
                             let gioiTinh = '—';
-                            if (patient.bn_gioi_tinh === 'Nu') {
+                            if (patient.bn_la_nam === false ) {
                                 gioiTinh = 'Nữ';
-                            } else if (patient.bn_gioi_tinh === 'Nam') {
+                            } else if (patient.bn_la_nam === true ) {
                                 gioiTinh = 'Nam';
                             }
                         %>
@@ -65,25 +64,135 @@
 
                 <div class="tab-content" id="historyTabContent">
                     
-                    <div class="tab-pane fade show active p-3" id="exam-history" role="tabpanel">
-                        <% if (examHistory && examHistory.length > 0) { %>
-                            <h4 class="text-primary mb-3">Tổng cộng: <%= examHistory.length %> lần khám</h4>
-                            <% examHistory.forEach((exam) => { %>
-                                <div class="info-card border-start border-3 border-primary mb-3">
-                                    <h5 class="fw-bold mb-2">Phiếu Khám <%= exam.pkb_ma %>
-                                        <small class="text-muted ms-3 fw-normal">
-                                            (<%= new Date(exam.pkb_ngay_kham).toLocaleDateString('vi-VN') %>)
-                                        </small>
-                                    </h5>
-                                    <p><strong>Triệu chứng:</strong> <%= exam.pkb_trieu_chung %></p>
-                                    <p><strong>Chẩn đoán:</strong> <%= exam.ten_benh_chinh || '—' %></p>
-                                    <p class="small text-muted mb-0">Ghi chú: <%= exam.pkb_ghi_chu || '—' %></p>
+                <div class="tab-pane fade show active p-3" id="exam-history" role="tabpanel">
+                    <% if (examHistory && examHistory.length > 0) { %>
+                        <h4 class="text-primary mb-3"><i class="fas fa-history me-2"></i>Tổng cộng: <%= examHistory.length %> lần khám</h4>
+                        
+                        <div class="accordion" id="accordionExam">
+                            <% examHistory.forEach((exam, index) => { %>
+                                <div class="accordion-item mb-3 border shadow-sm rounded overflow-hidden">
+                                    <h2 class="accordion-header" id="heading<%= index %>">
+                                        <button class="accordion-button <%= index !== 0 ? 'collapsed' : '' %>" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<%= index %>">
+                                            <div class="d-flex w-100 justify-content-between align-items-center pe-3">
+                                                <div>
+                                                    <strong><i class="fas fa-calendar-alt me-2"></i><%= new Date(exam.pkb_ngay_kham).toLocaleDateString('vi-VN') %></strong>
+                                                    <span class="text-muted ms-2 small">| Mã phiếu: <%= exam.pkb_ma %></span>
+                                                </div>
+                                                <span class="badge bg-light text-dark border">
+                                                    <%= exam.pkb_trieu_chung %>
+                                                </span>
+                                            </div>
+                                        </button>
+                                    </h2>
+                                    <div id="collapse<%= index %>" class="accordion-collapse collapse <%= index === 0 ? 'show' : '' %>" data-bs-parent="#accordionExam">
+                                        <div class="accordion-body bg-light">
+                                            
+                                            <div class="card mb-3 border-start border-4 border-info">
+                                                <div class="card-body py-2">
+                                                    <h6 class="fw-bold text-info"><i class="fas fa-stethoscope me-2"></i>Chẩn đoán & Kết luận</h6>
+                                                    <% if (exam.chan_doan && exam.chan_doan.length > 0) { %>
+                                                        <div>
+                                                            <% exam.chan_doan.forEach(b => { %>
+                                                                <span class="badge bg-info text-dark me-1 mb-1" style="font-size: 0.9rem">
+                                                                    [<%= b.b_ma_icd %>] <%= b.b_ten %>
+                                                                </span>
+                                                            <% }) %>
+                                                        </div>
+                                                    <% } else { %>
+                                                        <p class="text-muted small mb-0 fst-italic">Chưa có thông tin chẩn đoán.</p>
+                                                    <% } %>
+                                                    
+                                                    <% if(exam.pkb_ghi_chu) { %>
+                                                        <div class="mt-2 small text-muted"><i class="fas fa-note-sticky me-1"></i>Ghi chú: <%= exam.pkb_ghi_chu %></div>
+                                                    <% } %>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="card h-100 border-start border-4 border-success">
+                                                        <div class="card-header bg-white fw-bold text-success">
+                                                            <i class="fas fa-pills me-2"></i>Đơn thuốc
+                                                        </div>
+                                                        <div class="card-body p-0">
+                                                            <% if (exam.thuoc && exam.thuoc.length > 0) { %>
+                                                                <table class="table table-sm table-hover mb-0" style="font-size: 0.9rem">
+                                                                    <thead class="table-light">
+                                                                        <tr>
+                                                                            <th>Tên thuốc</th>
+                                                                            <th class="text-center">SL</th>
+                                                                            <th>Liều dùng</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <% exam.thuoc.forEach(t => { %>
+                                                                            <tr>
+                                                                                <td class="fw-bold"><%= t.t_ten_thuoc %></td>
+                                                                                <td class="text-center"><%= t.ctdt_so_luong %> <%= t.t_don_vi_tinh %></td>
+                                                                                <td class="small"><%= t.ctdt_lieu_dung %> - <%= t.ctdt_cach_dung %></td>
+                                                                            </tr>
+                                                                        <% }) %>
+                                                                    </tbody>
+                                                                </table>
+                                                                <% if(exam.loi_dan) { %>
+                                                                    <div class="p-2 small text-muted border-top">
+                                                                        <strong>Lời dặn:</strong> <%= exam.loi_dan %>
+                                                                    </div>
+                                                                <% } %>
+                                                            <% } else { %>
+                                                                <div class="p-3 text-muted small text-center">Không kê đơn thuốc.</div>
+                                                            <% } %>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <div class="card h-100 border-start border-4 border-warning">
+                                                        <div class="card-header bg-white fw-bold text-warning">
+                                                            <i class="fas fa-microscope me-2"></i>Kết quả Cận lâm sàng
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <% if (exam.cls && exam.cls.length > 0) { %>
+                                                                <ul class="list-group list-group-flush">
+                                                                    <% exam.cls.forEach(dv => { %>
+                                                                        <li class="list-group-item px-0">
+                                                                            <div class="fw-bold text-primary"><%= dv.dvcls_ten %></div>
+                                                                            <% if (dv.kq_ket_qua_mo_ta) { %>
+                                                                                <div class="small mt-1 p-2 bg-light rounded">
+                                                                                    <pre class="mb-0" style="white-space: pre-wrap; font-family: inherit;"><%= dv.kq_ket_qua_mo_ta %></pre>
+                                                                                </div>
+                                                                            <% } else { %>
+                                                                                <span class="badge bg-secondary">Chưa có kết quả</span>
+                                                                            <% } %>
+                                                                            
+                                                                            <% if (dv.kq_hinh_anh) { %>
+                                                                                <div class="mt-2">
+                                                                                    <a href="<%= dv.kq_hinh_anh %>" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                                                                        <i class="fas fa-image me-1"></i>Xem ảnh
+                                                                                    </a>
+                                                                                </div>
+                                                                            <% } %>
+                                                                        </li>
+                                                                    <% }) %>
+                                                                </ul>
+                                                            <% } else { %>
+                                                                <div class="text-muted small text-center">Không có chỉ định dịch vụ.</div>
+                                                            <% } %>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div> </div>
+                                    </div>
                                 </div>
                             <% }); %>
-                        <% } else { %>
-                            <div class="alert alert-info mt-3">Bệnh nhân chưa có lịch sử khám bệnh nào.</div>
-                        <% } %>
-                    </div>
+                        </div>
+                    <% } else { %>
+                        <div class="alert alert-info mt-3 text-center">
+                            <i class="fas fa-info-circle fa-2x mb-3 d-block"></i>
+                            Bệnh nhân chưa có lịch sử khám bệnh nào.
+                        </div>
+                    <% } %>
+                </div>
 
                     <div class="tab-pane fade p-3" id="appt-history" role="tabpanel">
                          <% if (history && history.length > 0) { %>
@@ -157,6 +266,14 @@
 
         <%- include('partials/modal_thanhcong') %>
     </main>
+
+    <link rel="stylesheet" href="/css/benhnhan/modal_sua.css">
+    <link rel="stylesheet" href="/css/lichhen/modal_taikham.css">
+    <link rel="stylesheet" href="/css/lichhen/modal_sua.css">
+    <link rel="stylesheet" href="/css/lichhen/modal_xoa.css">
+
+    <link rel="stylesheet" href="/css/benhnhan_chitiet.css">
+    <link rel="stylesheet" href="/css/partials/modal_thanhcong.css">
     <script src="/js/benhnhan_chitiet.js"></script>
     <script src="/js/benhnhan_danhsach.js"></script>
     <script src="/js/partials/benhnhan/modal_sua.js"></script>

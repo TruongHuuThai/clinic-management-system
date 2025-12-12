@@ -11,130 +11,191 @@ const GOOGLE_SCRIPT_URL =
 let checkPaidInterval = null;
 let isPaymentSuccess = false;
 
-$(document).ready(function () {
-  $("#phuong_thuc_tt").on("change", function () {
-    const selectedText = $(this).find("option:selected").text().trim();
-    const qrSection = $("#qr-section");
-    stopChecking();
+document.addEventListener("DOMContentLoaded", function () {
+  const selectPttt = document.getElementById("phuong_thuc_tt");
+  const btnOpenQR = document.getElementById("btnOpenQR");
+  const inputTongCong = document.getElementById("inputTongCong");
+  const inputPkbMa = document.querySelector('input[name="pkb_ma"]');
 
-    if (selectedText.toLowerCase().includes("chuyển khoản")) {
-      hienThiQRCode();
-      qrSection.removeClass("d-none").addClass("d-block");
-    } else {
-      qrSection.removeClass("d-block").addClass("d-none");
-    }
-  });
-});
+  const optNone = document.getElementById("opt_none");
+  const serviceItems = document.querySelectorAll(".service-item");
+  const inputKhac = document.getElementById("input_khac");
 
-function stopChecking() {
-  if (checkPaidInterval) {
-    clearInterval(checkPaidInterval);
-    checkPaidInterval = null;
+  const qrModalElement = document.getElementById("qrModal");
+  let qrModal = null;
+  if (qrModalElement) {
+    qrModal = new bootstrap.Modal(qrModalElement);
   }
-}
 
-function hienThiQRCode() {
-  const amount = $('input[name="tong_cong"]').val();
-  const pkbMa = $('input[name="pkb_ma"]').val();
-  const content = `TT PKB ${pkbMa}`;
+  if (optNone) {
+    optNone.addEventListener("change", function () {
+      if (this.checked) {
+        serviceItems.forEach((item) => (item.checked = false));
+        if (inputKhac) {
+          inputKhac.disabled = true;
+          inputKhac.value = "";
+        }
+      }
+    });
+  }
 
-  const qrUrl = `https://img.vietqr.io/image/${BANK_INFO.BANK_ID}-${
-    BANK_INFO.ACCOUNT_NO
-  }-${
-    BANK_INFO.TEMPLATE
-  }.png?amount=${amount}&addInfo=${content}&accountName=${encodeURIComponent(
-    BANK_INFO.ACCOUNT_NAME
-  )}`;
+  if (serviceItems.length > 0) {
+    serviceItems.forEach((item) => {
+      item.addEventListener("change", function () {
+        if (this.checked && optNone) optNone.checked = false;
 
+        const anyChecked = Array.from(serviceItems).some((i) => i.checked);
+        if (!anyChecked && optNone) optNone.checked = true;
 
-  $("#vietqr-image").attr("src", qrUrl);
-  $("#qr-bank-name").text(BANK_INFO.BANK_ID);
-  $("#qr-account-num").text(BANK_INFO.ACCOUNT_NO);
-  $("#qr-account-name").text(BANK_INFO.ACCOUNT_NAME);
-  $("#qr-content").text(content);
+        if (this.id === "opt_khac") {
+          if (this.checked) {
+            inputKhac.disabled = false;
+            inputKhac.focus();
+          } else {
+            inputKhac.disabled = true;
+            inputKhac.value = "";
+          }
+        }
+      });
+    });
+  }
 
-  const formattedAmount = new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(amount);
-  $("#qr-amount").text(formattedAmount);
-  setTimeout(() => {
-    if (
-      !isPaymentSuccess &&
-      $("#phuong_thuc_tt")
-        .find("option:selected")
-        .text()
-        .toLowerCase()
-        .includes("chuyển khoản")
-    ) {
-      console.log("Bắt đầu kiểm tra giao dịch...");
+  if (selectPttt) {
+    selectPttt.addEventListener("change", function () {
+      if (this.value == "2") {
+        if (btnOpenQR) btnOpenQR.classList.remove("d-none");
+
+        hienThiQRCode();
+        if (qrModal) qrModal.show();
+      } else {
+        if (btnOpenQR) btnOpenQR.classList.add("d-none");
+        stopChecking();
+      }
+    });
+  }
+
+  if (btnOpenQR) {
+    btnOpenQR.addEventListener("click", function () {
+      hienThiQRCode();
+      if (qrModal) qrModal.show();
+    });
+  }
+
+  if (qrModalElement) {
+    qrModalElement.addEventListener("hidden.bs.modal", function () {
       stopChecking();
+    });
+  }
+  function hienThiQRCode() {
+    if (!inputTongCong || !inputPkbMa) return;
 
+    const amount = inputTongCong.value;
+    const pkbMa = inputPkbMa.value;
+    const content = `TT PKB ${pkbMa}`;
 
+    const qrUrl = `https://img.vietqr.io/image/${BANK_INFO.BANK_ID}-${
+      BANK_INFO.ACCOUNT_NO
+    }-${BANK_INFO.TEMPLATE}.png?amount=${amount}&addInfo=${encodeURIComponent(
+      content
+    )}&accountName=${encodeURIComponent(BANK_INFO.ACCOUNT_NAME)}`;
+
+    const imgQr = document.getElementById("vietqr-image");
+    if (imgQr) imgQr.src = qrUrl;
+
+    document.getElementById("qr-bank-name").innerText = BANK_INFO.BANK_ID;
+    document.getElementById("qr-account-num").innerText = BANK_INFO.ACCOUNT_NO;
+    document.getElementById("qr-account-name").innerText =
+      BANK_INFO.ACCOUNT_NAME;
+    document.getElementById("qr-content").innerText = content;
+
+    const formattedAmount = new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(amount);
+    document.getElementById("qr-amount").innerText = formattedAmount;
+
+    stopChecking();
+    if (!isPaymentSuccess) {
       checkPaidInterval = setInterval(() => {
         checkPaid(amount, content);
       }, 3000);
     }
-  }, 5000);
-}
-
-async function checkPaid(amount, content) {
-  if (isPaymentSuccess) return;
-
-  try {
-    const response = await fetch(GOOGLE_SCRIPT_URL);
-    const data = await response.json();
-
-    const lastTransactions = data.data.slice(-5);
-    const match = lastTransactions.find((transaction) => {
-      const price = parseFloat(transaction["Giá trị"]);
-      const description = transaction["Mô tả"];
-
-      return price >= parseFloat(amount) && description.includes(content);
-    });
-
-    if (match) {
-      console.log("Thanh toán thành công!");
-      isPaymentSuccess = true;
-      stopChecking();
-      if (typeof hienThiThongBaoThanhCong === "function") {
-        hienThiThongBaoThanhCong("Đã nhận được tiền! Hệ thống đang xử lý...");
-      } else {
-        alert("Đã nhận được tiền!");
-      }
-      setTimeout(() => {
-        const form = document.getElementById("thanhtoanForm"); 
-        if (form) form.submit();
-      }, 1500);
-    } else {
-      console.log("Chưa thấy giao dịch...");
-    }
-  } catch (error) {
-    console.error("Lỗi kiểm tra thanh toán:", error);
   }
-}
 
-function copyText(elementId) {
-  const text = document.getElementById(elementId).innerText;
-  navigator.clipboard
-    .writeText(text)
-    .then(() => {
-      const btn = document.querySelector(
-        `button[onclick="copyText('${elementId}')"]`
-      );
-      const originalHTML = btn.innerHTML;
+  // 5. HÀM CHECK TIỀN TỪ GOOGLE SCRIPT
+  async function checkPaid(amount, content) {
+    if (isPaymentSuccess) return;
 
-      btn.innerHTML = '<i class="fas fa-check"></i> Đã chép';
-      btn.classList.remove("btn-outline-secondary");
-      btn.classList.add("btn-success");
+    try {
+      const response = await fetch(GOOGLE_SCRIPT_URL);
+      const resData = await response.json();
+      const lastTransactions = resData.data.slice(-10);
 
-      setTimeout(() => {
-        btn.innerHTML = originalHTML;
-        btn.classList.remove("btn-success");
-        btn.classList.add("btn-outline-secondary");
-      }, 1500);
-    })
-    .catch((err) => {
-      console.error("Lỗi copy:", err);
-    });
-}
+      const match = lastTransactions.find((transaction) => {
+        const price = parseFloat(transaction["Giá trị"]);
+        const description = transaction["Mô tả"];
+        return price >= parseFloat(amount) && description.includes(content);
+      });
+
+      if (match) {
+        isPaymentSuccess = true;
+        stopChecking();
+        if (qrModal) qrModal.hide();
+
+        if (typeof Swal !== "undefined") {
+          Swal.fire({
+            icon: "success",
+            title: "Đã nhận được tiền!",
+            text: "Hệ thống đang xử lý hóa đơn...",
+            timer: 2000,
+            showConfirmButton: false,
+          });
+        } else {
+          alert("Đã nhận được tiền! Đang xử lý...");
+        }
+
+        setTimeout(() => {
+          const form = document.getElementById("thanhtoanForm");
+          if (form) form.submit();
+        }, 1500);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  function stopChecking() {
+    if (checkPaidInterval) {
+      clearInterval(checkPaidInterval);
+      checkPaidInterval = null;
+    }
+  }
+
+  window.copyText = function (elementId) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    const text = el.innerText;
+
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        const btn = document.querySelector(
+          `i[onclick="copyText('${elementId}')"]`
+        );
+        if (btn) {
+          btn.classList.remove("fa-copy", "text-secondary");
+          btn.classList.add("fa-check", "text-success");
+          setTimeout(() => {
+            btn.classList.remove("fa-check", "text-success");
+            btn.classList.add("fa-copy", "text-secondary");
+          }, 1500);
+        } else {
+          alert("Đã sao chép: " + text);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        alert("Copy thất bại, vui lòng bôi đen và copy thủ công.");
+      });
+  };
+});

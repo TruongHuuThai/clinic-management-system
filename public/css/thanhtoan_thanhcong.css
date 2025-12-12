@@ -1,37 +1,145 @@
-
-        .success-icon {
-            font-size: 4rem;
-            color: #198754;
-            animation: scaleUp 0.5s ease-in-out;
-        }
-        @keyframes scaleUp {
-            0% { transform: scale(0); }
-            80% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        .bill-card {
-            border-top: 5px solid #198754;
-        }
-
-        #invoice-area {
-            display: none; 
-            font-family: 'Times New Roman', serif;
-            color: #000;
-            background: white;
-            padding: 40px;
-        }
-        .invoice-header { text-align: center; margin-bottom: 30px; }
-        .invoice-title { font-size: 24px; font-weight: bold; text-transform: uppercase; }
-        .invoice-meta { font-size: 14px; font-style: italic; margin-bottom: 5px; }
-        .invoice-info { margin-bottom: 20px; font-size: 15px; }
-        .invoice-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; }
-        .invoice-table th, .invoice-table td { border: 1px solid #000; padding: 8px; }
-        .invoice-table th { background-color: #f0f0f0; font-weight: bold; text-align: center; }
-        .text-right { text-align: right; }
-        .text-center { text-align: center; }
-        .footer-sign { margin-top: 50px; display: flex; justify-content: space-between; }
-        .sign-box { text-align: center; width: 40%; }
+:root {
+    --primary-color: #007bff;
+    --success-color: #198754;
+    --text-main: #000;
+}
 
 body {
-  padding-top: 70px;
+    background-color: #f0f2f5;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #333;
 }
+
+/* --- CẤU HÌNH KHUNG IN (SAFE MODE) --- */
+.invoice-paper {
+    background: white;
+    /* CHIỀU RỘNG AN TOÀN TUYỆT ĐỐI CHO A4 */
+    width: 700px; 
+    padding: 20px 30px;
+    margin: 0 auto;
+    color: #000;
+    font-size: 12px; /* Font nhỏ gọn */
+    line-height: 1.3;
+    box-sizing: border-box;
+    display: none; 
+    border: 1px solid white;
+}
+
+/* Header */
+.invoice-header {
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    /* Dùng Table display để không bị vỡ layout khi in */
+    display: table;
+    width: 100%;
+}
+
+.header-left {
+    display: table-cell;
+    width: 60%;
+    vertical-align: top;
+}
+
+.header-right {
+    display: table-cell;
+    width: 40%;
+    text-align: right;
+    vertical-align: top;
+}
+
+.invoice-title {
+    color: #007bff;
+    font-weight: 800;
+    font-size: 18px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+/* Bảng dữ liệu: FIX CỨNG CHIỀU RỘNG */
+.table-invoice {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+    table-layout: fixed; /* Bắt buộc các cột tuân thủ width */
+}
+
+.table-invoice th {
+    background-color: #e0e0e0 !important;
+    border: 1px solid #333;
+    padding: 5px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    word-wrap: break-word;
+}
+
+.table-invoice td {
+    border: 1px solid #333;
+    padding: 5px;
+    vertical-align: middle;
+    font-size: 12px;
+    word-wrap: break-word; /* Tự xuống dòng nếu chữ quá dài */
+}
+
+/* Căn chỉnh */
+.text-center { text-align: center; }
+.text-end { text-align: right; }
+.fw-bold { font-weight: bold; }
+
+/* Tổng tiền */
+.total-container {
+    width: 100%;
+    display: table;
+    margin-top: 10px;
+    border-top: 2px solid #000;
+    padding-top: 5px;
+    page-break-inside: avoid;
+}
+
+.total-left {
+    display: table-cell;
+    width: 60%;
+    font-style: italic;
+    font-size: 11px;
+    vertical-align: top;
+}
+
+.total-right {
+    display: table-cell;
+    width: 40%;
+    vertical-align: top;
+}
+
+.grand-total {
+    font-size: 15px;
+    color: #dc3545;
+    font-weight: 800;
+}
+
+/* Chữ ký */
+.footer-sign {
+    margin-top: 30px;
+    display: table;
+    width: 100%;
+    text-align: center;
+    page-break-inside: avoid;
+}
+
+.footer-col {
+    display: table-cell;
+    width: 50%;
+}
+
+
+.invoice-preview {
+    background: white;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.success-icon { font-size: 4rem; color: var(--success-color); margin-bottom: 15px; }

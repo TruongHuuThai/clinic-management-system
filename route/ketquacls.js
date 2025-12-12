@@ -8,23 +8,22 @@ const path = require("path");
 const boNhoDem = multer.memoryStorage();
 const boTaiLen = multer({ storage: boNhoDem });
 
+const uploadDir = path.join(__dirname, "..", "uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 router.get("/nhap/:maPhieuChiDinh", async (req, res) => {
   const maPhieuChiDinh = req.params.maPhieuChiDinh;
 
   try {
     const truyVanThongTin = `
             SELECT 
-                ctcd.ctcd_ma, 
-                ctcd.ctcd_ma_dvcls,
-                ctcd.ctcd_so_luong,
-                ctcd.ctcd_trang_thai,
-                dv.dvcls_ten, 
+                pkb.pkb_ma,
                 pkb.pkb_ma_bn
-            FROM chi_tiet_chi_dinh ctcd
-            JOIN dich_vu_can_lam_san dv ON ctcd.ctcd_ma_dvcls = dv.dvcls_ma
-            JOIN phieu_chi_dinh pcd ON ctcd.ctcd_ma_pcd = pcd.pcd_ma
+            FROM phieu_chi_dinh pcd
             JOIN phieu_kham_benh pkb ON pcd.pcd_ma_pkb = pkb.pkb_ma
-            WHERE ctcd.ctcd_ma_pcd = $1
+            WHERE pcd.pcd_ma = $1
             LIMIT 1;
         `;
     const ketQuaThongTin = await pool.query(truyVanThongTin, [maPhieuChiDinh]);
@@ -36,18 +35,19 @@ router.get("/nhap/:maPhieuChiDinh", async (req, res) => {
     }
 
     const maBenhNhan = ketQuaThongTin.rows[0].pkb_ma_bn;
+    const maPhieuKham = ketQuaThongTin.rows[0].pkb_ma;
 
-    const truyVanBenhNhan = `SELECT bn_ho_ten FROM benh_nhan WHERE bn_ma = $1;`;
+    const truyVanBenhNhan = `SELECT bn_ho_ten, bn_ma FROM benh_nhan WHERE bn_ma = $1;`;
     const ketQuaBenhNhan = await pool.query(truyVanBenhNhan, [maBenhNhan]);
-    const tenBenhNhan = ketQuaBenhNhan.rows[0].bn_ho_ten;
+    const thongTinBenhNhan = ketQuaBenhNhan.rows[0];
 
     const truyVanDanhSach = `
             SELECT 
                 ctcd.ctcd_ma, 
                 ctcd.ctcd_so_luong, 
                 dv.dvcls_ten, 
-                ctcd.ctcd_trang_thai,
-                dv.dvcls_loai
+                dv.dvcls_loai,
+                ctcd.ctcd_trang_thai
             FROM chi_tiet_chi_dinh ctcd
             JOIN dich_vu_can_lam_san dv ON ctcd.ctcd_ma_dvcls = dv.dvcls_ma
             WHERE ctcd.ctcd_ma_pcd = $1
@@ -57,9 +57,10 @@ router.get("/nhap/:maPhieuChiDinh", async (req, res) => {
 
     res.render("ketqua_cls_them", {
       pcdMa: maPhieuChiDinh,
+      pkbMa: maPhieuKham,
       ctcdList: ketQuaDanhSach.rows,
-      bn_ma: maBenhNhan,
-      bn_ho_ten: tenBenhNhan,
+      bn_ma: thongTinBenhNhan.bn_ma,
+      bn_ho_ten: thongTinBenhNhan.bn_ho_ten,
     });
   } catch (loi) {
     console.error(loi);
@@ -74,7 +75,6 @@ router.post("/luu", boTaiLen.any(), async (req, res) => {
   const maChiTietTho = req.body["ctcd_ma[]"] || req.body["ctcd_ma"];
 
   let danhSachMaChiTiet = [];
-
   if (maChiTietTho) {
     if (Array.isArray(maChiTietTho)) {
       danhSachMaChiTiet = maChiTietTho;
@@ -101,8 +101,10 @@ router.post("/luu", boTaiLen.any(), async (req, res) => {
         )}`;
         const duongDanFile = path.join("uploads", tenFile);
 
+        const absolutePath = path.join(uploadDir, tenFile);
+
         try {
-          fs.writeFileSync(duongDanFile, tep.buffer);
+          fs.writeFileSync(absolutePath, tep.buffer);
           banDoFileDaTai[maChiTiet] = duongDanFile;
         } catch (loi) {
           console.error(`Loi luu file cho CTCD ${maChiTiet}:`, loi);
@@ -136,18 +138,18 @@ router.post("/luu", boTaiLen.any(), async (req, res) => {
         const ketQuaKiemTra = await ketNoi.query(truyVanKiemTra, [maChiTiet]);
 
         if (ketQuaKiemTra.rows.length > 0) {
-          const truyVanCapNhat = `
-                        UPDATE ket_qua_can_lam_san
-                        SET kqcls_mota = $2, kqcls_ket_luan = $3, kqcls_file_dinh_kem = $4, kqcls_gia_tri_chinh = $5
-                        WHERE kqcls_ma_ctcd = $1;
-                    `;
-          await ketNoi.query(truyVanCapNhat, [
-            maChiTiet,
-            moTaKetQua,
-            ketLuan,
-            duongDanFile,
-            giaTriChinh,
-          ]);
+          let queryUpdate = `UPDATE ket_qua_can_lam_san SET kqcls_mota = $2, kqcls_ket_luan = $3, kqcls_gia_tri_chinh = $4`;
+          const params = [maChiTiet, moTaKetQua, ketLuan, giaTriChinh];
+
+          if (duongDanFile) {
+            queryUpdate += `, kqcls_file_dinh_kem = $5`;
+            params.push(duongDanFile);
+            queryUpdate += ` WHERE kqcls_ma_ctcd = $1`;
+          } else {
+            queryUpdate += ` WHERE kqcls_ma_ctcd = $1`;
+          }
+
+          await ketNoi.query(queryUpdate, params);
         } else {
           const truyVanThem = `
                         INSERT INTO ket_qua_can_lam_san (kqcls_ma_ctcd, kqcls_mota, kqcls_ket_luan, kqcls_file_dinh_kem, kqcls_gia_tri_chinh)
@@ -170,12 +172,19 @@ router.post("/luu", boTaiLen.any(), async (req, res) => {
       }
     }
 
+    const resPKB = await ketNoi.query(
+      "SELECT pcd_ma_pkb FROM phieu_chi_dinh WHERE pcd_ma = $1",
+      [maPhieuChiDinh]
+    );
+    const pkbMa = resPKB.rows[0].pcd_ma_pkb;
+
     await ketNoi.query("COMMIT");
-    res.redirect(`/api/thanh-toan/lap-phieu/${maPhieuChiDinh}`);
+
+    res.redirect(`/api/thanh-toan/lap-phieu/${pkbMa}`);
   } catch (loi) {
     await ketNoi.query("ROLLBACK");
     console.error(loi);
-    res.status(500).send("Loi luu ket qua");
+    res.status(500).send("Loi luu ket qua: " + loi.message);
   } finally {
     ketNoi.release();
   }

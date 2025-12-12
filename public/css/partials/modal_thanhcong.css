@@ -1,0 +1,56 @@
+#successModal .modal-content {
+    border-radius: 24px;
+    background-color: #ffffff;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    border: none;
+}
+
+#successModal .modal-body {
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+#successModal div.text-success {
+    color: #10b981 !important;
+    font-size: 2.5rem !important;
+    width: 80px;
+    height: 80px;
+    background-color: #d1fae5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+#successModalTitle {
+    color: #10b981 !important;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+    width: auto !important; 
+    height: auto !important;
+    background-color: transparent !important;
+}
+
+#successModal p.text-muted {
+    color: #7b809a !important;
+    font-size: 0.9rem;
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes bounceIn {
+    0% { opacity: 0; transform: scale(0.3); }
+    50% { opacity: 1; transform: scale(1.05); }
+    70% { transform: scale(0.9); }
+    100% { transform: scale(1); }
+}
+
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}

@@ -1,0 +1,36 @@
+/* --- MODAL CẢNH BÁO CHUNG (#warningModal) --- */
+#warningModal .modal-content {
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+#warningModal .modal-header {
+    background: linear-gradient(135deg, #ffc107 0%, #ffca2c 100%); /* Vàng tươi */
+    color: #000;
+    border-bottom: none;
+    padding: 15px;
+}
+
+#warningModal .modal-title {
+    font-weight: 700;
+}
+
+#warningModal .modal-body {
+    font-size: 1rem;
+    color: #333;
+    padding: 20px;
+}
+
+/* Nút Đã hiểu */
+#warningModal .btn-warning {
+    background-color: #ffc107;
+    border: none;
+    color: #000;
+    box-shadow: 0 4px 6px rgba(255, 193, 7, 0.3);
+}
+
+#warningModal .btn-warning:hover {
+    background-color: #ffca2c;
+    transform: translateY(-1px);
+}

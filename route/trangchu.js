@@ -48,12 +48,13 @@ router.get("/", async (req, res) => {
       revenueResult.rows[0].total_revenue
     ).toLocaleString("vi-VN");
     totalRevenue = `${revenueAmount} VNĐ`;
-
     const waitingPatientsQuery = `
             SELECT 
                 pkb.pkb_ma,
+                pkb.pkb_ma_bn,   -- LẤY THÊM ID BỆNH NHÂN (Để sửa lỗi 404)
                 bn.bn_ho_ten,
                 tt.tt_da_thanh_toan,
+                MAX(pcd.pcd_ma) as pcd_ma, -- LẤY ID PHIẾU CHỈ ĐỊNH (Để link sang nhập KQ)
                 
                 COALESCE(
                     JSON_AGG(
@@ -79,8 +80,10 @@ router.get("/", async (req, res) => {
                     WHERE sub_pcd.pcd_ma_pkb = pkb.pkb_ma 
                     AND sub_ctcd.ctcd_trang_thai NOT IN ('DA_CO_KET_QUA', 'HUY')
                 )
+                OR (tt.tt_da_thanh_toan IS FALSE OR tt.tt_da_thanh_toan IS NULL)
             )
-            GROUP BY pkb.pkb_ma, bn.bn_ho_ten, tt.tt_da_thanh_toan
+            -- BẮT BUỘC GROUP BY pkb.pkb_ma_bn ĐỂ TRÁNH LỖI SQL
+            GROUP BY pkb.pkb_ma, bn.bn_ho_ten, tt.tt_da_thanh_toan, pkb.pkb_ma_bn
             ORDER BY pkb.pkb_ngay_kham;
         `;
 
@@ -88,16 +91,26 @@ router.get("/", async (req, res) => {
 
     const waitingPatientsList = waitingResult.rows.map((row) => {
       const pendingServices = row.pending_services;
-
       let statusDetail = "Đã hoàn tất Khám";
+      let actionLink = `/api/benh-nhan/${row.pkb_ma_bn}`;
+      let actionText = "Xem hồ sơ";
+      let btnClass = "btn-outline-secondary";
 
       if (pendingServices.length > 0) {
         statusDetail = "CLS: Chờ kết quả";
+        if (row.pcd_ma) {
+          actionLink = `/api/ket-qua-cls/nhap/${row.pcd_ma}`;
+          actionText = "Nhập kết quả";
+          btnClass = "btn-primary";
+        }
       } else if (
         row.tt_da_thanh_toan === false ||
         row.tt_da_thanh_toan === null
       ) {
         statusDetail = "Chờ thanh toán";
+        actionLink = `/api/thanh-toan/lap-phieu/${row.pkb_ma}`;
+        actionText = "Thanh toán";
+        btnClass = "btn-success";
       }
 
       return {
@@ -105,6 +118,9 @@ router.get("/", async (req, res) => {
         pkb_ma: row.pkb_ma,
         status: statusDetail,
         pendingServices: pendingServices,
+        actionLink: actionLink,
+        actionText: actionText,
+        btnClass: btnClass,
       };
     });
 

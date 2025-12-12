@@ -1,0 +1,79 @@
+/* --- MODAL THÊM BỆNH NHÂN (#addPatientModal) --- */
+
+/* 1. Khung Modal */
+#addPatientModal .modal-content {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+}
+
+/* 2. Header: Gradient Xanh lá */
+#addPatientModal .modal-header {
+    background: linear-gradient(135deg, #198754 0%, #146c43 100%); /* Xanh lá đậm */
+    color: white;
+    padding: 20px 24px;
+    border-bottom: none;
+}
+
+#addPatientModal .modal-title {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+}
+
+/* 3. Form nhập liệu */
+#addPatientModal .form-label {
+    font-size: 0.9rem;
+    color: #344767;
+    margin-bottom: 6px;
+}
+
+#addPatientModal .form-control {
+    border-radius: 8px;
+    padding: 10px 12px;
+    border: 1px solid #ced4da;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+#addPatientModal .form-control:focus {
+    border-color: #198754;
+    box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.15);
+}
+
+/* Radio Button (Nam/Nữ) */
+#addPatientModal .form-check-input:checked {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+/* Switch "Tạo phiếu khám ngay" */
+#addPatientModal .form-switch .form-check-input {
+    width: 3em;
+    height: 1.5em;
+    margin-right: 10px;
+}
+#addPatientModal .form-switch .form-check-input:checked {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+/* 4. Footer & Nút bấm */
+#addPatientModal .modal-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    padding: 15px 24px;
+}
+
+#addPatientModal .btn-success {
+    background-color: #198754;
+    border: none;
+    box-shadow: 0 4px 6px rgba(25, 135, 84, 0.3);
+    padding: 10px 25px;
+    font-weight: 600;
+}
+#addPatientModal .btn-success:hover {
+    background-color: #146c43;
+    transform: translateY(-2px);
+}

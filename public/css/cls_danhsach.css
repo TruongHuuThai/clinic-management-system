@@ -1,0 +1,195 @@
+/* --- 1. CẤU HÌNH CHUNG --- */
+:root {
+    --primary: #007bff;
+    --text-main: #344767;      /* Màu chữ chính đậm đà */
+    --text-light: #7b809a;     /* Màu chữ phụ nhạt hơn */
+    --bg-body: #f0f2f5;
+    --bg-card: #ffffff;
+    --radius: 12px;
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+body {
+    background-color: var(--bg-body) !important; /* Ghi đè class bg-light của Bootstrap */
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    color: var(--text-main);
+    font-size: 14px;
+}
+
+.container {
+    max-width: 1300px;
+}
+
+/* --- 2. HEADER & NÚT THÊM --- */
+h2 {
+    color: var(--text-main) !important; /* Đổi màu xanh mặc định thành màu đen xám sang trọng */
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+h2 i {
+    color: var(--primary); /* Icon giữ màu xanh thương hiệu */
+}
+
+/* Nút Thêm Dịch Vụ */
+.btn-primary {
+    background-color: var(--primary);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 600;
+    box-shadow: 0 4px 6px rgba(0, 123, 255, 0.2);
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 10px rgba(0, 123, 255, 0.3);
+}
+
+/* --- 3. BẢNG DỮ LIỆU (DATA TABLE) --- */
+.card {
+    border-radius: var(--radius) !important;
+    background: var(--bg-card);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden; /* Bo góc cho bảng bên trong */
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+/* Header Bảng: Ghi đè class table-primary */
+.table thead th {
+    background-color: #f8f9fa !important; /* Nền xám nhạt */
+    color: var(--text-light) !important;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 15px;
+    border-bottom: 1px solid #e9ecef;
+    border-top: none;
+    vertical-align: middle;
+}
+
+/* Nội dung bảng */
+.table tbody td {
+    padding: 15px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
+    color: var(--text-main);
+    font-size: 0.95rem;
+}
+
+/* Hàng hover */
+.table-hover tbody tr:hover {
+    background-color: #fafbfc;
+}
+
+/* --- 4. TÙY CHỈNH CỘT --- */
+
+/* Cột STT */
+td.fw-bold.text-center {
+    color: var(--text-light);
+}
+
+/* Cột Tên Dịch Vụ */
+td.text-primary.fw-bold {
+    color: var(--primary) !important;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+/* Cột Loại Dịch Vụ (Badge) */
+/* Biến đổi badge bg-info mặc định thành Soft Badge */
+.badge.bg-info {
+    background-color: #e0f2fe !important; /* Xanh dương rất nhạt */
+    color: #0369a1 !important;           /* Chữ xanh đậm */
+    border: 1px solid #bae6fd;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+}
+
+/* Cột Phương pháp & Ghi chú */
+td.small {
+    font-size: 0.85rem;
+    color: #666;
+    max-width: 250px; /* Giới hạn chiều rộng để text không tràn */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Hiện dấu ... nếu dài quá */
+}
+
+/* --- 5. NÚT HÀNH ĐỘNG (SỬA/XÓA) --- */
+/* Nút Sửa (Warning) */
+.btn-warning {
+    background-color: #fff7ed !important; /* Cam nhạt */
+    color: #c2410c !important;            /* Chữ cam đậm */
+    border: 1px solid #ffedd5;
+    border-radius: 6px;
+    padding: 6px 10px;
+    transition: all 0.2s;
+}
+.btn-warning:hover {
+    background-color: #c2410c !important;
+    color: white !important;
+}
+
+/* Nút Xóa (Danger) */
+.btn-danger {
+    background-color: #fef2f2 !important; /* Đỏ nhạt */
+    color: #b91c1c !important;            /* Chữ đỏ đậm */
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+    padding: 6px 10px;
+    transition: all 0.2s;
+}
+.btn-danger:hover {
+    background-color: #b91c1c !important;
+    color: white !important;
+}
+
+/* --- 6. PHÂN TRANG (PAGINATION) --- */
+.pagination {
+    margin-top: 5px;
+}
+
+.page-item .page-link {
+    border: none;
+    border-radius: 50% !important; /* Nút tròn */
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 4px;
+    color: var(--text-main);
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.page-item.active .page-link {
+    background-color: var(--primary);
+    color: white;
+    box-shadow: 0 4px 6px rgba(0, 123, 255, 0.3);
+}
+
+.page-item.disabled .page-link {
+    background-color: transparent;
+    color: #d1d5db;
+}
+
+.page-link:hover {
+    background-color: #e9ecef;
+    color: var(--primary);
+}
+
+/* Trạng thái bảng trống */
+td.text-center.py-5 {
+    padding-top: 3rem !important;
+    padding-bottom: 3rem !important;
+}

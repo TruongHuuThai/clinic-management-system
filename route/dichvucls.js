@@ -14,15 +14,15 @@ router.get("/all", async (req, res) => {
     LEFT JOIN 
         co_gia_dich_vu cgdv 
     ON 
-        dv.dvcls_ma = cgdv.cgdv_dvcls_ma
+        dv.dvcls_ma = cgdv.cgdv_ma_dvcls
     WHERE 
         cgdv.cgdv_ngay_ap_dung = (
             SELECT MAX(cg.cgdv_ngay_ap_dung)
             FROM co_gia_dich_vu cg
-            WHERE cg.cgdv_dvcls_ma = dv.dvcls_ma 
+            WHERE cg.cgdv_ma_dvcls = dv.dvcls_ma 
               AND cg.cgdv_ngay_ap_dung <= CURRENT_TIMESTAMP
         )
-        OR cgdv.cgdv_dvcls_ma IS NULL
+        OR cgdv.cgdv_ma_dvcls IS NULL
     ORDER BY dv.dvcls_ten;  
     `;
     const ketQua = await pool.query(truyVan);

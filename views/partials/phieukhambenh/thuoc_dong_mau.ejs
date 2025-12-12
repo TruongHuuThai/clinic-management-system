@@ -1,29 +1,62 @@
 <tr class="drug-row">
-    <td>
-        <select name="nhom_thuoc[]" class="form-select drug-group-select">
-            <option value=""> Chọn nhóm thuốc </option>
-            </select>
-    </td>
-    <td>
-        <input type="text" name="thuoc_ten[]" class="form-control drug-name-input" placeholder="Gõ tên thuốc" required autocomplete="off">
-        <input type="hidden" name="thuoc_ma[]" class="drug-id-input">
-    </td>
-    <td>
-        <input type="number" name="so_luong[]" class="form-control text-center" value="1" min="1" placeholder="Số lượng" required>
-    </td>
-    <td>
-        <input type="text" name="don_vi[]" class="form-control drug-unit-input" placeholder="Đon vị" readonly>
-    </td>
-    <td>
-        <input type="text" name="cach_dung[]" class="form-control drug-usage-input" placeholder="Cách dùng" autocomplete="off">
-    </td>
-    <td>
-        <input type="text" name="lieu_dung[]" class="form-control drug-dosage-input" placeholder="Liều dùng" autocomplete="off">
-    </td>
-    <td class="text-center">
-        <button type="button" class="btn btn-danger btn-sm remove-drug">
-            <i class="fas fa-trash"></i>
-        </button>
-    </td>
-</tr>
+  <td>
+    <select name="nhom_thuoc[]" class="form-select drug-group-select">
+      <option value="">Chọn nhóm thuốc</option>
+    </select>
+  </td>
+  <td>
+    <input
+      type="text"
+      name="thuoc_ten[]"
+      class="form-control drug-name-input"
+      placeholder="Gõ tên thuốc"
+      required
+      autocomplete="off"
+    />
+    <input type="hidden" name="thuoc_ma[]" class="drug-id-input" />
+  </td>
+  <td>
+    <input
+      type="number"
+      name="so_luong[]"
+      class="form-control text-center drug-qty-input"
+      value="1"
+      min="1"
+      placeholder="SL"
+      required
+    />
+  </td>
+  <td>
+    <input
+      type="text"
+      name="don_vi[]"
+      class="form-control drug-unit-input"
+      placeholder="Đơn vị"
+      readonly
+    />
+  </td>
+  <td>
+    <input
+      type="text"
+      name="lieu_dung[]"
+      class="form-control drug-dosage-input"
+      placeholder="Sáng 1, chiều 1"
+      autocomplete="off"
+    />
+  </td>
+  <td>
+    <input
+      type="text"
+      name="cach_dung[]"
+      class="form-control drug-usage-input"
+      placeholder="Cách dùng"
+      autocomplete="off"
+    />
+  </td>
 
+  <td class="text-center">
+    <button type="button" class="btn btn-danger btn-sm remove-drug">
+      <i class="fas fa-trash"></i>
+    </button>
+  </td>
+</tr>

@@ -1,0 +1,219 @@
+/* --- 1. CẤU HÌNH CHUNG --- */
+:root {
+    --primary: #007bff;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #0ea5e9;
+    --text-main: #344767;
+    --text-light: #7b809a;
+    --bg-body: #f0f2f5;
+    --bg-card: #ffffff;
+    --radius: 12px;
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+body {
+    background-color: var(--bg-body);
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    color: var(--text-main);
+    font-size: 14px;
+}
+
+.container {
+    max-width: 1400px;
+    padding: 20px;
+}
+
+h1 {
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+/* --- 2. BỘ LỌC (FILTER CARD) --- */
+#filter-container {
+    background-color: var(--bg-card) !important; /* Ghi đè bg-light */
+    border: none !important; /* Bỏ viền cũ */
+    border-radius: var(--radius) !important;
+    box-shadow: var(--shadow-sm);
+    padding: 25px !important;
+}
+
+/* Label của bộ lọc */
+.form-label {
+    font-size: 0.85rem;
+    color: var(--text-main);
+    margin-bottom: 5px;
+}
+
+/* Input và Select */
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #d2d6da;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    box-shadow: none;
+    transition: all 0.2s;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
+/* Nút Lọc và Xóa */
+.btn-primary { background: var(--primary); border: none; }
+.btn-secondary { background: #e2e6ea; color: #6c757d; border: none; }
+.btn-secondary:hover { background: #cfd4da; color: #343a40; }
+
+/* Nút Thêm Lịch Hẹn (Góc phải) */
+.btn-success {
+    background: var(--success);
+    border: none;
+    font-weight: 600;
+    box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+}
+.btn-success:hover { background: #059669; transform: translateY(-1px); }
+
+/* --- 3. BẢNG DANH SÁCH (TABLE) --- */
+.table {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden; /* Bo góc */
+    margin-top: 15px;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+/* Header bảng */
+.table thead tr th {
+    background-color: #f8f9fa !important;
+    color: var(--text-light) !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    padding: 15px;
+    border-bottom: 1px solid #e9ecef;
+    border-top: none;
+}
+
+/* Body bảng */
+.table tbody tr td {
+    padding: 12px 15px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.9rem;
+    color: var(--text-main);
+}
+
+/* Cột Bệnh nhân: In đậm */
+td.fw-bold {
+    font-weight: 600 !important;
+    color: var(--primary);
+}
+
+/* --- 4. TRẠNG THÁI (SOFT BADGES) --- */
+/* Ghi đè các class badge của Bootstrap để tạo style mềm mại */
+.badge {
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    border: 1px solid transparent; /* Chuẩn bị cho border */
+}
+
+/* Chờ khám (Vàng) */
+.bg-warning {
+    background-color: #fff8e1 !important; /* Nền vàng rất nhạt */
+    color: #b45309 !important; /* Chữ vàng nâu */
+    border-color: #fcd34d;
+}
+
+/* Đã đến (Xanh lá) */
+.bg-success {
+    background-color: #ecfdf5 !important;
+    color: #047857 !important;
+    border-color: #6ee7b7;
+}
+
+/* Đã hủy (Đỏ) */
+.bg-danger {
+    background-color: #fef2f2 !important;
+    color: #b91c1c !important;
+    border-color: #fca5a5;
+}
+
+/* Đã xong / Đang khám (Xanh dương) */
+.bg-primary {
+    background-color: #eff6ff !important;
+    color: #1d4ed8 !important;
+    border-color: #93c5fd;
+}
+
+/* Tái khám (Xanh Cyan) */
+.bg-info {
+    background-color: #ecfeff !important;
+    color: #0e7490 !important;
+    border-color: #67e8f9;
+}
+
+/* Chưa đến (Xám) */
+.bg-secondary {
+    background-color: #f3f4f6 !important;
+    color: #4b5563 !important;
+    border-color: #d1d5db;
+}
+
+/* --- 5. HÀNH ĐỘNG & GHI CHÚ --- */
+/* Nút hành động nhỏ */
+.btn-group .btn-sm {
+    border-radius: 6px !important;
+    padding: 5px 10px;
+    margin: 0 2px;
+}
+.btn-info { background: #0ea5e9; border: none; }
+.btn-danger { background: #ef4444; border: none; }
+
+/* Trạng thái đã xóa */
+.text-secondary.small i {
+    margin-right: 4px;
+}
+
+/* --- 6. PHÂN TRANG (PAGINATION) --- */
+.pagination {
+    margin-top: 20px;
+}
+
+.page-item .page-link {
+    border: none;
+    border-radius: 50% !important; /* Nút tròn */
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 3px;
+    color: var(--text-main);
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.page-item.active .page-link {
+    background-color: var(--primary);
+    color: white;
+    box-shadow: 0 4px 6px rgba(0, 123, 255, 0.3);
+}
+
+.page-item.disabled .page-link {
+    background-color: transparent;
+    color: #ccc;
+}
+
+.page-link:hover {
+    background-color: #e9ecef;
+    color: var(--primary);
+}

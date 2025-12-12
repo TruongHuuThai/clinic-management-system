@@ -1,0 +1,43 @@
+/* --- MODAL XÁC NHẬN LƯU (#modalConfirmSave) --- */
+
+/* 1. Khung Modal nhỏ gọn */
+#modalConfirmSave .modal-content {
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3); /* Bóng đậm hơn vì nó nằm đè lên modal khác */
+}
+
+/* 2. Header: Gradient Xanh lá */
+#modalConfirmSave .modal-header {
+    background: linear-gradient(135deg, #198754 0%, #146c43 100%);
+    color: white;
+    padding: 15px;
+}
+
+#modalConfirmSave .modal-title {
+    font-size: 1rem;
+    text-transform: uppercase;
+}
+
+/* 3. Body */
+#modalConfirmSave .modal-body {
+    padding: 20px;
+    font-size: 1rem;
+    color: #333;
+}
+
+/* 4. Footer */
+#modalConfirmSave .modal-footer {
+    padding: 15px;
+    background-color: #f8f9fa;
+}
+
+#modalConfirmSave .btn-success {
+    background-color: #198754;
+    border: none;
+    box-shadow: 0 4px 6px rgba(25, 135, 84, 0.3);
+}
+
+#modalConfirmSave .btn-success:hover {
+    background-color: #157347;
+}

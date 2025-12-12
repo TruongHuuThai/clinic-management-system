@@ -1,0 +1,35 @@
+/* --- MODAL SỬA LỊCH HẸN (#editAppointmentModal) --- */
+#editAppointmentModal .modal-header {
+    background: linear-gradient(135deg, #0dcaf0 0%, #0aa2c0 100%); /* Xanh Cyan */
+    color: white;
+}
+
+/* Ô tên bệnh nhân (Readonly) */
+#editAppointmentModal #edit_bn_ten {
+    background-color: #e0f2fe !important; /* Nền xanh dương nhạt */
+    border: 1px solid #b3e5fc;
+    color: #0284c7 !important; /* Chữ xanh đậm */
+    font-size: 1.1rem;
+    pointer-events: none; /* Không cho click vào */
+}
+
+/* Select trạng thái */
+#editAppointmentModal #edit_lh_trang_thai {
+    font-weight: 600;
+    color: #333;
+}
+#editAppointmentModal #edit_lh_trang_thai option {
+    font-weight: normal;
+}
+
+/* Nút Lưu */
+#editAppointmentModal .btn-info {
+    background-color: #0dcaf0;
+    border: none;
+    color: white !important;
+    box-shadow: 0 4px 6px rgba(13, 202, 240, 0.3);
+}
+#editAppointmentModal .btn-info:hover {
+    background-color: #0aa2c0;
+    transform: translateY(-2px);
+}

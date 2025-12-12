@@ -1,49 +1,216 @@
+/* --- 1. CẤU HÌNH GIAO DIỆN CHUNG (Compact Style) --- */
+:root {
+    --primary: #007bff;
+    --success: #28a745;
+    --warning: #ffc107;
+    --danger: #dc3545;
+    --info: #17a2b8;
+    --text-main: #344767;      /* Màu chữ chính (Xanh đen đậm) */
+    --text-light: #7b809a;     /* Màu chữ phụ (Xám) */
+    --bg-body: #f0f2f5;        /* Nền tổng thể */
+    --bg-card: #ffffff;
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+    --shadow-hover: 0 10px 20px rgba(0,0,0,0.08);
+    --radius: 12px;
+}
+
 body {
-            background-color: #f8f9fa; 
-            padding-top: 80px; 
-            font-family: 'Segoe UI', Roboto, sans-serif;
-        }
-        
-        .kpi-card {
-            border: none;
-            border-radius: 15px;
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
-        }
-        .kpi-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-        .kpi-icon-bg {
-            position: absolute;
-            right: -10px;
-            bottom: -10px;
-            font-size: 5rem;
-            opacity: 0.2;
-            transform: rotate(-15deg);
-        }
-        
-        /* Bảng dữ liệu */
-        .table-custom thead {
-            background-color: #e9ecef;
-            color: #495057;
-        }
-        .table-custom th {
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 0.5px;
-        }
-        .avatar-circle {
-            width: 35px;
-            height: 35px;
-            background-color: #e9ecef;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: #495057;
-            margin-right: 10px;
-        }
+    background-color: var(--bg-body);
+    font-family: 'Inter', 'Segoe UI', sans-serif; /* Font hiện đại */
+    color: var(--text-main);
+    font-size: 14px; /* Chữ nhỏ gọn */
+}
+
+/* Container giới hạn chiều rộng để nội dung không bị bè ra */
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h2, h3 {
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--text-main);
+    font-size: 1.25rem; /* Tiêu đề không quá to */
+}
+
+/* --- 2. XỬ LÝ GRID (Nếu không dùng Bootstrap JS) --- */
+.row { display: flex; flex-wrap: wrap; margin: 0 -10px; }
+.col-md-4 { flex: 0 0 33.333%; padding: 0 10px; max-width: 33.333%; }
+.mb-3 { margin-bottom: 1rem !important; }
+.mb-4 { margin-bottom: 1.5rem !important; }
+
+/* Responsive */
+@media(max-width: 768px) {
+    .col-md-4 { flex: 0 0 100%; max-width: 100%; }
+}
+
+/* --- 3. KPI CARDS (Phong cách Tối giản - Nền trắng) --- */
+/* Ghi đè class bg-* của Bootstrap để về nền trắng */
+.card {
+    background: var(--bg-card) !important; 
+    color: var(--text-main) !important;
+    border: none;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s, box-shadow 0.2s;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.card .p-3 { padding: 20px !important; }
+
+/* Tạo viền màu bên trái để phân biệt loại thẻ */
+.card.bg-primary { border-left: 5px solid var(--primary); }
+.card.bg-warning { border-left: 5px solid var(--warning); }
+.card.bg-success { border-left: 5px solid var(--success); }
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+}
+
+.card h3 {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.card .display-4 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin: 0;
+}
+
+/* Icon mờ và nhỏ hơn */
+.card i {
+    color: var(--text-light);
+    opacity: 0.15 !important;
+    font-size: 3rem !important; /* Nhỏ hơn bản cũ */
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* --- 4. BẢNG DỮ LIỆU (Compact Table) --- */
+.table-responsive {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    padding: 0; /* Bỏ padding thừa */
+    border: 1px solid #e0e0e0;
+}
+
+.table {
+    width: 100%;
+    margin-bottom: 0;
+    border-collapse: collapse;
+}
+
+.table thead th {
+    background-color: #f8f9fa;
+    color: var(--text-light);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e9ecef;
+    border-top: none;
+}
+
+.table tbody td {
+    padding: 10px 16px; /* Giảm padding để bảng gọn hơn */
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.9rem;
+    color: var(--text-main);
+}
+
+.table tbody tr:last-child td { border-bottom: none; }
+.table tbody tr:hover { background-color: #fafafa; }
+
+/* --- 5. BADGES & BUTTONS (Nhỏ gọn) --- */
+.badge {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 6px; /* Bo góc vuông nhẹ thay vì tròn vo */
+}
+
+/* Soft Badge (Nền nhạt chữ đậm) - Nhìn sang hơn */
+.bg-secondary { background: #e2e5e9 !important; color: #4a5568; }
+.bg-success   { background: #d1e7dd !important; color: #0f5132; }
+.bg-primary   { background: #cff4fc !important; color: #055160; } /* Đổi thành màu Cyan nhạt */
+.bg-warning   { background: #fff3cd !important; color: #664d03; }
+.bg-danger    { background: #f8d7da !important; color: #842029; }
+.bg-info      { background: #cff4fc !important; color: #055160; }
+
+/* Nút bấm nhỏ */
+.btn-sm {
+    padding: 4px 10px;
+    font-size: 0.8rem;
+    border-radius: 4px;
+    margin-right: 4px;
+    text-transform: none;
+    font-weight: 500;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+/* Màu nút bấm giữ nguyên đậm để nổi bật hành động */
+.btn-success { background-color: var(--success); color: white; }
+.btn-success:hover { background-color: #218838; }
+
+.btn-warning { background-color: var(--warning); color: #333; }
+.btn-warning:hover { background-color: #e0a800; }
+
+.btn-primary { background-color: var(--primary); color: white; }
+.btn-primary:hover { background-color: #0069d9; }
+
+/* --- 6. DANH SÁCH BỆNH NHÂN (List Group) --- */
+.list-group {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+}
+
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid #f1f5f9;
+    padding: 12px 20px; /* Gọn hơn */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.list-group-item:last-child { border-bottom: none; }
+
+.list-group-item strong {
+    font-size: 0.95rem;
+    color: var(--text-main);
+}
+
+.list-group-item .small {
+    font-size: 0.8rem;
+    margin-top: 2px;
+}
+
+/* Icon nhỏ trong list */
+.fa-user-injured { font-size: 1rem; opacity: 0.7; }
+
+/* --- 7. MODAL OVERRIDE (Nếu có modal) --- */
+.modal-content {
+    border: none;
+    border-radius: var(--radius);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+}

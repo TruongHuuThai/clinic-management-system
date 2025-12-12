@@ -1,0 +1,195 @@
+/* --- MODAL SOẠN ĐƠN THUỐC MẪU (#templateModal) --- */
+
+/* 1. Khung Modal */
+#templateModal .modal-content {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+}
+
+/* 2. Header: Gradient Xanh lá */
+#templateModal .modal-header {
+    background: linear-gradient(135deg, #198754 0%, #146c43 100%); /* Xanh lá đậm */
+    color: white;
+    padding: 15px 24px;
+}
+
+#templateModal .modal-title {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+}
+
+#templateModal .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+    opacity: 0.8;
+}
+
+/* 3. Form nhập liệu */
+#templateModal .form-label {
+    font-size: 0.9rem;
+    color: #344767;
+    margin-bottom: 5px;
+}
+
+/* Input Tên đơn mẫu (Làm to nổi bật) */
+#templateModal #templateName {
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    padding: 10px 15px;
+    background-color: #f8fdf9; /* Nền xanh siêu nhạt */
+}
+
+#templateModal #templateName:focus {
+    border-color: #198754;
+    box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.15);
+    background-color: white;
+}
+
+/* 4. Khu vực chọn bệnh (Tags Input) */
+#templateModal .input-group-text {
+    background-color: #e9ecef;
+    color: #198754;
+}
+
+/* Container chứa các tag bệnh */
+#danhSachBenhTags {
+    background-color: #fff;
+    border: 1px dashed #ced4da;
+    border-radius: 8px;
+    padding: 10px;
+    min-height: 45px;
+}
+
+/* Tag bệnh (Badge) */
+.benh-tag {
+    background-color: #e0f2fe; /* Xanh dương nhạt */
+    color: #0284c7;           /* Chữ xanh đậm */
+    border: 1px solid #bae6fd;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.benh-tag:hover {
+    background-color: #bae6fd;
+}
+
+/* Nút xóa tag (x) */
+.benh-tag i.fa-times {
+    cursor: pointer;
+    color: #0284c7;
+    font-size: 0.8rem;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+.benh-tag i.fa-times:hover {
+    background-color: #fff;
+    color: #dc3545;
+}
+
+/* 5. Bảng chi tiết thuốc */
+#templateModal .card {
+    border: 1px solid #d1e7dd !important; /* Viền xanh nhạt */
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+#templateModal .card-header {
+    background-color: #d1e7dd;
+    color: #0f5132;
+    padding: 10px 15px;
+    border-bottom: 1px solid #badbcc;
+}
+
+#templateModal .table thead th {
+    background-color: #f8f9fa;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #6c757d;
+    font-weight: 700;
+    border-bottom: 1px solid #e9ecef;
+}
+
+#templateModal .table tbody td {
+    padding: 5px; /* Giảm padding để ô input khít hơn */
+    vertical-align: middle;
+}
+
+/* Ô nhập liệu trong bảng (Edit-in-place) */
+#templateModal .table input.form-control,
+#templateModal .table select.form-select {
+    border: 1px solid transparent; /* Trong suốt khi bình thường */
+    border-radius: 4px;
+    font-size: 0.9rem;
+    padding: 6px 8px;
+    background-color: transparent;
+}
+
+/* Khi bấm vào nhập liệu */
+#templateModal .table input.form-control:focus,
+#templateModal .table select.form-select:focus {
+    border-color: #198754;
+    background-color: white;
+    box-shadow: 0 0 0 2px rgba(25, 135, 84, 0.1);
+}
+
+/* Nút xóa dòng (Trash Icon) */
+.btn-delete-row {
+    color: #dc3545;
+    background: #fff5f5;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    margin: 0 auto;
+}
+.btn-delete-row:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* 6. Footer & Nút hành động */
+#templateModal .modal-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    padding: 15px 24px;
+}
+
+/* Nút Lưu */
+#templateModal .btn-success {
+    background-color: #198754;
+    border: none;
+    box-shadow: 0 4px 6px rgba(25, 135, 84, 0.3);
+    padding: 8px 20px;
+}
+#templateModal .btn-success:hover {
+    background-color: #146c43;
+    transform: translateY(-2px);
+}
+
+/* Nút Thêm dòng (Viền đứt nét) */
+#btnAddDrugRow {
+    width: 100%;
+    border-style: dashed;
+    margin-top: 5px;
+}
+#btnAddDrugRow:hover {
+    background-color: #f0fdf4;
+}

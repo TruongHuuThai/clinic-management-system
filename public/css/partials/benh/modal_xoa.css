@@ -1,0 +1,64 @@
+/* --- MODAL XÓA BỆNH (#modalConfirmDelete) --- */
+
+/* 1. Header: Gradient Đỏ */
+#modalConfirmDelete .modal-header {
+    background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%) !important; /* Đỏ đậm */
+    color: white;
+    padding: 20px;
+    border-bottom: none;
+}
+
+#modalConfirmDelete .modal-title {
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* 2. Nội dung cảnh báo */
+#modalConfirmDelete .modal-body {
+    padding: 30px 20px;
+}
+
+/* Tên bệnh bị xóa */
+#modalConfirmDelete #lblTenBenhXoa {
+    color: #dc3545 !important;
+    font-size: 1.3rem;
+    font-weight: 800 !important;
+    margin: 10px 0;
+    display: block;
+    
+    /* Hiệu ứng rung */
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* Text phụ */
+#modalConfirmDelete .small.text-muted {
+    background: #fff5f5;
+    padding: 8px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+/* 3. Footer */
+#modalConfirmDelete .modal-footer {
+    padding-bottom: 25px;
+    background-color: white !important;
+}
+
+#modalConfirmDelete .btn-danger {
+    background-color: #dc3545;
+    box-shadow: 0 4px 6px rgba(220, 53, 69, 0.3);
+    border: none;
+}
+
+#modalConfirmDelete .btn-danger:hover {
+    background-color: #bb2d3b;
+    transform: translateY(-2px);
+}

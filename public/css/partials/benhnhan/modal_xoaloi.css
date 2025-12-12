@@ -1,0 +1,28 @@
+/* --- MODAL LỖI XÓA (#notificationModal) --- */
+
+#notificationModal .modal-content {
+    background-color: #dc3545 !important; /* Nền đỏ toàn bộ */
+    color: white !important;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(220, 53, 69, 0.4);
+}
+
+#notificationModal .modal-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Icon tam giác cảnh báo */
+#notificationModal .fa-exclamation-triangle {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    color: #ffc107; /* Màu vàng trên nền đỏ cho nổi bật */
+}
+
+/* Dòng thông báo lỗi */
+#notificationMessage {
+    font-size: 1rem;
+    line-height: 1.5;
+}

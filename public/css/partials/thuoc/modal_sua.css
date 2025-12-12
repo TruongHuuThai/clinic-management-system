@@ -1,0 +1,46 @@
+/* --- MODAL CHỈNH SỬA THUỐC (#editDrugModal) --- */
+#editDrugModal .modal-header {
+    background: linear-gradient(135deg, #0dcaf0 0%, #0aa2c0 100%); /* Xanh Cyan */
+    color: white;
+}
+
+/* Tùy chỉnh Form Input */
+#editDrugModal .form-control, 
+#editDrugModal .form-select {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    padding: 10px 15px;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+#editDrugModal .form-control:focus, 
+#editDrugModal .form-select:focus {
+    border-color: #0dcaf0;
+    box-shadow: 0 0 0 3px rgba(13, 202, 240, 0.15);
+}
+
+/* Label chữ nhỏ in hoa */
+#editDrugModal .form-label.text-uppercase {
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+}
+
+/* Icon bên cạnh input */
+#editDrugModal .input-group-text {
+    background-color: #f8f9fa;
+    border-color: #ced4da;
+    color: #6c757d;
+}
+
+/* Nút Lưu thay đổi */
+#editDrugModal button[type="submit"] {
+    background-color: #198754; /* Xanh lá */
+    border-color: #198754;
+    transition: transform 0.2s;
+}
+#editDrugModal button[type="submit"]:hover {
+    background-color: #157347;
+    transform: translateY(-2px);
+}

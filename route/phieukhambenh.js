@@ -2,183 +2,170 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../config/db");
 
-router.get("/new/:maLichHen", async (req, res) => {
-  const maLichHen = req.params.maLichHen;
-
+router.get("/new/:id", async (req, res) => {
+  const idParam = req.params.id;
+  let maBenhNhan = null;
+  let maLichHen = null;
   try {
-    const truyVanLichHen = `
-            SELECT lh_ma_bn, lh_ngay_hen, lh_khung_gio
-            FROM lich_hen 
-            WHERE lh_ma = $1;
-        `;
-    const ketQuaLichHen = await pool.query(truyVanLichHen, [maLichHen]);
+    let isLichHen = false;
+    try {
+      const checkLH = await pool.query(
+        "SELECT * FROM lich_hen WHERE lh_ma = $1",
+        [idParam]
+      );
+      if (checkLH.rows.length > 0) {
+        maLichHen = idParam;
+        maBenhNhan = checkLH.rows[0].lh_ma_bn;
+        isLichHen = true;
+      }
+    } catch (e) {}
+    if (!isLichHen) maBenhNhan = idParam;
 
-    if (!ketQuaLichHen || ketQuaLichHen.rows.length === 0) {
+    const resultBN = await pool.query(
+      "SELECT * FROM benh_nhan WHERE bn_ma = $1",
+      [maBenhNhan]
+    );
+    if (resultBN.rows.length === 0)
       return res
         .status(404)
-        .render("loi_hethong", { message: "Khong tim thay lich hen" });
-    }
+        .render("loi_hethong", { message: "Không tìm thấy bệnh nhân" });
 
-    const maBenhNhan = ketQuaLichHen.rows[0].lh_ma_bn;
-    const ngayHen = ketQuaLichHen.rows[0].lh_ngay_hen;
-    const khungGio = ketQuaLichHen.rows[0].lh_khung_gio;
+    const resultThuoc = await pool.query(
+      "SELECT * FROM thuoc ORDER BY t_ten_thuoc"
+    );
+    const resultBenh = await pool.query(
+      "SELECT * FROM benh WHERE b_da_xoa = false ORDER BY b_ten"
+    );
 
-    const truyVanBenhNhan = `
-            SELECT bn_ma, bn_ho_ten, bn_gioi_tinh, bn_ngay_sinh, bn_sdt, bn_dia_chi
-            FROM benh_nhan 
-            WHERE bn_ma = $1;
-        `;
-    const ketQuaBenhNhan = await pool.query(truyVanBenhNhan, [maBenhNhan]);
-
-    const duLieuBenhNhan =
-      ketQuaBenhNhan.rows.length > 0 ? ketQuaBenhNhan.rows[0] : {};
-
-    duLieuBenhNhan.lh_ngay_hen = ngayHen;
-    duLieuBenhNhan.lh_khung_gio = khungGio;
-
-    return res.render("phieukham_them", {
-      benhNhan: duLieuBenhNhan,
+    res.render("phieukham_them", {
+      benhNhan: resultBN.rows[0],
+      danhSachThuoc: resultThuoc.rows,
+      danhSachBenh: resultBenh.rows,
       lh_ma: maLichHen,
     });
-  } catch (loi) {
-    console.error("Loi khi lay thong tin kham benh:", loi);
-    return res.status(500).render("loi_hethong", {
-      message: "Loi he thong khi tai phieu kham.",
-    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Lỗi Server: " + err.message);
   }
 });
 
 router.post("/save", async (req, res) => {
+  const toArray = (val) => (val ? (Array.isArray(val) ? val : [val]) : []);
+
   const {
     pkb_ma_bn,
     lh_ma,
     pkb_trieu_chung,
     pkb_ghi_chu,
+    pkb_loi_dan,
+    pkb_chi_dinh_ngoai,
     dt_ghi_chu,
-    pcd_ghi_chu,
+    pkb_ngay_tai_kham,
   } = req.body;
 
-  const toArray = (val) => (val ? (Array.isArray(val) ? val : [val]) : []);
+  const ds_thuoc_ma = toArray(req.body.thuoc_ma);
+  const ds_so_luong = toArray(req.body.so_luong);
+  const ds_lieu_dung = toArray(req.body.lieu_dung);
+  const ds_cach_dung = toArray(req.body.cach_dung);
   const ma_benh = toArray(req.body.ma_benh);
-  const thuoc_ma = toArray(req.body.thuoc_ma);
-  const so_luong = toArray(req.body.so_luong);
-  const lieu_dung = toArray(req.body.lieu_dung);
-  const cach_dung = toArray(req.body.cach_dung);
-  const service_ma = toArray(req.body.service_ma);
-  const service_so_luong = toArray(req.body.service_so_luong);
+  const ds_dich_vu = toArray(req.body.dich_vu_chi_dinh);
 
-  let maPhieuChiDinhMoi = null;
-  let maPhieuKham = null;
+  if (!pkb_ma_bn) return res.status(400).send("Thiếu mã bệnh nhân.");
 
-  if (!pkb_ma_bn || !lh_ma || !pkb_trieu_chung) {
-    return res.status(400).send("Dữ liệu khám bệnh thiếu.");
-  }
-  const ketNoi = await pool.connect();
+  const client = await pool.connect();
+  let pcd_ma = null;
+
   try {
-    await ketNoi.query("BEGIN");
-    const truyVanPkb = `
-            INSERT INTO phieu_kham_benh (pkb_ma_bn, pkb_ngay_kham, pkb_trieu_chung, pkb_ghi_chu)
-            VALUES ($1, CURRENT_TIMESTAMP, $2, $3) 
+    await client.query("BEGIN");
+
+    let ngayTaiKham =
+      pkb_ngay_tai_kham && pkb_ngay_tai_kham !== "" ? pkb_ngay_tai_kham : null;
+
+    const insertPKB = `
+            INSERT INTO phieu_kham_benh 
+            (pkb_ma_bn, pkb_ngay_kham, pkb_trieu_chung, pkb_ghi_chu, pkb_loi_dan, pkb_chi_dinh_ngoai, pkb_ngay_tai_kham)
+            VALUES ($1, CURRENT_TIMESTAMP, $2, $3, $4, $5, $6)
             RETURNING pkb_ma;
         `;
-    const ketQuaPkb = await ketNoi.query(truyVanPkb, [
+    const resPKB = await client.query(insertPKB, [
       pkb_ma_bn,
       pkb_trieu_chung,
-      pkb_ghi_chu,
+      pkb_ghi_chu || "",
+      pkb_loi_dan || "",
+      pkb_chi_dinh_ngoai || "",
+      ngayTaiKham,
     ]);
-    maPhieuKham = ketQuaPkb.rows[0].pkb_ma;
-    const coThuoc = thuoc_ma.length > 0 && thuoc_ma[0] !== "";
-    const coBenh = ma_benh.length > 0;
 
-    if (coThuoc || coBenh) {
-      const truyVanDonThuoc = `
-                INSERT INTO don_thuoc (dt_ma_pkb, dt_ngay_tao, dt_ghi_chu)
-                VALUES ($1, CURRENT_TIMESTAMP, $2) 
-                RETURNING dt_ma;
-            `;
-      const ketQuaDonThuoc = await ketNoi.query(truyVanDonThuoc, [
-        maPhieuKham,
-        dt_ghi_chu,
-      ]);
-      const maDonThuoc = ketQuaDonThuoc.rows[0].dt_ma;
-      if (coBenh) {
-        const truyVanChanDoan = `
-              INSERT INTO CHAN_DOAN (cd_ma_dt, cd_ma_benh) 
-              VALUES ($1, $2)
-              ON CONFLICT (cd_ma_dt, cd_ma_benh) DO NOTHING;
-          `;
-        for (const idBenh of ma_benh) {
-          await ketNoi.query(truyVanChanDoan, [maDonThuoc, idBenh]);
-        }
-      }
-      if (coThuoc) {
-        const truyVanChiTietDt = `
-              INSERT INTO chi_tiet_don_thuoc (ctdt_ma_dt, ctdt_ma_thuoc, ctdt_so_luong, ctdt_lieu_dung, ctdt_cach_dung)
-              VALUES ($1, $2, $3, $4, $5);
-          `;
+    if (resPKB.rows.length === 0)
+      throw new Error("Không lấy được ID phiếu khám mới.");
+    const pkb_ma = resPKB.rows[0].pkb_ma;
 
-        for (let i = 0; i < thuoc_ma.length; i++) {
-          if (thuoc_ma[i] && so_luong[i]) {
-            await ketNoi.query(truyVanChiTietDt, [
-              maDonThuoc,
-              thuoc_ma[i],
-              so_luong[i],
-              lieu_dung[i] || "",
-              cach_dung[i] || "",
-            ]);
-          }
+    if (ds_dich_vu.length > 0) {
+      const insertPCD = `INSERT INTO phieu_chi_dinh (pcd_ma_pkb) VALUES ($1) RETURNING pcd_ma`;
+      const resPCD = await client.query(insertPCD, [pkb_ma]);
+      pcd_ma = resPCD.rows[0].pcd_ma;
+
+      const insertCTCD = `INSERT INTO chi_tiet_chi_dinh (ctcd_ma_pcd, ctcd_ma_dvcls) VALUES ($1, $2)`;
+      for (const maDV of ds_dich_vu) {
+        if (maDV) {
+          await client.query(insertCTCD, [pcd_ma, maDV]);
         }
       }
     }
-    if (service_ma.length > 0 && service_ma[0] !== "") {
-      const truyVanPcd = `
-                INSERT INTO phieu_chi_dinh (pcd_ma_pkb, pcd_trang_thai, pcd_ghi_chu) 
-                VALUES ($1, $2, $3) 
-                RETURNING pcd_ma;
-            `;
-      const ketQuaPcd = await ketNoi.query(truyVanPcd, [
-        maPhieuKham,
-        "CHO_THUC_HIEN",
-        pcd_ghi_chu || null,
-      ]);
-      maPhieuChiDinhMoi = ketQuaPcd.rows[0].pcd_ma;
 
-      const truyVanCtcd = `
-                INSERT INTO chi_tiet_chi_dinh (ctcd_ma_pcd, ctcd_ma_dvcls, ctcd_so_luong, ctcd_trang_thai)
-                VALUES ($1, $2, $3, $4); 
+    const insertDT = `INSERT INTO don_thuoc (dt_ma_pkb, dt_ngay_tao, dt_ghi_chu) VALUES ($1, CURRENT_TIMESTAMP, $2) RETURNING dt_ma`;
+    const resDT = await client.query(insertDT, [pkb_ma, dt_ghi_chu || ""]);
+    const dt_ma = resDT.rows[0].dt_ma;
+
+    if (ds_thuoc_ma.length > 0) {
+      const insertCTDT = `
+                INSERT INTO chi_tiet_don_thuoc 
+                (ctdt_ma_dt, ctdt_ma_thuoc, ctdt_so_luong, ctdt_lieu_dung, ctdt_cach_dung) 
+                VALUES ($1, $2, $3, $4, $5)
             `;
 
-      for (let i = 0; i < service_ma.length; i++) {
-        if (service_ma[i]) {
-          await ketNoi.query(truyVanCtcd, [
-            maPhieuChiDinhMoi,
-            service_ma[i],
-            service_so_luong[i] || 1,
-            "DA_CHI_DINH",
+      for (let i = 0; i < ds_thuoc_ma.length; i++) {
+        const sl = parseInt(ds_so_luong[i]);
+
+        if (ds_thuoc_ma[i] && !isNaN(sl) && sl > 0) {
+          await client.query(insertCTDT, [
+            dt_ma,
+            ds_thuoc_ma[i],
+            sl,
+            ds_lieu_dung[i] || "",
+            ds_cach_dung[i] || "",
           ]);
         }
       }
     }
-    if (lh_ma) {
-      const truyVanCapNhatLich = `UPDATE lich_hen SET lh_trang_thai = 'DA_HOAN_THANH' WHERE lh_ma = $1;`;
-      await ketNoi.query(truyVanCapNhatLich, [lh_ma]);
+
+    if (ma_benh.length > 0) {
+      const insertCD = `INSERT INTO chan_doan (cd_ma_dt, cd_ma_benh) VALUES ($1, $2) ON CONFLICT DO NOTHING`;
+      for (const idBenh of ma_benh) {
+        if (idBenh) await client.query(insertCD, [dt_ma, idBenh]);
+      }
     }
 
-    await ketNoi.query("COMMIT");
-
-    if (maPhieuChiDinhMoi) {
-      res.redirect(`/api/ket-qua-cls/nhap/${maPhieuChiDinhMoi}`);
-    } else {
-      res.redirect(
-        `/api/thanh-toan/lap-phieu/${maPhieuChiDinhMoi || maPhieuKham}`
+    if (lh_ma) {
+      await client.query(
+        `UPDATE lich_hen SET lh_trang_thai = 'CHO_THANH_TOAN' WHERE lh_ma = $1`,
+        [lh_ma]
       );
     }
+
+    await client.query("COMMIT");
+
+    if (pcd_ma) {
+      return res.redirect(`/api/ket-qua-cls/nhap/${pcd_ma}`);
+    } else {
+      return res.redirect(`/api/thanh-toan/lap-phieu/${pkb_ma}`);
+    }
   } catch (loi) {
-    await ketNoi.query("ROLLBACK");
-    console.error("LOI LUU PHIEU KHAM:", loi);
-    res.status(500).send("Lỗi máy chủ khi lưu phiếu khám: " + loi.message);
+    await client.query("ROLLBACK");
+    console.error(loi);
+    res.status(500).send("Lỗi lưu phiếu: " + loi.message);
   } finally {
-    ketNoi.release();
+    client.release();
   }
 });
 

@@ -33,7 +33,7 @@ router.put("/cap-nhat/:maBenhNhan", async (req, res) => {
     const ketNoi = await pool.connect();
     const truyVan = `
         UPDATE benh_nhan 
-        SET bn_ho_ten = $1, bn_sdt = $2, bn_gioi_tinh = $3, bn_ngay_sinh = $4, bn_dia_chi = $5 
+        SET bn_ho_ten = $1, bn_sdt = $2, bn_la_nam = $3, bn_ngay_sinh = $4, bn_dia_chi = $5 
         WHERE bn_ma = $6
     `;
     await ketNoi.query(truyVan, [
@@ -102,7 +102,7 @@ router.get("/tim-kiem", async (req, res) => {
                 bn_ma, 
                 bn_ho_ten, 
                 bn_sdt, 
-                bn_gioi_tinh, 
+                bn_la_nam, 
                 bn_ngay_sinh, 
                 bn_dia_chi 
             FROM benh_nhan 
@@ -174,7 +174,7 @@ router.post("/them-moi", async (req, res) => {
     }
 
     const truyVanThem = `
-            INSERT INTO benh_nhan (bn_ho_ten, bn_gioi_tinh, bn_ngay_sinh, bn_sdt, bn_dia_chi, bn_ngay_tao)
+            INSERT INTO benh_nhan (bn_ho_ten, bn_la_nam, bn_ngay_sinh, bn_sdt, bn_dia_chi, bn_ngay_tao)
             VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP) RETURNING bn_ma;
         `;
 
@@ -225,7 +225,7 @@ router.get("/", async (req, res) => {
     const tongSoTrang = Math.ceil(tongSoLuong / SO_DONG_MOI_TRANG);
 
     const patientsQuery = `
-            SELECT bn_ma, bn_ho_ten, bn_sdt, bn_dia_chi, bn_ngay_sinh, bn_gioi_tinh
+            SELECT bn_ma, bn_ho_ten, bn_sdt, bn_dia_chi, bn_ngay_sinh, bn_la_nam
             FROM benh_nhan 
             ${chuoiDieuKien}
             ORDER BY bn_ngay_tao DESC
@@ -253,41 +253,92 @@ router.get("/:maBenhNhan", async (req, res) => {
   const maBenhNhan = req.params.maBenhNhan;
 
   try {
-    const truyVanHoSo = `SELECT * FROM benh_nhan WHERE bn_ma = $1`;
-    const ketQuaHoSo = await pool.query(truyVanHoSo, [maBenhNhan]);
+    const queryBN = `SELECT * FROM benh_nhan WHERE bn_ma = $1`;
+    const resultBN = await pool.query(queryBN, [maBenhNhan]);
 
-    if (ketQuaHoSo.rows.length === 0) {
-      return res.status(404).render("loi_hethong", { message: "Khong tim thay benh nhan." });
+    if (resultBN.rows.length === 0) {
+      return res
+        .status(404)
+        .render("loi_hethong", { message: "Không tìm thấy bệnh nhân này!" });
     }
-    const thongTinBenhNhan = ketQuaHoSo.rows[0];
+    const queryLichHen = `
+            SELECT * FROM lich_hen 
+            WHERE lh_ma_bn = $1 
+            ORDER BY lh_ngay_hen DESC, lh_khung_gio DESC
+        `;
+    const resultLichHen = await pool.query(queryLichHen, [maBenhNhan]);
+    const queryPKB = `
+            SELECT pkb_ma, pkb_ngay_kham, pkb_trieu_chung, pkb_ghi_chu 
+            FROM phieu_kham_benh 
+            WHERE pkb_ma_bn = $1 
+            ORDER BY pkb_ngay_kham DESC
+        `;
+    const resultPKB = await pool.query(queryPKB, [maBenhNhan]);
+    let danhSachPhieuKham = resultPKB.rows;
+    danhSachPhieuKham = await Promise.all(
+      danhSachPhieuKham.map(async (pkb) => {
+        const queryDonThuoc = `SELECT dt_ma, dt_ghi_chu FROM don_thuoc WHERE dt_ma_pkb = $1`;
+        const resDT = await pool.query(queryDonThuoc, [pkb.pkb_ma]);
 
-    const truyVanLichHen = `
-        SELECT lh.lh_ma, lh.lh_ngay_hen, lh.lh_khung_gio, lh.lh_trang_thai, lh.lh_ghi_chu
-        FROM lich_hen lh 
-        WHERE lh.lh_ma_bn = $1 and lh.lh_da_xoa = FALSE
-        ORDER BY lh.lh_ngay_hen DESC, lh.lh_khung_gio DESC;
-    `;
-    const ketQuaLichSu = await pool.query(truyVanLichHen, [maBenhNhan]); 
-    const truyVanLichSuKham = `
-        SELECT 
-            pkb.pkb_ma, 
-            pkb.pkb_ngay_kham, 
-            pkb.pkb_trieu_chung, 
-            pkb.pkb_ghi_chu
-        FROM phieu_kham_benh pkb
-        WHERE pkb.pkb_ma_bn = $1
-        ORDER BY pkb_ngay_kham DESC;
-    `;
-    const ketQuaLichSuKham = await pool.query(truyVanLichSuKham, [maBenhNhan]); 
+        let thuoc = [];
+        let chanDoan = [];
+        let loiDan = "";
+
+        if (resDT.rows.length > 0) {
+          const dt_ma = resDT.rows[0].dt_ma;
+          loiDan = resDT.rows[0].dt_ghi_chu;
+
+          const queryChiTietThuoc = `
+                    SELECT t.t_ten_thuoc, t.t_don_vi_tinh, ct.ctdt_so_luong, ct.ctdt_lieu_dung, ct.ctdt_cach_dung
+                    FROM chi_tiet_don_thuoc ct
+                    JOIN thuoc t ON ct.ctdt_ma_thuoc = t.t_ma
+                    WHERE ct.ctdt_ma_dt = $1
+                `;
+          const resThuoc = await pool.query(queryChiTietThuoc, [dt_ma]);
+          thuoc = resThuoc.rows;
+          const queryBenh = `
+                    SELECT b.b_ten, b.b_ma_icd
+                    FROM chan_doan cd
+                    JOIN benh b ON cd.cd_ma_benh = b.b_ma
+                    WHERE cd.cd_ma_dt = $1
+                `;
+          const resBenh = await pool.query(queryBenh, [dt_ma]);
+          chanDoan = resBenh.rows;
+        }
+
+        const queryCLS = `
+                SELECT 
+                    dv.dvcls_ten, 
+                    kq.kqcls_mota, 
+                    kq.kqcls_ket_luan, 
+                    kq.kqcls_file_dinh_kem
+                FROM phieu_chi_dinh pcd
+                JOIN chi_tiet_chi_dinh ctcd ON pcd.pcd_ma = ctcd.ctcd_ma_pcd
+                JOIN dich_vu_can_lam_san dv ON ctcd.ctcd_ma_dvcls = dv.dvcls_ma
+                LEFT JOIN ket_qua_can_lam_san kq ON ctcd.ctcd_ma = kq.kqcls_ma_ctcd
+                WHERE pcd.pcd_ma_pkb = $1
+            `;
+        const resCLS = await pool.query(queryCLS, [pkb.pkb_ma]);
+        return {
+          ...pkb,
+          chan_doan: chanDoan, 
+          thuoc: thuoc,
+          loi_dan: loiDan, 
+          cls: resCLS.rows, 
+        };
+      })
+    );
     res.render("benhnhan_chitiet", {
-        patient: thongTinBenhNhan,
-        history: ketQuaLichSu.rows, 
-        examHistory: ketQuaLichSuKham.rows,
-        title: "Chi Tiết Bệnh Nhân",
+      title: "Hồ sơ bệnh nhân",
+      patient: resultBN.rows[0], 
+      history: resultLichHen.rows, 
+      examHistory: danhSachPhieuKham,
     });
-  } catch (loi) {
-    console.error("Lỗi khi tải hồ sơ bệnh nhân:", loi);
-    res.status(500).render("loi_hethong", { message: "Loi tai ho so" });
+  } catch (err) {
+    console.error("Lỗi khi xem chi tiết bệnh nhân:", err);
+    res
+      .status(500)
+      .render("loi_hethong", { message: "Lỗi máy chủ khi tải hồ sơ bệnh án." });
   }
 });
 
@@ -308,7 +359,7 @@ router.get("/kham-moi/:maLichHen", async (req, res) => {
     const ngayKham = ketQuaLichHen.rows[0].lh_ngay_kham;
 
     const truyVanBenhNhan = `
-            SELECT bn_ma, bn_ho_ten, bn_tuoi, bn_gioi_tinh, bn_dia_chi, bn_tien_su
+            SELECT bn_ma, bn_ho_ten, bn_tuoi, bn_la_nam , bn_dia_chi, bn_tien_su
             FROM benh_nhan 
             WHERE bn_ma = $1;
         `;
@@ -441,7 +492,7 @@ router.post("/sua/:maBenhNhan", async (req, res) => {
             SET 
                 bn_ho_ten = $1,
                 bn_sdt = $2,
-                bn_gioi_tinh = $3,
+                bn_la_nam = $3,
                 bn_ngay_sinh = $4,
                 bn_dia_chi = $5,
                 bn_ngay_cap_nhat = CURRENT_TIMESTAMP

@@ -1,24 +1,225 @@
-.patient-sidebar {
-            background-color: #f8f9fa; /* Màu nền xám nhẹ */
-            border-right: 1px solid #e9ecef;
-            padding: 20px;
-            position: sticky;
-            top: 70px; /* Bù trừ chiều cao header */
-            height: calc(100vh - 70px); /* Chiếm trọn chiều cao còn lại */
-            overflow-y: auto; /* Cuộn nếu nội dung quá dài */
-        }
-        .info-card {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.05);
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        .history-section h5 {
-            border-bottom: 2px solid #0d6efd;
-            padding-bottom: 5px;
-            margin-bottom: 15px;
-        }
-body {
-  padding-top: 70px;
+/* --- 1. CẤU HÌNH CHUNG --- */
+:root {
+    --primary: #007bff;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --info: #0ea5e9;
+    --danger: #ef4444;
+    --text-main: #344767;
+    --text-light: #7b809a;
+    --bg-body: #f0f2f5;
+    --bg-card: #ffffff;
+    --radius: 12px;
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+    --shadow-hover: 0 10px 20px rgba(0,0,0,0.08);
 }
+
+body {
+    background-color: var(--bg-body);
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    color: var(--text-main);
+    font-size: 14px;
+}
+
+/* --- 2. SIDEBAR (THÔNG TIN BỆNH NHÂN) --- */
+.patient-sidebar {
+    background-color: transparent;
+}
+
+/* Thẻ thông tin hành chính */
+.info-card {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    padding: 25px;
+    margin-bottom: 20px;
+    border-top: 5px solid var(--primary); /* Điểm nhấn màu xanh trên đầu */
+}
+
+.info-card h5 {
+    color: var(--text-light);
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #f0f2f5;
+    padding-bottom: 10px;
+}
+
+.info-card p {
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+    color: var(--text-main);
+}
+
+.info-card strong {
+    color: var(--text-light);
+    width: 80px;
+    display: inline-block;
+}
+
+/* Các nút hành động ở Sidebar */
+.d-grid .btn {
+    padding: 10px;
+    font-weight: 600;
+    border-radius: 8px;
+}
+
+.btn-warning {
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #ffedd5;
+}
+.btn-warning:hover { background: #c2410c; color: white; }
+
+/* --- 3. TABS (HỒ SƠ / LỊCH HẸN) --- */
+.nav-tabs {
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 20px;
+}
+
+.nav-link {
+    color: var(--text-light);
+    font-weight: 600;
+    border: none !important; /* Bỏ viền mặc định */
+    background: transparent !important;
+    padding: 12px 20px;
+    position: relative;
+    transition: all 0.3s;
+}
+
+.nav-link:hover {
+    color: var(--primary);
+}
+
+/* Tab đang chọn */
+.nav-link.active {
+    color: var(--primary) !important;
+    background: transparent !important;
+}
+
+/* Gạch chân màu xanh dưới tab đang chọn */
+.nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: var(--primary);
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+
+/* --- 4. ACCORDION (LỊCH SỬ KHÁM) --- */
+.accordion-item {
+    border: none;
+    border-radius: var(--radius) !important;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 15px; /* Tách rời các lần khám */
+    overflow: hidden;
+}
+
+.accordion-button {
+    background-color: white;
+    font-size: 1rem;
+    padding: 15px 20px;
+    box-shadow: none !important; /* Bỏ viền xanh khi click */
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: #f8f9fa; /* Màu nền khi mở ra */
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.accordion-button::after {
+    filter: grayscale(100%); /* Làm mũi tên màu xám */
+}
+
+.accordion-body {
+    background-color: #fbfbfb;
+    padding: 20px;
+}
+
+/* --- 5. CÁC THẺ CHI TIẾT (CHẨN ĐOÁN / THUỐC / CLS) --- */
+/* Thẻ chung trong accordion */
+.accordion-body .card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    background: white;
+    border-radius: 8px;
+}
+
+/* Header của các thẻ con */
+.accordion-body .card-header {
+    background-color: white;
+    border-bottom: 1px dashed #eee;
+    padding: 10px 15px;
+    font-size: 0.9rem;
+}
+
+/* 5.1. Chẩn đoán (Màu Info - Xanh dương) */
+.border-info { border-color: var(--info) !important; }
+.text-info { color: var(--info) !important; }
+.badge.bg-info {
+    background: #e0f2fe !important;
+    color: #0284c7 !important;
+    border: 1px solid #bae6fd;
+}
+
+/* 5.2. Đơn thuốc (Màu Success - Xanh lá) */
+.border-success { border-color: var(--success) !important; }
+.text-success { color: var(--success) !important; }
+
+/* Bảng thuốc nhỏ gọn */
+.accordion-body .table-sm th {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: var(--text-light);
+    background: #f8fafc;
+}
+.accordion-body .table-sm td {
+    vertical-align: middle;
+}
+
+/* 5.3. Cận lâm sàng (Màu Warning - Vàng cam) */
+.border-warning { border-color: var(--warning) !important; }
+.text-warning { color: #d97706 !important; } /* Chỉnh màu cam đậm hơn cho dễ đọc */
+
+/* Khung hiển thị kết quả mô tả (PRE tag) */
+pre {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #333;
+    border: 1px solid #e9ecef;
+}
+
+/* --- 6. TAB LỊCH HẸN (APPOINTMENT HISTORY) --- */
+#appt-history .table {
+    background: white;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+#appt-history thead th {
+    background: #f1f5f9;
+    color: var(--text-light);
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    padding: 12px;
+}
+
+/* Status Badges */
+.badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+}
+.bg-warning { background: #fffbeb !important; color: #b45309 !important; border: 1px solid #fcd34d; }
+.bg-success { background: #dcfce7 !important; color: #15803d !important; border: 1px solid #86efac; }
+.bg-danger  { background: #fee2e2 !important; color: #b91c1c !important; border: 1px solid #fca5a5; }
+.bg-info    { background: #e0f2fe !important; color: #0369a1 !important; border: 1px solid #bae6fd; }
+.bg-primary { background: #dbeafe !important; color: #1e40af !important; border: 1px solid #93c5fd; }

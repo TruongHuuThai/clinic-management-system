@@ -1,0 +1,46 @@
+/* --- MODAL XÓA BỆNH NHÂN (#deleteConfirmModal) --- */
+
+/* 1. Header: Gradient Đỏ */
+#deleteConfirmModal .modal-header {
+    background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%); /* Đỏ đậm */
+    color: white;
+}
+
+/* 2. Nội dung cảnh báo */
+#deleteConfirmModal .modal-body {
+    padding: 25px 20px;
+    font-size: 1rem;
+}
+
+/* Tên bệnh nhân bị xóa */
+#deleteConfirmModal #deleteTargetName {
+    color: #dc3545;
+    font-size: 1.2rem;
+    font-weight: 700;
+    
+    /* Hiệu ứng rung nhẹ */
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* Dòng cảnh báo nhỏ */
+#deleteConfirmModal .text-danger.small {
+    background-color: #fff5f5;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px dashed #dc3545;
+    margin-top: 15px;
+    display: block;
+}
+
+/* 3. Nút Xóa Ngay */
+#deleteConfirmModal .btn-danger {
+    background-color: #dc3545;
+    box-shadow: 0 4px 6px rgba(220, 53, 69, 0.3);
+}

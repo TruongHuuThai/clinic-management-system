@@ -1,0 +1,40 @@
+/* --- MODAL HỦY KHÁM (#cancelDataModal) --- */
+/* Ghi đè màu vàng mặc định thành Đỏ cảnh báo */
+#cancelDataModal .modal-header {
+    background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%) !important;
+    color: white !important;
+    border-bottom: none;
+}
+
+#cancelDataModal .modal-title {
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+#cancelDataModal .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* Khung cảnh báo mất dữ liệu */
+#cancelDataModal .text-danger {
+    color: #dc3545 !important;
+    background-color: #fff5f5;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px dashed #dc3545; /* Viền đứt nét */
+    display: block;
+    margin-top: 10px;
+    font-size: 0.95rem;
+}
+
+/* Nút Đồng ý Hủy */
+#cancelDataModal #btnConfirmCancel {
+    background-color: #dc3545;
+    color: white !important;
+    border: none;
+    box-shadow: 0 4px 6px rgba(220, 53, 69, 0.3);
+}
+
+#cancelDataModal #btnConfirmCancel:hover {
+    background-color: #b02a37;
+}

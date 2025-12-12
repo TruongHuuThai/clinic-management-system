@@ -4,8 +4,16 @@
     <meta charset="UTF-8">
     <title><%= title %></title>
     <%- include('partials/thuvien_js') %>
-    <link rel="stylesheet" href="/css/donthuocmau.css">
     <link rel="stylesheet" href="/css/partials/placehoder_nghien.css">
+    <style>
+    ul.ui-autocomplete {
+        z-index: 1100 !important;
+    }
+
+    .ui-front {
+        z-index: 1100 !important;
+    }
+</style>
 <body>
     <%- include('partials/header') %>
     <main class="container my-5">
@@ -43,7 +51,10 @@
     <%- include('partials/modal_thanhcong')%>
     <%- include('partials/donthuocmau/modal_them') %>
     <%- include('partials/phieukhambenh/modal_trung_thuoc.ejs')%>
-
+    <link rel="stylesheet" href="/css/partials/modal_thanhcong.css">
+    <link rel="stylesheet" href="/css/partials/donthuocmau/modal_them.css">
+    <link rel="stylesheet" href="/css/partials/phieukhambenh/modal_canhbao.css">
+    <link rel="stylesheet" href="/css/donthuocmau.css">
     <script src="/js/donthuocmau.js"></script>
 </body>
 </html>

@@ -1,29 +1,174 @@
+/* --- 1. CẤU HÌNH CHUNG --- */
+:root {
+    --primary: #007bff;
+    --success: #10b981;  /* Xanh lá hiện đại hơn */
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #3b82f6;
+    --text-main: #344767;
+    --text-light: #7b809a;
+    --bg-body: #f0f2f5;
+    --bg-card: #ffffff;
+    --border-color: #e9ecef;
+    --radius: 10px;
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+}
+
 body {
-  padding-top: 70px;
+    background-color: var(--bg-body);
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    color: var(--text-main);
+    font-size: 14px;
 }
+
+/* Container rộng hơn để chứa bảng */
+.container {
+    max-width: 1400px; /* Mở rộng chiều ngang vì bảng thuốc nhiều cột */
+    padding: 20px;
+}
+
+h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 20px;
+}
+
+hr { border-color: #dee2e6; opacity: 0.5; }
+
+/* --- 2. KHU VỰC BỘ LỌC (FILTER SECTION) --- */
+#filter-section {
+    background-color: var(--bg-card) !important; /* Đè màu xám của Bootstrap */
+    border-radius: var(--radius) !important;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    padding: 20px !important;
+    margin-bottom: 25px !important;
+}
+
+/* Input và Select trong bộ lọc */
+.form-control, .form-select {
+    border-radius: 6px;
+    border: 1px solid #d2d6da;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    box-shadow: none;
+    transition: all 0.2s;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.15);
+}
+
+/* Nút bấm trong bộ lọc */
+.btn {
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 8px 16px;
+    transition: all 0.2s;
+    border: none;
+}
+
+.btn-primary { background: var(--primary); box-shadow: 0 2px 4px rgba(0,123,255,0.2); }
+.btn-primary:hover { background: #0069d9; transform: translateY(-1px); }
+
+.btn-secondary { background: #e2e6ea; color: #6c757d; }
+.btn-secondary:hover { background: #dbe0e5; color: #343a40; }
+
+.btn-success { background: var(--success); border: none; }
+.btn-success:hover { background: #059669; }
+
+/* --- 3. BẢNG DỮ LIỆU (DATA TABLE) --- */
+/* Biến bảng thành thẻ Card */
+.table {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    border-collapse: separate; /* Để bo góc hoạt động */
+    border-spacing: 0;
+    overflow: hidden;
+    margin-bottom: 0;
+}
+
+/* Header bảng - Ghi đè class table-primary */
+.table thead tr th {
+    background-color: #f8f9fa !important; /* Chuyển từ xanh đậm sang xám nhạt */
+    color: var(--text-light) !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    padding: 15px 15px;
+    border-bottom: 1px solid #e9ecef;
+    border-top: none;
+}
+
+/* Body bảng */
+.table tbody tr td {
+    padding: 12px 15px; /* Giảm padding cho gọn */
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
+    color: var(--text-main);
+    font-size: 0.9rem;
+}
+
+/* Hiệu ứng hover dòng */
+.table-hover tbody tr:hover {
+    background-color: #fafbfc;
+}
+
+/* --- 4. TÙY CHỈNH CÁC CỘT ĐẶC BIỆT --- */
+
+/* Tên thuốc: Xanh đậm để nổi bật */
+td.fw-bold.text-primary {
+    color: var(--primary) !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem;
+}
+
+/* Giá tiền: Xanh lá, chữ to hơn chút */
+td.text-success {
+    color: var(--success) !important;
+    font-weight: 700 !important;
+    font-family: 'Consolas', monospace; /* Dùng font số để dễ nhìn */
+    letter-spacing: -0.5px;
+}
+
+/* Ô cuộn nội dung (Cách dùng, Hướng dẫn) */
+/* Class này bạn đã có trong HTML, giờ ta style nó */
 .scrollable-cell {
-  max-height: 60px;
-  overflow-y: auto;
-  font-size: 0.9rem;
-  line-height: 1.4;
-  padding-right: 5px;
+    max-height: 60px; /* Chỉ hiện 3-4 dòng */
+    overflow-y: auto; /* Tự hiện thanh cuộn nếu dài */
+    font-size: 0.85rem;
+    color: #555;
+    line-height: 1.4;
+    padding-right: 5px; /* Tránh chữ dính thanh cuộn */
 }
 
-.scrollable-cell::-webkit-scrollbar {
-  width: 4px;
-}
-.scrollable-cell::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-.scrollable-cell::-webkit-scrollbar-thumb {
-  background: #bbb;
-  border-radius: 10px;
-}
-.scrollable-cell::-webkit-scrollbar-thumb:hover {
-  background: #888;
+/* Tùy chỉnh thanh cuộn cho đẹp (Chrome/Safari) */
+.scrollable-cell::-webkit-scrollbar { width: 4px; }
+.scrollable-cell::-webkit-scrollbar-track { background: #f1f1f1; }
+.scrollable-cell::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+.scrollable-cell::-webkit-scrollbar-thumb:hover { background: #aaa; }
+
+/* --- 5. NÚT HÀNH ĐỘNG (ACTION BUTTONS) --- */
+.btn-group {
+    box-shadow: none;
+    gap: 4px; /* Tách rời các nút ra một chút thay vì dính liền */
 }
 
-.table thead th {
-  text-align: center !important;
-  vertical-align: middle !important;
+.btn-group .btn-sm {
+    border-radius: 4px !important; /* Bo góc từng nút */
+    padding: 4px 8px;
+    font-size: 0.8rem;
+    margin-left: 2px;
 }
+
+/* Màu riêng cho nút hành động */
+.btn-info { background: #17a2b8; color: white !important; }
+.btn-warning { background: #ffc107; color: #333 !important; }
+.btn-danger { background: #dc3545; color: white; }
+
+/* Ẩn bớt border mặc định của Bootstrap table */
+.table-bordered>:not(caption)>*>* { border-width: 0; }

@@ -4,118 +4,141 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nhập Kết Quả CLS - PCD <%= pcdMa %></title>
-    
     <%- include('partials/thuvien_js') %>
-    <link rel="stylesheet" href="/css/ketqua_cls_them.css">
-
+    <style>
+        .service-card { transition: all 0.2s; border-left: 4px solid #0d6efd; }
+        .service-card:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .file-upload-wrapper { position: relative; overflow: hidden; display: inline-block; width: 100%; }
+        .file-upload-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; }
+        .btn-upload { border: 2px dashed #dee2e6; color: #6c757d; background: #f8f9fa; transition: all 0.2s; }
+        .file-upload-wrapper:hover .btn-upload { border-color: #0d6efd; color: #0d6efd; background: #fff; }
+        .preview-image { max-height: 150px; object-fit: contain; display: none; margin-top: 10px; border-radius: 5px; border: 1px solid #ddd; }
+    </style>
 </head>
-<body>
+<body class="bg-light">
     <%- include('partials/header') %>
 
     <main class="container my-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="text-primary fw-bold mb-0">NHẬP KẾT QUẢ CẬN LÂM SÀNG</h2>
-            <a href="/api/thanh-toan/lap-phieu/<%= pcdMa %>" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-right"></i> Bỏ qua & Đến Thanh Toán
-            </a>
-        </div>
-
-        <div class="card shadow-sm border-0 mb-4">
-            <div class="card-body bg-light">
-                <div class="row">
-                    <div class="col-md-4">
-                        <strong>Phiếu Chỉ Định:</strong> <span class="text-danger"><%= pcdMa %></span>
-                    </div>
-                    <div class="col-md-4">
-                        <strong>Bệnh Nhân:</strong> <span class="fw-bold"><%= bn_ho_ten %></span>
-                    </div>
-                    <div class="col-md-4">
-                        <strong>Mã BN:</strong> <%= bn_ma %>
-                    </div>
+        <div class="d-flex justify-content-between align-items-center mb-4 sticky-top bg-light py-3" style="z-index: 99;">
+            <div>
+                <h2 class="text-primary fw-bold mb-0">NHẬP KẾT QUẢ CẬN LÂM SÀNG</h2>
+                <div class="text-muted small">
+                    Phiếu chỉ định: <strong>#<%= pcdMa %></strong> | Bệnh nhân: <strong><%= bn_ho_ten %></strong>
                 </div>
             </div>
+            <div>
+                <button type="button" class="btn btn-outline-primary me-2" onclick="setAllCompleted()">
+                    <i class="fas fa-check-double"></i> Hoàn tất tất cả
+                </button>
+                <a href="/api/thanh-toan/lap-phieu/<%= pcdMa %>" class="btn btn-outline-secondary">
+                     Bỏ qua & Đến Thanh Toán <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
         </div>
-        
+
         <form method="POST" action="/api/ket-qua-cls/luu" enctype="multipart/form-data" id="resultForm">
             <input type="hidden" name="pcd_ma" value="<%= pcdMa %>">
             
-            <div class="card shadow-sm border-0">
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-hover mb-0">
-                            <thead class="table-primary text-center">
-                                <tr>
-                                    <th width="25%">Dịch vụ yêu cầu</th>
-                                    <th width="40%">Mô tả & Kết luận</th>
-                                    <th width="15%">Trạng thái</th>
-                                    <th width="20%">File đính kèm</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% ctcdList.forEach(function(ctcd) { %>
-                                    <tr data-ctcd-ma="<%= ctcd.ctcd_ma %>">
-                                        <td>
-                                            <div class="service-name fw-bold"><%= ctcd.dvcls_ten %></div>
-                                            <small class="text-muted">Số lượng: <%= ctcd.ctcd_so_luong %></small>
-                                            <input type="hidden" name="ctcd_ma[]" value="<%= ctcd.ctcd_ma %>">
-                                        </td>
+            <div class="d-flex flex-column gap-3">
+                <% ctcdList.forEach(function(ctcd, index) { %>
+                <div class="card shadow-sm border-0 service-card">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3 border-end">
+                                <h5 class="fw-bold text-primary"><%= ctcd.dvcls_ten %></h5>
+                                <span class="badge bg-info text-dark mb-2"><%= ctcd.dvcls_nhom || 'Dịch vụ' %></span>
+                                <div class="text-muted small mt-2">
+                                    <i class="fas fa-clock me-1"></i> Trạng thái hiện tại:<br>
+                                    <span class="fw-bold text-warning status-text-<%= ctcd.ctcd_ma %>">
+                                        <%= ctcd.ctcd_trang_thai === 'DA_CO_KET_QUA' ? 'Đã có kết quả' : 'Đang thực hiện' %>
+                                    </span>
+                                </div>
+                                <input type="hidden" name="ctcd_ma[]" value="<%= ctcd.ctcd_ma %>">
+                            </div>
 
-                                        <td>
-                                            <div class="mb-2">
-                                                <label class="form-label small fw-bold text-muted">Mô tả chi tiết:</label>
-                                                <textarea name="kqcls_mota_<%= ctcd.ctcd_ma %>" class="form-control" rows="3" placeholder="Mô tả hình ảnh, chỉ số..."></textarea>
-                                            </div>
-                                            
-                                            <div>
-                                                <label class="form-label small text-muted">Kết luận:</label>
-                                                <input type="text" name="kqcls_ketluan_<%= ctcd.ctcd_ma %>" class="form-control fw-bold" placeholder="Kết luận cuối cùng...">
-                                            </div>
-                                            
-                                            <% if (ctcd.dvcls_loai === 'XET_NGHIEM') { %>
-                                                <div class="mt-2">
-                                                    <label class="form-label small fw-bold text-muted">Chỉ số (JSON):</label>
-                                                    <input type="text" name="kqcls_json_<%= ctcd.ctcd_ma %>" class="form-control form-control-sm font-monospace" placeholder='{"WBC": 10.5, "RBC": 4.2...}'/>
-                                                </div>
-                                            <% } %>
-                                        </td>
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label fw-bold small text-secondary">Mô tả / Chỉ số:</label>
+                                    <textarea name="kqcls_mota_<%= ctcd.ctcd_ma %>" class="form-control" rows="3" placeholder="Nhập mô tả chi tiết..."></textarea>
+                                </div>
+                                <div>
+                                    <label class="form-label fw-bold small text-secondary">Kết luận:</label>
+                                    <input type="text" name="kqcls_ketluan_<%= ctcd.ctcd_ma %>" class="form-control fw-bold text-success" placeholder="Kết luận (VD: Bình thường)...">
+                                </div>
+                                
+                                <% if (ctcd.dvcls_loai === 'XET_NGHIEM') { %>
+                                <div class="mt-2">
+                                     <a class="small text-primary text-decoration-none" data-bs-toggle="collapse" href="#json-<%= ctcd.ctcd_ma %>">
+                                        <i class="fas fa-code"></i> Nhập JSON chỉ số nâng cao
+                                     </a>
+                                     <div class="collapse mt-1" id="json-<%= ctcd.ctcd_ma %>">
+                                        <input type="text" name="kqcls_json_<%= ctcd.ctcd_ma %>" class="form-control form-control-sm font-monospace" placeholder='{"WBC": 10.5, "RBC": 4.2...}'/>
+                                     </div>
+                                </div>
+                                <% } %>
+                            </div>
 
-                                        <td class="text-center">
-                                            <select name="ctcd_trang_thai_<%= ctcd.ctcd_ma %>" class="form-select status-select">
-                                                <option value="DANG_THUC_HIEN" <%= ctcd.ctcd_trang_thai === 'DANG_THUC_HIEN' ? 'selected' : '' %>> Đang thực hiện</option>
-                                                <option value="DA_CO_KET_QUA" <%= ctcd.ctcd_trang_thai === 'DA_CO_KET_QUA' ? 'selected' : '' %> > Đã Có Kết quả </option>
-                                                <option value="HUY" <%= ctcd.ctcd_trang_thai === 'HUY' ? 'selected' : '' %> > Hủy </option>
-                                            </select>
-                                        </td>
+                            <div class="col-md-3 border-start">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small text-secondary">Trạng thái:</label>
+                                    <select name="ctcd_trang_thai_<%= ctcd.ctcd_ma %>" class="form-select status-select" id="select-status-<%= ctcd.ctcd_ma %>">
+                                        <option value="DANG_THUC_HIEN" <%= ctcd.ctcd_trang_thai === 'DANG_THUC_HIEN' ? 'selected' : '' %>>Wait: Đang làm</option>
+                                        <option value="DA_CO_KET_QUA" <%= ctcd.ctcd_trang_thai === 'DA_CO_KET_QUA' ? 'selected' : '' %> class="fw-bold">Done: Đã có KQ</option>
+                                        <option value="HUY" <%= ctcd.ctcd_trang_thai === 'HUY' ? 'selected' : '' %>>Cancel: Hủy</option>
+                                    </select>
+                                </div>
 
-                                        <td>
-                                            <div class="d-flex flex-column gap-2">
-                                                <input type="file" id="file-<%= ctcd.ctcd_ma %>" name="kqcls_file_<%= ctcd.ctcd_ma %>" class="form-control form-control-sm file-input" accept="image/*, application/pdf">
-                                                <button type="button" 
-                                                        class="btn btn-sm btn-outline-primary w-100" 
-                                                        onclick="quetAnhAI('<%= ctcd.ctcd_ma %>')">
-                                                    <i class="fas fa-magic me-1"></i> Trích xuất dữ liệu
-                                                </button>
-                                                
-                                                <img src="#" class="preview-image mt-2 rounded" alt="Preview">
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <% }); %>
-                            </tbody>
-                        </table>
+                                <div class="file-upload-wrapper">
+                                    <button type="button" class="btn btn-upload w-100 py-2">
+                                        <i class="fas fa-cloud-upload-alt fa-2x d-block mb-1"></i>
+                                        <span class="small fw-bold">Chọn ảnh/KQ</span>
+                                    </button>
+                                    <input type="file" name="kqcls_file_<%= ctcd.ctcd_ma %>" onchange="previewImage(this, 'preview-<%= ctcd.ctcd_ma %>')" accept="image/*, application/pdf">
+                                </div>
+                                <img id="preview-<%= ctcd.ctcd_ma %>" src="#" class="preview-image w-100" alt="Ảnh KQ">
+                            </div>
+                        </div>
                     </div>
                 </div>
+                <% }); %>
             </div>
             
-            <div class="text-center mt-4 mb-5">
-                <button type="submit" class="btn btn-success btn-lg px-5 shadow-sm">
-                    <i class="fas fa-save me-2"></i> Lưu kết quả
+            <div class="card mt-4 border-0 shadow-sm sticky-bottom">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <span class="text-muted fst-italic">* Vui lòng kiểm tra kỹ trước khi lưu.</span>
+                    <button type="submit" class="btn btn-success btn-lg px-5 fw-bold">
+                        <i class="fas fa-save me-2"></i> LƯU KẾT QUẢ & THANH TOÁN
+                    </button>
+                </div>
             </div>
         </form>
     </main>
 
     <%- include('partials/modal_thanhcong') %>
+    
+    <script>
+        function previewImage(input, imgId) {
+            const preview = document.getElementById(imgId);
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                reader.readAsDataURL(input.files[0]);
+                
+                const rowCard = input.closest('.row');
+                const select = rowCard.querySelector('.status-select');
+                if(select) select.value = 'DA_CO_KET_QUA';
+            }
+        }
 
-    <script src="/js/ketqua_cls_them.js"></script>
+        function setAllCompleted() {
+            document.querySelectorAll('.status-select').forEach(select => {
+                select.value = 'DA_CO_KET_QUA';
+            });
+            alert('Đã chuyển tất cả trạng thái sang "Đã có kết quả"!');
+        }
+    </script>
 </body>
 </html>

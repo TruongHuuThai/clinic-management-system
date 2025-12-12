@@ -1,0 +1,45 @@
+#saveConfirmModal .modal-content {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(13, 110, 253, 0.15);
+}
+
+#saveConfirmModal .modal-header {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); 
+    color: white;
+    border-bottom: none;
+    padding: 15px 20px;
+}
+
+#saveConfirmModal .modal-title {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+}
+
+#saveConfirmModal .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+    opacity: 0.8;
+}
+
+#saveConfirmModal .fa-file-medical-alt {
+    width: 90px;
+    height: 90px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    
+    background-color: #e7f1ff !important;
+    color: #0d6efd !important;
+    
+    margin-bottom: 15px;
+    animation: pulseBlue 2s infinite;
+}
+
+@keyframes pulseBlue {
+    0% { box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.4); }
+    70% { box-shadow: 0 0 0 15px rgba(13, 110, 253, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(13, 110, 253, 0); }
+}

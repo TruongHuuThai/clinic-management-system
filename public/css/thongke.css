@@ -1,0 +1,121 @@
+body {
+        background-color: #f3f4f6; /* Màu xám nhẹ hiện đại */
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* 2. Hiệu ứng cho các Card (Khối chứa) */
+    .card {
+        border: none;
+        border-radius: 12px; /* Bo góc mềm mại hơn */
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); /* Đổ bóng nhẹ tạo chiều sâu */
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    /* Hiệu ứng khi di chuột vào Card biểu đồ */
+    .card:hover {
+        transform: translateY(-3px); /* Nổi lên nhẹ */
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        background-color: #ffffff;
+        border-bottom: 1px solid #f0f0f0;
+        padding: 15px 20px;
+        border-radius: 12px 12px 0 0 !important;
+    }
+
+    .card-header h6 {
+        font-size: 1.1rem; /* Tăng kích thước tiêu đề */
+        letter-spacing: 0.5px;
+        color: #4e73df;
+    }
+
+    /* 3. Card thống kê số liệu (Màu sắc Gradient) */
+    .card-stat {
+        color: white;
+        overflow: hidden;
+        position: relative;
+    }
+
+    /* Gradient đẹp mắt hơn */
+    .bg-gradient-primary { background: linear-gradient(135deg, #4e73df 0%, #224abe 100%); }
+    .bg-gradient-success { background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%); }
+    .bg-gradient-info { background: linear-gradient(135deg, #36b9cc 0%, #258391 100%); }
+
+    /* Icon mờ làm nền trang trí */
+    .card-stat .col-auto i {
+        opacity: 0.3;
+        font-size: 3.5rem; /* Icon to hơn */
+        transform: rotate(-15deg); /* Nghiêng nhẹ */
+    }
+
+    /* Số liệu lớn */
+    .card-stat .h3 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    /* 4. Tùy chỉnh ô chọn ngày (Flatpickr + Bootstrap) */
+    .form-control {
+        border-radius: 8px;
+        border: 1px solid #d1d3e2;
+        padding: 10px 15px;
+        font-size: 0.95rem;
+    }
+
+    .form-control:focus {
+        border-color: #4e73df;
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.15);
+    }
+
+    /* Label đậm và rõ ràng */
+    .form-label {
+        font-weight: 600;
+        color: #5a5c69;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+    }
+
+    /* Nút lọc dữ liệu */
+    .btn-primary {
+        background-color: #4e73df;
+        border-color: #4e73df;
+        border-radius: 8px;
+        padding: 10px;
+        font-weight: 600;
+        transition: all 0.2s;
+        box-shadow: 0 4px 6px rgba(78, 115, 223, 0.3);
+    }
+
+    .btn-primary:hover {
+        background-color: #2e59d9;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 8px rgba(78, 115, 223, 0.4);
+    }
+
+    /* 5. Vùng chứa biểu đồ */
+    .chart-container {
+        position: relative;
+        height: 350px; /* Tăng chiều cao chút để dễ nhìn */
+        width: 100%;
+        padding: 10px;
+    }
+
+    /* Ẩn input date mặc định của trình duyệt để flatpickr đè lên đẹp hơn */
+    input[type="date"]::-webkit-inner-spin-button,
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        display: none;
+        -webkit-appearance: none;
+    }
+    
+    /* Responsive cho mobile */
+    @media (max-width: 768px) {
+        .chart-container {
+            height: 250px;
+        }
+        .card-stat .h3 {
+            font-size: 1.4rem;
+        }
+    }

@@ -1,0 +1,33 @@
+/* --- MODAL LỊCH SỬ GIÁ (#historyModal) --- */
+#historyModal .modal-header {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%); /* Màu xám */
+    color: white;
+}
+
+#historyModal #history-drug-name {
+    color: #344767;
+}
+
+/* Bảng lịch sử (Sticky Header) */
+#historyModal .table thead th {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    border-bottom: 1px solid #dee2e6;
+    padding: 12px;
+}
+
+#historyModal .table tbody td {
+    vertical-align: middle;
+    padding: 12px;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+#historyModal .table tbody td:first-child {
+    font-family: 'Consolas', monospace; 
+    font-weight: 600;
+    color: #198754;
+}

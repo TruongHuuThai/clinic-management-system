@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <title><%= title %></title>
     <%- include('partials/thuvien_js') %>
-    <link rel="stylesheet" href="/css/benhnhan_danhsach.css">
+    
     <link rel="stylesheet" href="/css/partials/placehoder_nghien.css">
   </head>
 
@@ -72,9 +72,9 @@
               <td ><%= viTriOffset + index + 1 %></td>
               <td class="fw-bold text-primary"><%= p.bn_ho_ten %></td>
               <td >
-                  <% if(p.bn_gioi_tinh === 'Nam') { %>
+                  <% if(p.bn_la_nam === true ) { %>
                       <span class="badge bg-info ">Nam</span>
-                  <% } else if (p.bn_gioi_tinh === 'Nữ' || p.bn_gioi_tinh === 'Nu') { %>
+                  <% } else if (p.bn_la_nam === false ) { %>
                       <span class="badge bg-danger bg-opacity-75">Nữ</span>
                   <% } else { %>
                       -
@@ -143,6 +143,12 @@
       <%- include('partials/benhnhan/modal_xoaloi') %>
       <%- include('partials/modal_thanhcong') %>
 
+    <link rel="stylesheet" href="/css/partials/benhnhan/modal_them.css">
+    <link rel="stylesheet" href="/css/partials/benhnhan/modal_sua.css">
+    <link rel="stylesheet" href="/css/partials/benhnhan/modal_xoa.css">
+    <link rel="stylesheet" href="/css/partials/benhnhan/modal_xoaloi.css">
+    <link rel="stylesheet" href="/css/partials/modal_thanhcong.css">
+    <link rel="stylesheet" href="/css/benhnhan_danhsach.css">
     <script src="/js/benhnhan_danhsach.js"></script>
     <script src="/js/partials/benhnhan/modal_sua.js"></script>
   </body>
